@@ -6,7 +6,7 @@ module Flipped
   class Book
     FRAME_LIST_FILE = 'frameList.php'
 
-    FRAME_LIST_PATTERN = /array\(\s+"(.*)"\s+\)/
+    FRAME_LIST_PATTERN = /array\(\s*"(.*)"\s*\)/
 
     FRAME_LIST_TEMPLATE = '<?php $frameList = array( $FRAME_NUMBERS$ ); ?>'
 
@@ -26,6 +26,7 @@ module Flipped
         end
 
         frame_list_text =~ FRAME_LIST_PATTERN
+        p frame_list_text, FRAME_LIST_PATTERN
         frame_names =  $1.split(/",\s+"/)
         frame_numbers = frame_names.map { |s| s.to_i }
 
