@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager" verified="true">
     <list default="true" readonly="true" id="09daf466-3604-48c6-8e7c-329650ff1ae4" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/book.rb" afterPath="$PROJECT_DIR$/lib/flipped/book.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped.rb" afterPath="$PROJECT_DIR$/lib/flipped.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/book_spec.rb" afterPath="$PROJECT_DIR$/spec/book_spec.rb" />
@@ -32,7 +31,7 @@
       <file leaf-file-name="flipped.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/flipped.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="74" selection-start="448" selection-end="448" vertical-scroll-proportion="0.0">
+            <state line="6" column="74" selection-start="478" selection-end="478" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -389,7 +388,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="74" selection-start="448" selection-end="448" vertical-scroll-proportion="0.0">
+        <state line="6" column="74" selection-start="478" selection-end="478" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
