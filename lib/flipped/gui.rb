@@ -205,7 +205,7 @@ END_TEXT
 
     def select_frame(index)
       @current_frame_index = index
-      img = FXPNGImage.new(getApp(), @book.frames[@current_frame_index], IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP)
+      img = FXPNGImage.new(getApp(), @book[@current_frame_index], IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP)
       img.create
       @image_viewer.image = img
 
