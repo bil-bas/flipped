@@ -26,7 +26,6 @@ module Flipped
         end
 
         frame_list_text =~ FRAME_LIST_PATTERN
-        p frame_list_text, FRAME_LIST_PATTERN
         frame_names =  $1.split(/",\s+"/)
         frame_numbers = frame_names.map { |s| s.to_i }
 

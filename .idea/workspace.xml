@@ -3,6 +3,7 @@
   <component name="ChangeListManager" verified="true">
     <list default="true" readonly="true" id="09daf466-3604-48c6-8e7c-329650ff1ae4" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/book.rb" afterPath="$PROJECT_DIR$/lib/flipped/book.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/gui.rb" afterPath="$PROJECT_DIR$/lib/flipped/gui.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/book_spec.rb" afterPath="$PROJECT_DIR$/spec/book_spec.rb" />
     </list>
@@ -31,7 +32,7 @@
       <file leaf-file-name="gui.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="283" column="50" selection-start="8783" selection-end="8783" vertical-scroll-proportion="0.0">
+            <state line="259" column="19" selection-start="7967" selection-end="7971" vertical-scroll-proportion="-57.4">
               <folding />
             </state>
           </provider>
@@ -49,7 +50,7 @@
       <file leaf-file-name="book.rb" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/flipped/book.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="56" column="17" selection-start="1651" selection-end="1651" vertical-scroll-proportion="0.52117866">
+            <state line="27" column="45" selection-start="849" selection-end="849" vertical-scroll-proportion="0.37200737">
               <folding />
             </state>
           </provider>
@@ -68,8 +69,8 @@
         <option value="$PROJECT_DIR$/lib/main.rb" />
         <option value="$PROJECT_DIR$/lib/book.rb" />
         <option value="$PROJECT_DIR$/lib/flipped.rb" />
-        <option value="$PROJECT_DIR$/lib/flipped/gui.rb" />
         <option value="$PROJECT_DIR$/spec/book_spec.rb" />
+        <option value="$PROJECT_DIR$/lib/flipped/gui.rb" />
         <option value="$PROJECT_DIR$/lib/flipped/book.rb" />
       </list>
     </option>
@@ -163,7 +164,7 @@
     <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
   </component>
-  <component name="RunManager" selected="RSpec.book_spec">
+  <component name="RunManager" selected="Ruby.flipped">
     <configuration default="false" name="book_spec" type="RubyRunConfigurationType" factoryName="Ruby" temporary="true">
       <module name="flipped" />
       <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="-e STDOUT.sync=true;STDERR.sync=true;load($0=ARGV.shift)" />
@@ -336,21 +337,21 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="840" height="1010" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32992035" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32992035" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.30049875" sideWeight="0.66439134" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.30049875" sideWeight="0.66439134" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32764506" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32992035" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -447,13 +448,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="283" column="50" selection-start="8783" selection-end="8783" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/spec/book_spec.rb">
       <provider selected="true" editor-type-id="text-editor">
         <state line="70" column="20" selection-start="1932" selection-end="1932" vertical-scroll-proportion="-6.88">
@@ -461,9 +455,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="259" column="19" selection-start="7967" selection-end="7971" vertical-scroll-proportion="-57.4">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped/book.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="56" column="17" selection-start="1651" selection-end="1651" vertical-scroll-proportion="0.52117866">
+        <state line="27" column="45" selection-start="849" selection-end="849" vertical-scroll-proportion="0.37200737">
           <folding />
         </state>
       </provider>
