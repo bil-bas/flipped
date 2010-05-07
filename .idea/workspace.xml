@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ChangeListManager" verified="true">
     <list default="true" readonly="true" id="09daf466-3604-48c6-8e7c-329650ff1ae4" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/book.rb" afterPath="$PROJECT_DIR$/lib/flipped/book.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped.rb" afterPath="$PROJECT_DIR$/lib/flipped.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/book_spec.rb" afterPath="$PROJECT_DIR$/spec/book_spec.rb" />
@@ -29,19 +28,19 @@
   <component name="FileColors" enabled="true" enabledForTabs="true" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="flipped.rb" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="flipped.rb" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/flipped.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="7" column="93" selection-start="574" selection-end="574" vertical-scroll-proportion="0.0">
+            <state line="6" column="47" selection-start="196" selection-end="196" vertical-scroll-proportion="0.18312387">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="book_spec.rb" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="book_spec.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/spec/book_spec.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="72" column="21" selection-start="2037" selection-end="2037" vertical-scroll-proportion="0.5830258">
+            <state line="2" column="0" selection-start="16" selection-end="110" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -77,9 +76,9 @@
       <list>
         <option value="$PROJECT_DIR$/lib/main.rb" />
         <option value="$PROJECT_DIR$/lib/book.rb" />
-        <option value="$PROJECT_DIR$/lib/flipped.rb" />
         <option value="$PROJECT_DIR$/lib/flipped/book.rb" />
         <option value="$PROJECT_DIR$/spec/book_spec.rb" />
+        <option value="$PROJECT_DIR$/lib/flipped.rb" />
       </list>
     </option>
   </component>
@@ -123,7 +122,7 @@
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
   </component>
-  <component name="RunManager" selected="RSpec.book_spec">
+  <component name="RunManager" selected="Ruby.flipped">
     <configuration default="false" name="book_spec" type="RubyRunConfigurationType" factoryName="Ruby" temporary="true">
       <module name="flipped" />
       <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="-e STDOUT.sync=true;STDERR.sync=true;load($0=ARGV.shift)" />
@@ -180,6 +179,20 @@
       <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="USE_CUSTOM_SPEC_RUNNER" VALUE="false" />
       <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="DRB" VALUE="false" />
       <RSPEC_RUN_CONFIG_SETTINGS_ID NAME="FULL_BACKTRACE" VALUE="false" />
+      <RunnerSettings RunnerId="RubyRunner" />
+      <ConfigurationWrapper RunnerId="RubyRunner" />
+      <method />
+    </configuration>
+    <configuration default="false" name="flipped" type="RubyRunConfigurationType" factoryName="Ruby" temporary="true">
+      <module name="flipped" />
+      <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="-e STDOUT.sync=true;STDERR.sync=true;load($0=ARGV.shift)" />
+      <RUBY_RUN_CONFIG NAME="WORK DIR" VALUE="$PROJECT_DIR$/lib" />
+      <RUBY_RUN_CONFIG NAME="SHOULD_USE_SDK" VALUE="false" />
+      <RUBY_RUN_CONFIG NAME="ALTERN_SDK_NAME" VALUE="" />
+      <RUBY_RUN_CONFIG NAME="myPassParentEnvs" VALUE="true" />
+      <envs />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="$PROJECT_DIR$/lib/flipped.rb" />
+      <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="" />
       <RunnerSettings RunnerId="RubyRunner" />
       <ConfigurationWrapper RunnerId="RubyRunner" />
       <method />
@@ -256,10 +269,11 @@
       <RTEST_RUN_CONFIG_SETTINGS_ID NAME="INHERITANCE_CHECK_DISABLED" VALUE="false" />
       <method />
     </configuration>
-    <list size="3">
+    <list size="4">
       <item index="0" class="java.lang.String" itemvalue="Ruby.book_spec" />
       <item index="1" class="java.lang.String" itemvalue="RSpec.All specs in: spec" />
       <item index="2" class="java.lang.String" itemvalue="RSpec.book_spec" />
+      <item index="3" class="java.lang.String" itemvalue="Ruby.flipped" />
     </list>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
@@ -387,13 +401,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="93" selection-start="574" selection-end="574" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/test_data/flipBooks/00002/frameList.php">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="57" vertical-scroll-proportion="0.0">
@@ -410,7 +417,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/spec/book_spec.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="72" column="21" selection-start="2037" selection-end="2037" vertical-scroll-proportion="0.5830258">
+        <state line="2" column="0" selection-start="16" selection-end="110" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="47" selection-start="196" selection-end="196" vertical-scroll-proportion="0.18312387">
           <folding />
         </state>
       </provider>
