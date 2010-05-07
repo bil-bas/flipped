@@ -45,9 +45,15 @@ module Flipped
     # Number of frames in the book [Integer]
     def size; @frames.size; end
 
-    # Copy of the frame images
+    # Get frame.
+    # Returns: Raw data for a specific frame.
+    def [](index)
+      @frames[index]
+    end
+
+    # Copy of the raw frame images.
     # Returns: list of image data strings [Array of String]
-    def frames
+    def frames()
       @frames.dup
     end
 
