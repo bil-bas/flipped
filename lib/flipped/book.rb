@@ -57,6 +57,22 @@ module Flipped
       self
     end
 
+    # Returns: Index deleted if it existed, else nil [Integer or nil]
+    def delete_at(index)
+      @frames.delete_at(index)
+    end
+
+    # Returns number of frames inserted.
+    def insert(index, *frames)
+      @frames.insert(index, *frames)
+      frames.size
+    end
+
+    def move(remove_from, insert_at)
+      @frames.insert(insert_at, @frames.delete_at(remove_from))
+      true
+    end
+
     # Write out a new flipbook directory.
     #
     # Raises ArgumentError if the directory already exists.

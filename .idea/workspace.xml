@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager" verified="true">
     <list default="true" readonly="true" id="09daf466-3604-48c6-8e7c-329650ff1ae4" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/book.rb" afterPath="$PROJECT_DIR$/lib/flipped/book.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped.rb" afterPath="$PROJECT_DIR$/lib/flipped.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/book_spec.rb" afterPath="$PROJECT_DIR$/spec/book_spec.rb" />
@@ -31,7 +32,7 @@
       <file leaf-file-name="flipped.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/flipped.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="6" column="74" selection-start="478" selection-end="478" vertical-scroll-proportion="0.0">
+            <state line="7" column="93" selection-start="574" selection-end="574" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -40,7 +41,7 @@
       <file leaf-file-name="book_spec.rb" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/spec/book_spec.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="14" column="61" selection-start="526" selection-end="526" vertical-scroll-proportion="-1.0664207">
+            <state line="72" column="21" selection-start="2037" selection-end="2037" vertical-scroll-proportion="0.5830258">
               <folding />
             </state>
           </provider>
@@ -49,7 +50,7 @@
       <file leaf-file-name="book.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/flipped/book.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="74" column="25" selection-start="2151" selection-end="2151" vertical-scroll-proportion="0.0">
+            <state line="72" column="10" selection-start="2017" selection-end="2017" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -388,7 +389,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="74" selection-start="478" selection-end="478" vertical-scroll-proportion="0.0">
+        <state line="7" column="93" selection-start="574" selection-end="574" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -402,14 +403,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped/book.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="74" column="25" selection-start="2151" selection-end="2151" vertical-scroll-proportion="0.0">
+        <state line="72" column="10" selection-start="2017" selection-end="2017" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/spec/book_spec.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="61" selection-start="526" selection-end="526" vertical-scroll-proportion="-1.0664207">
+        <state line="72" column="21" selection-start="2037" selection-end="2037" vertical-scroll-proportion="0.5830258">
           <folding />
         </state>
       </provider>

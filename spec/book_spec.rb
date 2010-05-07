@@ -34,6 +34,46 @@ describe Book do
     end
   end
 
+  describe "delete_at()" do
+    it "should remove the first frame" do
+      @book1.delete_at(0).should_not be_nil
+      @book1.size.should == @book1_size - 1
+    end
+
+    it "should remove the last frame" do
+      @book1.delete_at(@book1_size - 1).should_not be_nil
+      @book1.size.should == @book1_size - 1
+    end
+
+    it "should return nil if the frame does not exist" do
+      @book1.delete_at(@book1_size).should be_nil
+      @book1.size.should == @book1_size
+    end
+  end
+
+  describe "insert()" do
+    it "should insert a single frame" do
+      @book1.insert(0, "fred").should == 1
+      @book1.size.should == @book1_size + 1
+      @book1.frames[0].should == "fred"
+    end
+
+    it "should insert multiple frames" do
+      @book1.insert(1, "fred", "ted").should == 2
+      @book1.size.should == @book1_size + 2
+      @book1.frames[1..2].should == ["fred", "ted"]
+    end
+  end
+
+  describe "move()" do
+    it "should move a single frame" do
+      frame = @book1.frames[3]
+      @book1.move(3, 1).should == true
+      @book1.size.should == @book1_size
+      @book1.frames[1].should == frame
+    end
+  end
+
   describe "append()" do
     it "should add the frames from another book" do
       @book1.append(@book2)
