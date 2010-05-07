@@ -31,7 +31,7 @@
       <file leaf-file-name="gui.rb" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="114" column="27" selection-start="3985" selection-end="3985" vertical-scroll-proportion="0.5714286">
+            <state line="271" column="48" selection-start="8436" selection-end="8436" vertical-scroll-proportion="5.723938">
               <folding />
             </state>
           </provider>
@@ -49,7 +49,7 @@
       <file leaf-file-name="book.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/flipped/book.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="45" selection-start="849" selection-end="849" vertical-scroll-proportion="0.0">
+            <state line="49" column="0" selection-start="1445" selection-end="1445" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -449,7 +449,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped/book.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="45" selection-start="849" selection-end="849" vertical-scroll-proportion="0.0">
+        <state line="49" column="0" selection-start="1445" selection-end="1445" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -463,7 +463,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="114" column="27" selection-start="3985" selection-end="3985" vertical-scroll-proportion="0.5714286">
+        <state line="271" column="48" selection-start="8436" selection-end="8436" vertical-scroll-proportion="5.723938">
           <folding />
         </state>
       </provider>

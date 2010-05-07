@@ -11,7 +11,7 @@ module Flipped
 
     IMAGE_WIDTH = 640
     IMAGE_HEIGHT = 416
-    THUMB_SCALE = 0.125
+    THUMB_SCALE = 0.25
     THUMB_WIDTH = IMAGE_WIDTH * THUMB_SCALE
     THUMB_HEIGHT = IMAGE_HEIGHT * THUMB_SCALE
     DEFAULT_SLIDE_SHOW_INTERVAL = 5000
@@ -32,34 +32,30 @@ Features:
 END_TEXT
 
     def initialize(app)
-      super(app, WINDOW_TITLE, :opts => DECOR_ALL, :width => 800, :height => 600)
+      super(app, WINDOW_TITLE, :opts => DECOR_ALL, :width => 800, :height => 800)
 
+      FXToolTip.new(getApp(), TOOLTIP_NORMAL)
+      
       create_menu
 
-      splitter = FXHorizontalFrame.new(self, LAYOUT_FILL_X|LAYOUT_FILL_Y)
+      @main_frame = FXVerticalFrame.new(self, LAYOUT_FILL_X|LAYOUT_FILL_Y)
 
       # Sunken border for image widget
-      @thumbs_window = FXScrollWindow.new(splitter, LAYOUT_FIX_WIDTH|LAYOUT_FILL_Y, :width => THUMB_WIDTH + 20)
-      @thumbs_column = FXVerticalFrame.new(@thumbs_window,
+      @thumbs_window = FXScrollWindow.new(@main_frame, LAYOUT_FIX_HEIGHT|LAYOUT_FILL_X, :height => THUMB_HEIGHT + 50)
+      @thumbs_column = FXHorizontalFrame.new(@thumbs_window,
         FRAME_SUNKEN|FRAME_THICK|LAYOUT_FIX_X|LAYOUT_FILL_Y,
         :padLeft => 0, :padRight => 0, :padTop => 0, :padBottom => 0,
         :width => THUMB_WIDTH)
 
-      image_box = FXVerticalFrame.new(splitter,
-        FRAME_SUNKEN|FRAME_THICK|LAYOUT_FILL_X|LAYOUT_FILL_Y,
-        :padLeft => 0, :padRight => 0, :padTop => 0, :padBottom => 0)
-
-      @image_viewer = FXImageView.new(image_box, :opts => LAYOUT_FILL_X|LAYOUT_FILL_Y)
+      @image_viewer = FXImageView.new(@main_frame, :opts => LAYOUT_FILL_X|LAYOUT_FILL_Y)
       @image_viewer.connect(SEL_LEFTBUTTONPRESS, method(:right_button_pressed))
 
-      @label = FXLabel.new(image_box, 'No flip-book loaded', nil, LAYOUT_FILL_X,
+      @label = FXLabel.new(@main_frame, 'No flip-book loaded', nil, LAYOUT_FILL_X,
          :padLeft => 4, :padRight => 4, :padTop => 4, :padBottom => 4)
 
-      add_button_bar(image_box)
+      add_button_bar(@main_frame)
 
       @thumb_viewers = []
-
-      FXToolTip.new(getApp(), TOOLTIP_NORMAL)
 
       @current_directory = ''
       @current_frame_index = 0
@@ -94,8 +90,6 @@ END_TEXT
       FXMenuTitle.new(menu_bar, "&Options", nil, options_menu)
       @toggle_thumbs_menu = FXMenuCheck.new(options_menu, "Show &Thumbnails...\tCtl-T\tHide/show thumbnail strip.", nil).connect(SEL_COMMAND, method(:on_toggle_thumbs))
 
-      #@toggle_thumbs_menu.check = TRUE
-      
       # Help menu
       help_menu = FXMenuPane.new(self)
       FXMenuTitle.new(menu_bar, "&Help", nil, help_menu, LAYOUT_RIGHT)
@@ -114,6 +108,7 @@ END_TEXT
       else
         @thumbs_window.hide
       end
+      @main_frame.recalc
     end
 
     def add_button_bar(window)
@@ -122,22 +117,27 @@ END_TEXT
       @start_button = FXButton.new(button_bar, '<<<', NAV_BUTTON_OPTIONS)
       @start_button.connect(SEL_LEFTBUTTONPRESS, method(:start_button_pressed))
       @start_button.disable
+      @start_button.tipText = "Skip to first frame"
 
       @left_button = FXButton.new(button_bar, '<', NAV_BUTTON_OPTIONS)
       @left_button.connect(SEL_LEFTBUTTONPRESS, method(:left_button_pressed))
       @left_button.disable
+      @left_button.tipText = "Previous frame"
 
       @play_button = FXButton.new(button_bar, '|>', NAV_BUTTON_OPTIONS)
       @play_button.connect(SEL_LEFTBUTTONPRESS, method(:play_button_pressed))
       @play_button.disable
+      @play_button.tipText = "Play slide-show"
 
       @right_button = FXButton.new(button_bar, '>', NAV_BUTTON_OPTIONS)
       @right_button.connect(SEL_LEFTBUTTONPRESS, method(:right_button_pressed))
       @right_button.disable
+      @right_button.tipText = "Next frame"
 
       @end_button = FXButton.new(button_bar, '>>>', NAV_BUTTON_OPTIONS)
       @end_button.connect(SEL_LEFTBUTTONPRESS, method(:end_button_pressed))
       @end_button.disable
+      @end_button.tipText = "Skip to last frame"
     end
 
     # Convenience function to construct a PNG icon.
@@ -147,15 +147,19 @@ END_TEXT
       end
       @thumb_viewers.clear
 
-      @book.frames.each do |frame|
-        image_view = FXImageView.new(@thumbs_column, :opts => LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
+      @book.frames.each_with_index do |frame, i|
+        packer = FXVerticalFrame.new(@thumbs_column)
+        image_view = FXImageView.new(packer, :opts => LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
                                       :width => THUMB_WIDTH, :height => THUMB_HEIGHT)
 
         image_view.connect(SEL_LEFTBUTTONPRESS, method(:on_thumb_left_click))
         image_view.connect(SEL_RIGHTBUTTONPRESS, method(:on_thumb_right_click))
 
-        @thumb_viewers.push image_view
-        image_view.create
+        label = FXLabel.new(packer, "#{i + 1}", :opts => LAYOUT_FILL_X)
+
+        packer.create
+
+        @thumb_viewers.push packer      
         
         img = FXPNGImage.new(getApp(), frame, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP)
         img.create
@@ -187,9 +191,11 @@ END_TEXT
       if @playing
         @slide_show_timer = getApp().addTimeout(@slide_show_interval, method(:slide_show_timer))
         @play_button.text = '||'
+        @play_button.tipText = "Pause slide-show"
       else
         @play_button.text = '|>'
         @play_button.disable
+        @play_button.tipText = "Play slide-show"
       end
 
       return 1
@@ -254,7 +260,7 @@ END_TEXT
 
     # Event when clicking on a thumbnail - select.
     def on_thumb_left_click(sender, sel, ptr)
-      index = @thumb_viewers.index(sender)
+      index = @thumb_viewers.index(sender.parent)
       select_frame(index)
 
       return 1
@@ -263,7 +269,7 @@ END_TEXT
     # Event when clicking on a thumbnail - delete.
     # TODO: Open up a menu.
     def on_thumb_right_click(sender, sel, ptr)
-      index = @thumb_viewers.index(sender)
+      index = @thumb_viewers.index(sender.parent)
       @book.delete_at(index)
       show_frames([index, @book.size - 1].min)
 
