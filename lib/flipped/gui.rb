@@ -39,8 +39,8 @@ END_TEXT
       splitter = FXHorizontalFrame.new(self, LAYOUT_FILL_X|LAYOUT_FILL_Y)
 
       # Sunken border for image widget
-      thumbs_window = FXScrollWindow.new(splitter, LAYOUT_FIX_WIDTH|LAYOUT_FILL_Y, :width => THUMB_WIDTH + 20)
-      @thumbs_column = FXVerticalFrame.new(thumbs_window,
+      @thumbs_window = FXScrollWindow.new(splitter, LAYOUT_FIX_WIDTH|LAYOUT_FILL_Y, :width => THUMB_WIDTH + 20)
+      @thumbs_column = FXVerticalFrame.new(@thumbs_window,
         FRAME_SUNKEN|FRAME_THICK|LAYOUT_FIX_X|LAYOUT_FILL_Y,
         :padLeft => 0, :padRight => 0, :padTop => 0, :padBottom => 0,
         :width => THUMB_WIDTH)
@@ -81,10 +81,21 @@ END_TEXT
 
       @append_menu = FXMenuCommand.new(file_menu, "A&ppend flip-book...\tCtl-P\tAppend flip-book to currently loaded flip-book.", nil).connect(SEL_COMMAND, method(:on_cmd_append))
 
-      @save_menu = FXMenuCommand.new(file_menu, "&Save flip-book...\tCtl-S\tSave current flip-book.", nil).connect(SEL_COMMAND, method(:on_cmd_save))
       FXMenuSeparator.new(file_menu)
+
+      @save_menu = FXMenuCommand.new(file_menu, "&Save flip-book...\tCtl-S\tSave current flip-book.", nil).connect(SEL_COMMAND, method(:on_cmd_save))
+
+      FXMenuSeparator.new(file_menu)
+
       FXMenuCommand.new(file_menu, "&Quit\tCtl-Q").connect(SEL_COMMAND, method(:on_cmd_quit))
 
+      # Options menu.
+      options_menu = FXMenuPane.new(self)
+      FXMenuTitle.new(menu_bar, "&Options", nil, options_menu)
+      @toggle_thumbs_menu = FXMenuCheck.new(options_menu, "Show &Thumbnails...\tCtl-T\tHide/show thumbnail strip.", nil).connect(SEL_COMMAND, method(:on_toggle_thumbs))
+
+      #@toggle_thumbs_menu.check = TRUE
+      
       # Help menu
       help_menu = FXMenuPane.new(self)
       FXMenuTitle.new(menu_bar, "&Help", nil, help_menu, LAYOUT_RIGHT)
@@ -94,6 +105,14 @@ END_TEXT
           HELP_TEXT, nil,
           MBOX_OK|DECOR_TITLE|DECOR_BORDER)
         help_dialog.execute
+      end
+    end
+
+    def on_toggle_thumbs(sender, sel, ptr)
+      if sender.checked?
+        @thumbs_window.show
+      else
+        @thumbs_window.hide
       end
     end
 
