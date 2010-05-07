@@ -19,6 +19,9 @@ module Flipped
     NAV_BUTTON_OPTIONS = { :opts => Fox::BUTTON_NORMAL|Fox::LAYOUT_CENTER_X|Fox::LAYOUT_FIX_WIDTH|Fox::LAYOUT_FIX_HEIGHT,
                            :width => 90, :height => 50 }
 
+    DEFAULT_WINDOW_WIDTH = 800
+    DEFAULT_WINDOW_HEIGHT = 800
+
     HELP_TEXT = <<END_TEXT
 #{APPLICATION} is a flip-book tool for SleepIsDeath (http://sleepisdeath.net).
 
@@ -32,7 +35,8 @@ Features:
 END_TEXT
 
     def initialize(app)
-      super(app, WINDOW_TITLE, :opts => DECOR_ALL, :width => 800, :height => 800)
+      super(app, WINDOW_TITLE, :opts => DECOR_ALL,
+             :width => DEFAULT_WINDOW_WIDTH, :height => DEFAULT_WINDOW_HEIGHT)
 
       FXToolTip.new(getApp(), TOOLTIP_NORMAL)
       
@@ -150,7 +154,7 @@ END_TEXT
       @book.frames.each_with_index do |frame, i|
         packer = FXVerticalFrame.new(@thumbs_column)
         image_view = FXImageView.new(packer, :opts => LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
-                                      :width => THUMB_WIDTH, :height => THUMB_HEIGHT)
+                                      :width => THUMB_HEIGHT, :height => THUMB_HEIGHT)
 
         image_view.connect(SEL_LEFTBUTTONPRESS, method(:on_thumb_left_click))
         image_view.connect(SEL_RIGHTBUTTONPRESS, method(:on_thumb_right_click))
@@ -164,6 +168,7 @@ END_TEXT
         img = FXPNGImage.new(getApp(), frame, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP)
         img.create
         img.scale(THUMB_WIDTH, THUMB_HEIGHT)
+        img.crop((THUMB_WIDTH - THUMB_HEIGHT) / 2, 0, THUMB_HEIGHT, THUMB_HEIGHT)
 
         image_view.image = img
       end
@@ -351,8 +356,8 @@ END_TEXT
       # Get size, etc. from registry
       xx = getApp().reg().readIntEntry("SETTINGS", "x", 0)
       yy = getApp().reg().readIntEntry("SETTINGS", "y", 0)
-      ww = getApp().reg().readIntEntry("SETTINGS", "width", 850)
-      hh = getApp().reg().readIntEntry("SETTINGS", "height", 600)
+      ww = getApp().reg().readIntEntry("SETTINGS", "width", DEFAULT_WINDOW_WIDTH)
+      hh = getApp().reg().readIntEntry("SETTINGS", "height", DEFAULT_WINDOW_HEIGHT)
 
       #dir = getApp().reg().readStringEntry("SETTINGS", "directory", "~")
            
