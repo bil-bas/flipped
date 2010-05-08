@@ -193,13 +193,14 @@ END_TEXT
     def play_button_pressed(sender, sel, ptr)
       @playing = !@playing
 
+      @play_button.disable
       if @playing
+        @play_button.enable
         @slide_show_timer = getApp().addTimeout(@slide_show_interval, method(:slide_show_timer))
         @play_button.text = '||'
         @play_button.tipText = "Pause slide-show"
       else
-        @play_button.text = '|>'
-        @play_button.disable
+        @play_button.text = '|>'      
         @play_button.tipText = "Play slide-show"
       end
 
@@ -241,24 +242,22 @@ END_TEXT
 
       @label.text = "Frame #{index + 1} of #{@book.size}"
 
+      @start_button.disable
+      @left_button.disable
+
+      @right_button.disable
+      @end_button.disable
+
       if index > 0
         @start_button.enable unless @start_button.enabled
         @left_button.enable unless @left_button.enabled
-      else
-        @start_button.disable
-        @left_button.disable
       end
 
       if index < @book.size - 1
         @play_button.enable
         @end_button.enable
         @right_button.enable
-      else
-        @end_button.disable
-        @right_button.disable
       end
-
-
 
       nil
     end
