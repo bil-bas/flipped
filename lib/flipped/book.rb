@@ -2,7 +2,10 @@ require 'fileutils'
 
 module Flipped
   include FileUtils
-  
+
+  # A flip-book for SleepIsDeath.
+  #
+  # Enables reading/editing/writing flipbooks.
   class Book
     FRAME_LIST_FILE = 'frameList.php'
 
@@ -18,6 +21,9 @@ module Flipped
     PRELOAD_NEXT_HTML = 'preloadNext.html'
 
     # Create a new book, optionally from an existing flipbook directory.
+    #
+    # === Parameters
+    # directory:: Flipbook directory to read from [String]
     def initialize(directory = nil)
       if directory
         # Read in framelists in php format and extract the numbers.
@@ -42,50 +48,79 @@ module Flipped
     end
 
     # Number of frames in the book [Integer]
-    def size; @frames.size; end
+    attr_reader :size
+    def size # :nodoc:
+      @frames.size
+    end
 
-    # Get frame.
-    # Returns: Raw data for a specific frame.
+    # Get a single frame.
+    #
+    # === Parameters
+    # index:: Position of frame to look at [Integer]
+    #
+    # Returns: Raw data for a specific frame (ORIGINAL, NOT A COPY).
     def [](index)
       @frames[index]
     end
 
-    # Copy of the raw frame images.
-    # Returns: list of image data strings [Array of String]
-    def frames()
+    # List of image data strings [Array of String]
+    attr_reader :frames
+    def frames() #:nodoc:
       @frames.dup
     end
 
     # Adds another book to the end of this one.
+    #
+    # === Parameters
+    # book:: Other book to append to this one [Book]
+    #
     # Returns: self
     def append(book)
       @frames += book.frames
       self
     end
 
+    # Delete a single frame from the Book.
+    #
+    # === Parameters
+    # index:: Position of frame to delete [Integer]
+    #
     # Returns: Index deleted if it existed, else nil [Integer or nil]
     def delete_at(index)
       @frames.delete_at(index)
     end
 
-    # Returns number of frames inserted.
-    def insert(index, *frames)
-      @frames.insert(index, *frames)
-      frames.size
+    # Insert a frame or frames into the book.
+    #
+    # === Parameters
+    # index::  Position of frame to insert before [Integer]
+    # frames_to_insert:: Any number of frame data strings to add [String]
+    #
+    # Returns number of frames inserted [Integer].
+    def insert(index, *frames_to_insert)
+      @frames.insert(index, *frames_to_insert)
+      frames_to_insert.size
     end
 
+    # Moves a frame within the Book.
+    #
+    # === Parameters
+    # remove_from:: Position of frame to move [Integer]
+    # insert_at:: Frame position to insert before [Integer]
+    #
+    # Returns: self
     def move(remove_from, insert_at)
       @frames.insert(insert_at, @frames.delete_at(remove_from))
-      true
+      self
     end
 
     # Write out a new flipbook directory.
     #
     # Raises ArgumentError if the directory already exists.
     #
-    # == Parameters
-    # :out_dir: Directory of new flipbook [String]
-    # :template_dir: Directory where standard template files are stored [String]
+    # === Parameters
+    # out_dir:: Directory of new flipbook [String]
+    # template_dir:: Directory where standard template files are stored [String]
     #
     # Returns: self
     def write(out_dir, template_dir)

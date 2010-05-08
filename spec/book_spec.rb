@@ -69,7 +69,7 @@ describe Book do
   describe "move()" do
     it "should move a single frame" do
       frame = @book1[3]
-      @book1.move(3, 1).should == true
+      @book1.move(3, 1).should == @book1
       @book1.size.should == @book1_size
       @book1[1].should == frame
     end
