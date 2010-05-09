@@ -237,19 +237,19 @@ END_TEXT
       nil
     end
 
-    def on_cmd_start(sender, sel, ptr)
+    def on_cmd_start(sender, selector, event)
       select_frame(0)
 
       return 1
     end
 
-    def on_cmd_previous(sender, sel, ptr)
+    def on_cmd_previous(sender, selector, event)
       select_frame(@current_frame_index - 1)
 
       return 1
     end
 
-    def play_button_pressed(sender, sel, ptr)
+    def play_button_pressed(sender, selector, event)
       @playing = !@playing
 
       @play_button.disable
@@ -266,7 +266,7 @@ END_TEXT
       return 1
     end
 
-    def slide_show_timer(sender, sel, ptr)
+    def slide_show_timer(sender, selector, event)
 
       if @playing
         select_frame(@current_frame_index + 1)
@@ -281,13 +281,13 @@ END_TEXT
       return 1
     end
 
-    def on_cmd_next(sender, sel, ptr)
+    def on_cmd_next(sender, selector, event)
       select_frame([@current_frame_index + 1, @book.size - 1].min)
 
       return 1
     end
 
-    def on_cmd_end(sender, sel, ptr)
+    def on_cmd_end(sender, selector, event)
       select_frame(@book.size - 1)
 
       return 1
@@ -302,7 +302,7 @@ END_TEXT
       @info_bar.text = if @book.size > 0
         "Frame #{index + 1} of #{@book.size}"
       else
-        "Empty flipbook"
+        "Empty flip-book"
       end
 
       @start_button.disable
@@ -326,7 +326,7 @@ END_TEXT
     end
 
     # Event when clicking on a thumbnail - select.
-    def on_thumb_left_click(sender, sel, ptr)
+    def on_thumb_left_click(sender, selector, event)
       index = @thumb_viewers.index(sender.parent)
       select_frame(index)
 
@@ -335,16 +335,49 @@ END_TEXT
 
     # Event when clicking on a thumbnail - delete.
     # TODO: Open up a menu.
-    def on_thumb_right_click(sender, sel, ptr)
+    def on_thumb_right_click(sender, selector, event)
       index = @thumb_viewers.index(sender.parent)
-      @book.delete_at(index)
-      show_frames([index, @book.size - 1].min)
+
+      FXMenuPane.new(self) do |menu_pane|
+        FXMenuCommand.new(menu_pane, "Delete frame\t\tDelete frame #{index + 1}." ).connect(SEL_COMMAND) do
+          delete_frames(index)
+        end
+
+        FXMenuCommand.new(menu_pane, "Delete frame and all frames before it\t\tDelete frames 1 to #{index + 1}." ).connect(SEL_COMMAND) do
+          delete_frames(*(0..index).to_a)
+        end
+
+        FXMenuCommand.new(menu_pane, "Delete frame and all frames after it\t\tDelete frames #{index + 1} to #{@book.size}." ).connect(SEL_COMMAND) do
+          delete_frames(*(index..(@book.size - 1)).to_a)
+        end
+
+        FXMenuCommand.new(menu_pane, "Delete identical frames\t\tDelete all frames showing exactly the same image as this one." ).connect(SEL_COMMAND) do
+          frame_data = @book[index]
+          identical_frame_indices = []
+          @book.frames.each_with_index do |frame, i|
+            identical_frame_indices.push(i) if frame == frame_data
+          end
+          delete_frames(*identical_frame_indices)
+        end
+
+        menu_pane.create
+        menu_pane.popup(nil, event.root_x, event.root_y)
+        app.runModalWhileShown(menu_pane)
+      end
 
       return 1
     end
 
+    def delete_frames(*indices)
+      indices.sort.reverse_each {|index| @book.delete_at(index) }
+
+      show_frames([indices.first, @book.size - 1].min)
+
+      nil
+    end
+
     # Open a new flip-book
-    def on_cmd_open(sender, sel, ptr)
+    def on_cmd_open(sender, selector, event)
       open_dir = FXFileDialog.getOpenDirectory(self, "Open flip-book directory", @current_directory)
       begin
         getApp().beginWaitCursor do
@@ -364,7 +397,7 @@ END_TEXT
     end
 
     # Open a new flip-book
-    def on_cmd_append(sender, sel, ptr)
+    def on_cmd_append(sender, selector, event)
       open_dir = FXFileDialog.getOpenDirectory(self, "Append flip-book directory", @current_directory)
       begin
         getApp().beginWaitCursor do
@@ -386,7 +419,7 @@ END_TEXT
     end
 
     # Save this flip-book
-    def on_cmd_save(sender, sel, ptr)
+    def on_cmd_save(sender, selector, event)
       save_dir = FXFileDialog.getSaveFilename(self, "Save flip-book directory", @current_directory)
       if File.exists? save_dir
         dialog = FXMessageBox.new(self, "Save error!",
@@ -402,7 +435,7 @@ END_TEXT
     end
 
     # Quit the application
-    def on_cmd_quit(sender, sel, ptr)
+    def on_cmd_quit(sender, selector, event)
       # Write new window size back to registry
       getApp().reg().writeIntEntry("SETTINGS", "x", x)
       getApp().reg().writeIntEntry("SETTINGS", "y", y)
