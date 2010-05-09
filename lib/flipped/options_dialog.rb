@@ -7,6 +7,7 @@ module Flipped
 
   class OptionsDialog < FXDialogBox
 
+    MIN_INTERVAL = 1
     MAX_INTERVAL = 30
     NUM_INTERVALS_SEEN = 20
 
@@ -27,14 +28,14 @@ module Flipped
     end
 
     def initialize(owner)
-      super(owner, "Options", :opts => DECOR_TITLE|DECOR_BORDER|LAYOUT_FIX_WIDTH, :width => 600)
+      super(owner, "Options", :opts => DECOR_TITLE|DECOR_BORDER)
 
       grid = FXMatrix.new(self, :n => 3, :opts => MATRIX_BY_COLUMNS|LAYOUT_FILL_X)
 
       # Slide-show duration.
       FXLabel.new(grid, "Slide-show duration (secs)")
       @slide_show_interval_field = FXComboBox.new(grid, 10) do |combo|
-        (1..MAX_INTERVAL).each {|i| combo.appendItem(i.to_s, i) }
+        (MIN_INTERVAL..MAX_INTERVAL).each {|i| combo.appendItem(i.to_s, i) }
         combo.editable = false
         combo.numVisible = NUM_INTERVALS_SEEN
       end
@@ -42,17 +43,23 @@ module Flipped
 
       # Template directory.
       FXLabel.new(grid, "Template directory")
-      @template_dir_field = FXLabel.new(grid, '', :opts => JUSTIFY_LEFT)
-      FXButton.new(grid, "Browse...", :opts => FRAME_RAISED|FRAME_THICK).connect(SEL_COMMAND) do |sender, selector, event|
-        directory = FXFileDialog.getOpenDirectory(self, "Select template directory", @template_dir_field.text)
-        
-        if Book.valid_template_directory?(directory)
-          @template_dir_field.text = directory
-        else
-          dialog = FXMessageBox.new(self, "Settings error!",
-                "Template directory #{directory} is invalid. Reverting to previous setting.",
-                :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
-          dialog.execute
+      @template_dir_field = FXTextField.new(grid, 40) do |text_field|
+        text_field.editable = false
+        text_field.disable
+      end
+
+      FXButton.new(grid, "Browse...", :opts => FRAME_RAISED|FRAME_THICK) do |button|
+        button.connect(SEL_COMMAND) do |sender, selector, event|
+          directory = FXFileDialog.getOpenDirectory(self, "Select template directory", @template_dir_field.text)
+
+          if Book.valid_template_directory?(directory)
+            @template_dir_field.text = directory
+          else
+            dialog = FXMessageBox.new(self, "Settings error!",
+                  "Template directory #{directory} is invalid. Reverting to previous setting.",
+                  :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
+            dialog.execute
+          end
         end
       end
 
