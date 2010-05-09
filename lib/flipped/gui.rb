@@ -42,8 +42,10 @@ END_TEXT
              :width => DEFAULT_WINDOW_WIDTH, :height => DEFAULT_WINDOW_HEIGHT)
 
       FXToolTip.new(getApp(), TOOLTIP_NORMAL)
+      @status_bar = FXStatusBar.new(self, :opts => LAYOUT_FILL_X|LAYOUT_SIDE_BOTTOM)
       
       create_menu
+      add_hot_keys
 
       @main_frame = FXVerticalFrame.new(self, LAYOUT_FILL_X|LAYOUT_FILL_Y)
 
@@ -57,19 +59,25 @@ END_TEXT
       # Place to show current frame image full-size.      
       @image_viewer = FXImageView.new(@main_frame, :opts => LAYOUT_FILL_X|LAYOUT_FILL_Y)
       @image_viewer.backColor = IMAGE_BACKGROUND_COLOR
-      @image_viewer.connect(SEL_LEFTBUTTONPRESS, method(:next_button_pressed))
+      @image_viewer.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_next))
 
       # Show info about the book and current frame.
-      @label = FXLabel.new(@main_frame, 'No flip-book loaded', nil, LAYOUT_FILL_X,
+      @info_bar = FXLabel.new(@main_frame, 'No flip-book loaded', nil, LAYOUT_FILL_X,
          :padLeft => 4, :padRight => 4, :padTop => 4, :padBottom => 4)
 
       add_button_bar(@main_frame)
 
+      # Initialise various things.
       @current_directory = Dir.pwd
+      @current_frame_index = 0
+
       @thumb_viewers = [] # List of thumbnail viewing windows.
       @slide_show_interval = DEFAULT_SLIDE_SHOW_INTERVAL
       @book = Book.new # Currently loaded flipbook.
       @playing = false # Is mode on?
+
+      select_frame(0)
+      update_menus
     end
 
     def create_menu
@@ -79,22 +87,43 @@ END_TEXT
       file_menu = FXMenuPane.new(self)
       FXMenuTitle.new(menu_bar, "&File", nil, file_menu)
 
-      @open_menu = FXMenuCommand.new(file_menu, "&Open flip-book...\tCtl-O\tOpen flip-book.", nil).connect(SEL_COMMAND, method(:on_cmd_open))
+      @open_menu = FXMenuCommand.new(file_menu, "&Open flip-book...\tCtl-O\tOpen flip-book.", nil)
+      @open_menu.connect(SEL_COMMAND, method(:on_cmd_open))
 
-      @append_menu = FXMenuCommand.new(file_menu, "A&ppend flip-book...\tCtl-P\tAppend flip-book to currently loaded flip-book.", nil).connect(SEL_COMMAND, method(:on_cmd_append))
-
+      @append_menu = FXMenuCommand.new(file_menu, "A&ppend flip-book...\tCtl-P\tAppend flip-book to currently loaded flip-book.", nil)
+      @append_menu.connect(SEL_COMMAND, method(:on_cmd_append))
+      
       FXMenuSeparator.new(file_menu)
 
-      @save_menu = FXMenuCommand.new(file_menu, "&Save flip-book...\tCtl-S\tSave current flip-book.", nil).connect(SEL_COMMAND, method(:on_cmd_save))
+      @save_menu = FXMenuCommand.new(file_menu, "&Save flip-book...\tCtl-S\tSave current flip-book.", nil)
+      @save_menu.connect(SEL_COMMAND, method(:on_cmd_save))
 
       FXMenuSeparator.new(file_menu)
 
       FXMenuCommand.new(file_menu, "&Quit\tCtl-Q").connect(SEL_COMMAND, method(:on_cmd_quit))
 
+      # Show menu.
+      show_menu = FXMenuPane.new(self)
+      FXMenuTitle.new(menu_bar, "&Show", nil, show_menu)
+      @toggle_navigation_menu = FXMenuCheck.new(show_menu, "&Buttons\tCtrl-B\tHide/show navigation buttons.", nil)
+      @toggle_navigation_menu.connect(SEL_COMMAND, method(:on_toggle_nav_buttons_bar))
+      @toggle_navigation_menu.checkState = true
+
+      @toggle_info_menu = FXMenuCheck.new(show_menu, "&Information\tCtrl-I\tHide/show information about the book/frame.", nil)
+      @toggle_info_menu.connect(SEL_COMMAND, method(:on_toggle_info))
+      @toggle_info_menu.checkState = true
+
+      @toggle_status_menu = FXMenuCheck.new(show_menu, "Status bar\t\tHide/show status bar.", nil)
+      @toggle_status_menu.connect(SEL_COMMAND, method(:on_toggle_status_bar))
+      @toggle_status_menu.checkState = true
+
+      @toggle_thumbs_menu = FXMenuCheck.new(show_menu, "&Thumbnails\tCtl-T\tHide/show thumbnail strip.", nil)
+      @toggle_thumbs_menu.connect(SEL_COMMAND, method(:on_toggle_thumbs))
+      @toggle_thumbs_menu.checkState = true
+
       # Options menu.
       options_menu = FXMenuPane.new(self)
       FXMenuTitle.new(menu_bar, "&Options", nil, options_menu)
-      @toggle_thumbs_menu = FXMenuCheck.new(options_menu, "Show &Thumbnails...\tCtl-T\tHide/show thumbnail strip.", nil).connect(SEL_COMMAND, method(:on_toggle_thumbs))
 
       # Help menu
       help_menu = FXMenuPane.new(self)
@@ -108,42 +137,68 @@ END_TEXT
       end
     end
 
-    def on_toggle_thumbs(sender, sel, ptr)
-      if sender.checked?
-        @thumbs_window.show
+    def on_toggle_thumbs(sender, selector, event)
+      show_window(@thumbs_window, sender.checked?)
+    end
+
+    def on_toggle_status_bar(sender, selector, event)
+      show_window(@status_bar, sender.checked?)
+    end
+
+    def on_toggle_nav_buttons_bar(sender, selector, event)     
+      show_window(@button_bar, sender.checked?)
+    end
+
+    def on_toggle_info(sender, selector, event)
+      show_window(@info_bar, sender.checked?)
+    end
+
+    def show_window(window, show)
+      if show
+        window.show
       else
-        @thumbs_window.hide
+        window.hide
       end
       @main_frame.recalc
+      return 1
     end
 
     def add_button_bar(window)
-      button_bar = FXHorizontalFrame.new(window, :opts => LAYOUT_FILL_X)
+      @button_bar = FXHorizontalFrame.new(window, :opts => LAYOUT_CENTER_X)
 
-      @start_button = FXButton.new(button_bar, '<<<', NAV_BUTTON_OPTIONS)
-      @start_button.connect(SEL_LEFTBUTTONPRESS, method(:start_button_pressed))
-      @start_button.disable
+      @start_button = FXButton.new(@button_bar, '<<<', NAV_BUTTON_OPTIONS)
+      @start_button.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_start))
       @start_button.tipText = "Skip to first frame"
 
-      @left_button = FXButton.new(button_bar, '<', NAV_BUTTON_OPTIONS)
-      @left_button.connect(SEL_LEFTBUTTONPRESS, method(:previous_button_pressed))
-      @left_button.disable
-      @left_button.tipText = "Previous frame"
+      @previous_button = FXButton.new(@button_bar, '<', NAV_BUTTON_OPTIONS)
+      @previous_button.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_previous))
+      @previous_button.tipText = "Previous frame"
 
-      @play_button = FXButton.new(button_bar, '|>', NAV_BUTTON_OPTIONS)
+      @play_button = FXButton.new(@button_bar, '|>', NAV_BUTTON_OPTIONS)
       @play_button.connect(SEL_LEFTBUTTONPRESS, method(:play_button_pressed))
-      @play_button.disable
       @play_button.tipText = "Play slide-show"
 
-      @right_button = FXButton.new(button_bar, '>', NAV_BUTTON_OPTIONS)
-      @right_button.connect(SEL_LEFTBUTTONPRESS, method(:next_button_pressed))
-      @right_button.disable
-      @right_button.tipText = "Next frame"
+      @next_button = FXButton.new(@button_bar, '>', NAV_BUTTON_OPTIONS)
+      @next_button.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_next))
+      @next_button.tipText = "Next frame"
 
-      @end_button = FXButton.new(button_bar, '>>>', NAV_BUTTON_OPTIONS)
-      @end_button.connect(SEL_LEFTBUTTONPRESS, method(:end_button_pressed))
-      @end_button.disable
+      @end_button = FXButton.new(@button_bar, '>>>', NAV_BUTTON_OPTIONS)
+      @end_button.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_end))
       @end_button.tipText = "Skip to last frame"
+
+      nil
+    end
+
+    def update_menus
+      if @book.size > 0
+        @append_menu.enable
+        @save_menu.enable
+      else
+        @append_menu.disable
+        @save_menu.disable
+      end
+
+      nil
     end
 
     # Convenience function to construct a PNG icon.
@@ -175,18 +230,20 @@ END_TEXT
         image_view.image = img
       end
 
+      update_menus
+
       select_frame(selected)
 
       nil
     end
 
-    def start_button_pressed(sender, sel, ptr)
+    def on_cmd_start(sender, sel, ptr)
       select_frame(0)
 
       return 1
     end
 
-    def previous_button_pressed(sender, sel, ptr)
+    def on_cmd_previous(sender, sel, ptr)
       select_frame(@current_frame_index - 1)
 
       return 1
@@ -224,13 +281,13 @@ END_TEXT
       return 1
     end
 
-    def next_button_pressed(sender, sel, ptr)
+    def on_cmd_next(sender, sel, ptr)
       select_frame([@current_frame_index + 1, @book.size - 1].min)
 
       return 1
     end
 
-    def end_button_pressed(sender, sel, ptr)
+    def on_cmd_end(sender, sel, ptr)
       select_frame(@book.size - 1)
 
       return 1
@@ -242,23 +299,27 @@ END_TEXT
       img.create
       @image_viewer.image = img
 
-      @label.text = "Frame #{index + 1} of #{@book.size}"
+      @info_bar.text = if @book.size > 0
+        "Frame #{index + 1} of #{@book.size}"
+      else
+        "Empty flipbook"
+      end
 
       @start_button.disable
-      @left_button.disable
-
-      @right_button.disable
-      @end_button.disable
+      @previous_button.disable
+      @play_button.disable
+      @next_button.disable
+      @end_button.disable      
 
       if index > 0
-        @start_button.enable unless @start_button.enabled
-        @left_button.enable unless @left_button.enabled
+        @start_button.enable
+        @previous_button.enable
       end
 
       if index < @book.size - 1
         @play_button.enable
         @end_button.enable
-        @right_button.enable
+        @next_button.enable
       end
 
       nil
@@ -370,6 +431,12 @@ END_TEXT
       # Create and show
       super   # i.e. FXMainWindow::create()
       show(PLACEMENT_SCREEN)
+
+      return 1
+    end
+
+    def add_hot_keys
+      accelTable.addAccel(fxparseAccel("Alt+F4"), self, FXSEL(SEL_CLOSE, 0))
     end
   end
 end
