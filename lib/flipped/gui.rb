@@ -52,7 +52,7 @@ END_TEXT
         :width => THUMB_WIDTH)
 
       @image_viewer = FXImageView.new(@main_frame, :opts => LAYOUT_FILL_X|LAYOUT_FILL_Y)
-      @image_viewer.connect(SEL_LEFTBUTTONPRESS, method(:right_button_pressed))
+      @image_viewer.connect(SEL_LEFTBUTTONPRESS, method(:next_button_pressed))
 
       @label = FXLabel.new(@main_frame, 'No flip-book loaded', nil, LAYOUT_FILL_X,
          :padLeft => 4, :padRight => 4, :padTop => 4, :padBottom => 4)
@@ -124,7 +124,7 @@ END_TEXT
       @start_button.tipText = "Skip to first frame"
 
       @left_button = FXButton.new(button_bar, '<', NAV_BUTTON_OPTIONS)
-      @left_button.connect(SEL_LEFTBUTTONPRESS, method(:left_button_pressed))
+      @left_button.connect(SEL_LEFTBUTTONPRESS, method(:previous_button_pressed))
       @left_button.disable
       @left_button.tipText = "Previous frame"
 
@@ -134,7 +134,7 @@ END_TEXT
       @play_button.tipText = "Play slide-show"
 
       @right_button = FXButton.new(button_bar, '>', NAV_BUTTON_OPTIONS)
-      @right_button.connect(SEL_LEFTBUTTONPRESS, method(:right_button_pressed))
+      @right_button.connect(SEL_LEFTBUTTONPRESS, method(:next_button_pressed))
       @right_button.disable
       @right_button.tipText = "Next frame"
 
@@ -184,7 +184,7 @@ END_TEXT
       return 1
     end
 
-    def left_button_pressed(sender, sel, ptr)
+    def previous_button_pressed(sender, sel, ptr)
       select_frame(@current_frame_index - 1)
 
       return 1
@@ -222,7 +222,7 @@ END_TEXT
       return 1
     end
 
-    def right_button_pressed(sender, sel, ptr)
+    def next_button_pressed(sender, sel, ptr)
       select_frame([@current_frame_index + 1, @book.size - 1].min)
 
       return 1
