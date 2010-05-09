@@ -307,8 +307,10 @@ END_TEXT
       open_dir = FXFileDialog.getOpenDirectory(self, "Append flip-book directory", @current_directory)
       begin
         getApp().beginWaitCursor do
+          # Append new frames and select the first one.
+          new_frame = @book.size
           @book.append(Book.new(open_dir))
-          show_frames
+          show_frames(new_frame)
         end
         @current_directory = open_dir
       rescue => ex
