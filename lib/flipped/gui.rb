@@ -267,11 +267,16 @@ END_TEXT
     def play_button_pressed(sender, selector, event)
       @playing = !@playing
 
+      @play_button.disable
+      @play_button.enable
+
       if @playing
-        @slide_show_timer = getApp().addTimeout(@slide_show_interval * 1000, method(:slide_show_timer))
+        @slide_show_timer = app.addTimeout(@slide_show_interval * 1000, method(:slide_show_timer))
         @play_button.text = '||'
         @play_button.tipText = "Pause slide-show"
       else
+        app.removeTimeout(@slide_show_timer)
+        @slide_show_timer = nil
         @play_button.text = '|>'      
         @play_button.tipText = "Play slide-show"
       end
@@ -283,7 +288,7 @@ END_TEXT
       if @playing
         select_frame(@current_frame_index + 1)
         if @current_frame_index < @book.size - 1
-          @slide_show_timer = getApp().addTimeout(@slide_show_interval * 1000, method(:slide_show_timer))
+          @slide_show_timer = app.addTimeout(@slide_show_interval * 1000, method(:slide_show_timer))
         else
           @playing = false
           @play_button.text = '|>'
@@ -307,7 +312,7 @@ END_TEXT
 
     def select_frame(index)
       @current_frame_index = index
-      img = FXPNGImage.new(getApp(), @book[@current_frame_index], IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP)
+      img = FXPNGImage.new(app, @book[@current_frame_index], IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP)
       img.create
       @image_viewer.image = img
 
@@ -391,7 +396,7 @@ END_TEXT
     def on_cmd_open(sender, selector, event)
       open_dir = FXFileDialog.getOpenDirectory(self, "Open flip-book directory", @current_directory)
       begin
-        getApp().beginWaitCursor do
+        app.beginWaitCursor do
           @book = Book.new(open_dir)
           show_frames
         end
@@ -411,7 +416,7 @@ END_TEXT
     def on_cmd_append(sender, selector, event)
       open_dir = FXFileDialog.getOpenDirectory(self, "Append flip-book directory", @current_directory)
       begin
-        getApp().beginWaitCursor do
+        app.beginWaitCursor do
           # Append new frames and select the first one.
           new_frame = @book.size
           @book.append(Book.new(open_dir))
@@ -455,26 +460,26 @@ END_TEXT
     # Quit the application
     def on_cmd_quit(sender, selector, event)
       # Write new window size back to registry
-      getApp().reg().writeIntEntry("SETTINGS", "x", x)
-      getApp().reg().writeIntEntry("SETTINGS", "y", y)
-      getApp().reg().writeIntEntry("SETTINGS", "width", width)
-      getApp().reg().writeIntEntry("SETTINGS", "height", height)
+      app.reg().writeIntEntry("SETTINGS", "x", x)
+      app.reg().writeIntEntry("SETTINGS", "y", y)
+      app.reg().writeIntEntry("SETTINGS", "width", width)
+      app.reg().writeIntEntry("SETTINGS", "height", height)
 
       # Current directory
-      #getApp().reg().writeStringEntry("SETTINGS", "directory", @file_list.directory)
+      #app.reg().writeStringEntry("SETTINGS", "directory", @file_list.directory)
 
       # Quit
-      getApp().exit(0)
+      app.exit(0)
     end
 
     def create
       # Get size, etc. from registry
-      xx = getApp().reg().readIntEntry("SETTINGS", "x", 0)
-      yy = getApp().reg().readIntEntry("SETTINGS", "y", 0)
-      ww = getApp().reg().readIntEntry("SETTINGS", "width", DEFAULT_WINDOW_WIDTH)
-      hh = getApp().reg().readIntEntry("SETTINGS", "height", DEFAULT_WINDOW_HEIGHT)
+      xx = app.reg().readIntEntry("SETTINGS", "x", 0)
+      yy = app.reg().readIntEntry("SETTINGS", "y", 0)
+      ww = app.reg().readIntEntry("SETTINGS", "width", DEFAULT_WINDOW_WIDTH)
+      hh = app.reg().readIntEntry("SETTINGS", "height", DEFAULT_WINDOW_HEIGHT)
 
-      #dir = getApp().reg().readStringEntry("SETTINGS", "directory", "~")
+      #dir = app.reg().readStringEntry("SETTINGS", "directory", "~")
            
       # Reposition window to specified x, y, w and h
       position(xx, yy, ww, hh)
