@@ -82,6 +82,16 @@ describe Book do
     end
   end
 
+  describe "self.valid_template_directory?()" do
+    it "should return true for a valid template directory" do
+      Book.valid_template_directory?(@template_dir).should be_true
+    end
+
+    it "should return false for an invalid template directory" do
+      Book.valid_template_directory?(Dir.pwd).should be_false
+    end
+  end
+
   describe "write()" do
     before :each do
       rm_rf(@output_dir) if File.exists? @output_dir

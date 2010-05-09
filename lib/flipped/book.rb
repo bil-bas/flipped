@@ -13,12 +13,13 @@ module Flipped
 
     FRAME_LIST_TEMPLATE = '<?php $frameList = array( $FRAME_NUMBERS$ ); ?>'
 
-    TEMPLATE_FILES = %w[footer.php header.php index.html index.php next.png prev.png]
-
     NEXT_BUTTON_HTML = 'nextButton.html'
     PREVIOUS_BUTTON_HTML = 'prevButton.html'
     FRAME_TEMPLATE_HTML = 'x.html'
     PRELOAD_NEXT_HTML = 'preloadNext.html'
+
+    HTML_TEMPLATE_FILES = [NEXT_BUTTON_HTML, PREVIOUS_BUTTON_HTML, FRAME_TEMPLATE_HTML, PRELOAD_NEXT_HTML]
+    ALL_TEMPLATE_FILES = HTML_TEMPLATE_FILES + [FRAME_LIST_FILE]
 
     # Create a new book, optionally from an existing flipbook directory.
     #
@@ -168,12 +169,30 @@ module Flipped
         file.print(FRAME_LIST_TEMPLATE.sub("$FRAME_NUMBERS$", frame_numbers_quoted.join(', ')))
       end
 
-      # Copy template files.
-      TEMPLATE_FILES.each do |template|
-        cp(File.join(template_dir, template), File.join(out_dir, template))
+      # Copy all other files and directories across intact.
+      Dir[File.join(template_dir, "*")].each do |filename|
+        base_name = File.basename(filename)
+        unless ALL_TEMPLATE_FILES.include?(base_name)
+          cp_r(filename, File.join(out_dir, base_name))
+        end
       end
 
       self
+    end
+
+    # Is the specified template directory valid. That is, does it include all the files
+    # absolutely required to generate a flipbook?
+    #
+    # === Parameters
+    # directory:: Directory to check [String]
+    #
+    # Returns: true if the directory is valid, otherwise false.
+    def self.valid_template_directory?(directory)
+       HTML_TEMPLATE_FILES.each do |template|
+        return false unless File.exists?(File.join(directory, template))
+      end
+
+      true
     end
   end
 end

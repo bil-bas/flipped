@@ -150,6 +150,12 @@ END_TEXT
       end
     end
 
+    def show_message(type, caption, text)
+
+
+      nil
+    end
+
     def on_toggle_thumbs(sender, selector, event)
       show_window(@thumbs_window, sender.checked?)
     end

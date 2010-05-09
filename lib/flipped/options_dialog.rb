@@ -1,16 +1,21 @@
 require 'fox16'
 
+require 'book'
+
 module Flipped
   include Fox
 
   class OptionsDialog < FXDialogBox
 
+    MAX_INTERVAL = 30
+    NUM_INTERVALS_SEEN = 20
+
     def slide_show_interval
-      @slide_show_interval_field.text.to_i
+      @slide_show_interval_field.getItemData(@slide_show_interval_field.currentItem)
     end
 
     def slide_show_interval=(value)
-      @slide_show_interval_field.text = value.to_s
+      @slide_show_interval_field.currentItem = value - 1
     end
 
     def template_dir
@@ -22,20 +27,33 @@ module Flipped
     end
 
     def initialize(owner)
-      super(owner, "Options", DECOR_TITLE|DECOR_BORDER)
+      super(owner, "Options", :opts => DECOR_TITLE|DECOR_BORDER|LAYOUT_FIX_WIDTH, :width => 600)
 
-      grid = FXMatrix.new(self, :n => 3, :opts => MATRIX_BY_COLUMNS)
+      grid = FXMatrix.new(self, :n => 3, :opts => MATRIX_BY_COLUMNS|LAYOUT_FILL_X)
 
       # Slide-show duration.
-      FXLabel.new(grid, "Slide-show duration")
-      @slide_show_interval_field = FXTextField.new(grid, 10, :opts => TEXTFIELD_NORMAL|LAYOUT_SIDE_RIGHT)
-      FXLabel.new(grid, "")
+      FXLabel.new(grid, "Slide-show duration (secs)")
+      @slide_show_interval_field = FXComboBox.new(grid, 10) do |combo|
+        (1..MAX_INTERVAL).each {|i| combo.appendItem(i.to_s, i) }
+        combo.editable = false
+        combo.numVisible = NUM_INTERVALS_SEEN
+      end
+      FXLabel.new(grid, "")     
 
       # Template directory.
       FXLabel.new(grid, "Template directory")
-      @template_dir_field = FXTextField.new(grid, 50)
+      @template_dir_field = FXLabel.new(grid, '', :opts => JUSTIFY_LEFT)
       FXButton.new(grid, "Browse...", :opts => FRAME_RAISED|FRAME_THICK).connect(SEL_COMMAND) do |sender, selector, event|
-        @template_dir_field.text = FXFileDialog.getOpenDirectory(self, "Select template directory", @template_dir_field.text)
+        directory = FXFileDialog.getOpenDirectory(self, "Select template directory", @template_dir_field.text)
+        
+        if Book.valid_template_directory?(directory)
+          @template_dir_field.text = directory
+        else
+          dialog = FXMessageBox.new(self, "Settings error!",
+                "Template directory #{directory} is invalid. Reverting to previous setting.",
+                :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
+          dialog.execute
+        end
       end
 
       # Bottom buttons
