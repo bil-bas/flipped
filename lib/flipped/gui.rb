@@ -1,4 +1,5 @@
 require 'fox16'
+require 'fox16/colors' 
 
 require 'book'
 
@@ -22,6 +23,8 @@ module Flipped
     DEFAULT_WINDOW_WIDTH = 800
     DEFAULT_WINDOW_HEIGHT = 800
 
+    IMAGE_BACKGROUND_COLOR = Fox::FXColor::Black
+
     HELP_TEXT = <<END_TEXT
 #{APPLICATION} is a flip-book tool for SleepIsDeath (http://sleepisdeath.net).
 
@@ -44,30 +47,29 @@ END_TEXT
 
       @main_frame = FXVerticalFrame.new(self, LAYOUT_FILL_X|LAYOUT_FILL_Y)
 
-      # Sunken border for image widget
+      # Scrolling area into which to place thumbnail images.
       @thumbs_window = FXScrollWindow.new(@main_frame, LAYOUT_FIX_HEIGHT|LAYOUT_FILL_X, :height => THUMB_HEIGHT + 50)
-      @thumbs_column = FXHorizontalFrame.new(@thumbs_window,
-        FRAME_SUNKEN|FRAME_THICK|LAYOUT_FIX_X|LAYOUT_FILL_Y,
+      @thumbs_row = FXHorizontalFrame.new(@thumbs_window,
+        :opts => LAYOUT_FIX_X|LAYOUT_FILL_Y,
         :padLeft => 0, :padRight => 0, :padTop => 0, :padBottom => 0,
         :width => THUMB_WIDTH)
 
+      # Place to show current frame image full-size.      
       @image_viewer = FXImageView.new(@main_frame, :opts => LAYOUT_FILL_X|LAYOUT_FILL_Y)
+      @image_viewer.backColor = IMAGE_BACKGROUND_COLOR
       @image_viewer.connect(SEL_LEFTBUTTONPRESS, method(:next_button_pressed))
 
+      # Show info about the book and current frame.
       @label = FXLabel.new(@main_frame, 'No flip-book loaded', nil, LAYOUT_FILL_X,
          :padLeft => 4, :padRight => 4, :padTop => 4, :padBottom => 4)
 
       add_button_bar(@main_frame)
 
-      @thumb_viewers = []
-
-      @current_directory = ''
-      @current_frame_index = 0
-      @playing = false
-
+      @current_directory = Dir.pwd
+      @thumb_viewers = [] # List of thumbnail viewing windows.
       @slide_show_interval = DEFAULT_SLIDE_SHOW_INTERVAL
-
-      @book = Book.new
+      @book = Book.new # Currently loaded flipbook.
+      @playing = false # Is mode on?
     end
 
     def create_menu
@@ -147,12 +149,12 @@ END_TEXT
     # Convenience function to construct a PNG icon.
     def show_frames(selected = 0)
       @thumb_viewers.each do |viewer|
-        @thumbs_column.removeChild(viewer)
+        @thumbs_row.removeChild(viewer)
       end
       @thumb_viewers.clear
 
       @book.frames.each_with_index do |frame, i|
-        packer = FXVerticalFrame.new(@thumbs_column)
+        packer = FXVerticalFrame.new(@thumbs_row)
         image_view = FXImageView.new(packer, :opts => LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
                                       :width => THUMB_HEIGHT, :height => THUMB_HEIGHT)
 

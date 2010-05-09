@@ -1,4 +1,4 @@
-= Flipped - The flip-book editing tool
+= Flipped - The flip-book tool
 
 Project:: {Spooner/Flipped at github.com}[http://github.com/Spooner/flipped]
 Author:: Bil Bas (aka Spooner) bil dot bagpuss at gmail dot com
