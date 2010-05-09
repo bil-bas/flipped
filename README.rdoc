@@ -15,10 +15,6 @@ both more effectively view flipbooks and enabling simple editing of flipbooks.
 
 == Features
 
-=== Screenshot
-
-link:../../media/screenshot.png
-
 === Viewing
 
 * View individual frames, with optional thumbnails for easy navigation.
@@ -29,8 +25,7 @@ link:../../media/screenshot.png
 
 * Merge existing flip-books (makes playing games with breaks/pauses a lot more manageable, believe me!).
 * Delete individual frames.
-* Save edited flipbook in format identical to that created by the game. This also allows the re-creation of flip-books
-with new formats in the templates folder.
+* Save edited flipbook in format identical to that created by the game. This also allows the re-creation of flip-books with new formats in the templates folder.
 
 == Installation
 
