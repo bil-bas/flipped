@@ -19,17 +19,26 @@ module Flipped
       @slide_show_interval_field.currentItem = value - 1
     end
 
-    def template_dir
-      @template_dir_field.text
+    def slide_show_loops?
+      @slide_show_loops_check_box.checkState == 1
     end
 
-    def template_dir=(value)
-      @template_dir_field.text = value
+    def slide_show_loops=(value)
+      @slide_show_loops_check_box.checkState = value
+    end
+
+    def template_directory
+      @template_directory_field.text
+    end
+
+    def template_directory=(value)
+      @template_directory_field.text = value
     end
 
     def initialize(owner)
-      super(owner, "Options", :opts => DECOR_TITLE|DECOR_BORDER)
+      super(owner, "Settings", :opts => DECOR_TITLE|DECOR_BORDER)
 
+      # 3 columns wide.
       grid = FXMatrix.new(self, :n => 3, :opts => MATRIX_BY_COLUMNS|LAYOUT_FILL_X)
 
       # Slide-show duration.
@@ -39,11 +48,15 @@ module Flipped
         combo.editable = false
         combo.numVisible = NUM_INTERVALS_SEEN
       end
-      FXLabel.new(grid, "")     
+      FXLabel.new(grid, "")
+
+      FXLabel.new(grid, "Slide-show loops?")
+      @slide_show_loops_check_box = FXCheckButton.new(grid, '')
+      FXLabel.new(grid, "")
 
       # Template directory.
       FXLabel.new(grid, "Template directory")
-      @template_dir_field = FXTextField.new(grid, 40) do |text_field|
+      @template_directory_field = FXTextField.new(grid, 40) do |text_field|
         text_field.editable = false
         text_field.disable
       end

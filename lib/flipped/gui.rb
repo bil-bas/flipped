@@ -1,5 +1,7 @@
 require 'fox16'
-require 'fox16/colors' 
+require 'fox16/colors'
+require 'yaml'
+require 'fileutils'
 
 require 'book'
 require 'options_dialog'
@@ -11,18 +13,33 @@ module Flipped
     APPLICATION = "Flipped"
     WINDOW_TITLE = "#{APPLICATION} - The SiD flip-book tool"
 
+    SETTINGS_FILE = File.expand_path(File.join('..', 'config', 'settings.yml'))
+
     IMAGE_WIDTH = 640
     IMAGE_HEIGHT = 416
     THUMB_SCALE = 0.25
     THUMB_WIDTH = IMAGE_WIDTH * THUMB_SCALE
     THUMB_HEIGHT = IMAGE_HEIGHT * THUMB_SCALE
-    DEFAULT_SLIDE_SHOW_INTERVAL = 5
 
     NAV_BUTTON_OPTIONS = { :opts => Fox::BUTTON_NORMAL|Fox::LAYOUT_CENTER_X|Fox::LAYOUT_FIX_WIDTH|Fox::LAYOUT_FIX_HEIGHT,
                            :width => 90, :height => 50 }
 
-    DEFAULT_WINDOW_WIDTH = 800
-    DEFAULT_WINDOW_HEIGHT = 800
+    SETTINGS_ATTRIBUTES = {
+      :window_x => [:x, 0],
+      :window_y => [:y, 0],
+      :window_width => [:width, 800],
+      :window_height => [:height, 800],
+
+      :current_flip_book_directory => [:@current_flip_book_directory, Dir.pwd],
+      :template_directory => [:@template_directory, Dir.pwd],
+      :slide_show_interval => [:@slide_show_interval, 5],
+      :slide_show_loops => [:@slide_show_loops, false],
+
+      :navigation_buttons_shown => [:@navigation_buttons_shown, true],
+      :information_bar_shown => [:@information_bar_shown, true],
+      :status_bar_shown => [:@status_bar_shown, true],
+      :thumbnails_shown => [:@thumbnails_shown, true],
+    }
 
     IMAGE_BACKGROUND_COLOR = Fox::FXColor::Black
 
@@ -35,8 +52,7 @@ Allows the user to view and edit flip- books.
 END_TEXT
 
     def initialize(app)
-      super(app, WINDOW_TITLE, :opts => DECOR_ALL,
-             :width => DEFAULT_WINDOW_WIDTH, :height => DEFAULT_WINDOW_HEIGHT)
+      super(app, WINDOW_TITLE, :opts => DECOR_ALL)
 
       FXToolTip.new(getApp(), TOOLTIP_NORMAL)
       @status_bar = FXStatusBar.new(self, :opts => LAYOUT_FILL_X|LAYOUT_SIDE_BOTTOM)
@@ -65,12 +81,8 @@ END_TEXT
       add_button_bar(@main_frame)
 
       # Initialise various things.
-      @current_directory = Dir.pwd
-      @template_dir = Dir.pwd
       @current_frame_index = 0
-
       @thumb_viewers = [] # List of thumbnail viewing windows.
-      @slide_show_interval = DEFAULT_SLIDE_SHOW_INTERVAL
       @book = Book.new # Currently loaded flipbook.
       @playing = false # Is mode on?
 
@@ -105,19 +117,15 @@ END_TEXT
       FXMenuTitle.new(menu_bar, "&Show", nil, show_menu)
       @toggle_navigation_menu = FXMenuCheck.new(show_menu, "&Buttons\tCtrl-B\tHide/show navigation buttons.")
       @toggle_navigation_menu.connect(SEL_COMMAND, method(:on_toggle_nav_buttons_bar))
-      @toggle_navigation_menu.checkState = true
 
       @toggle_info_menu = FXMenuCheck.new(show_menu, "&Information\tCtrl-I\tHide/show information about the book/frame.")
       @toggle_info_menu.connect(SEL_COMMAND, method(:on_toggle_info))
-      @toggle_info_menu.checkState = true
 
       @toggle_status_menu = FXMenuCheck.new(show_menu, "Status bar\t\tHide/show status bar.")
       @toggle_status_menu.connect(SEL_COMMAND, method(:on_toggle_status_bar))
-      @toggle_status_menu.checkState = true
 
       @toggle_thumbs_menu = FXMenuCheck.new(show_menu, "&Thumbnails\tCtl-T\tHide/show thumbnail strip.")
       @toggle_thumbs_menu.connect(SEL_COMMAND, method(:on_toggle_thumbs))
-      @toggle_thumbs_menu.checkState = true
 
       # Options menu.
       options_menu = FXMenuPane.new(self)
@@ -126,10 +134,12 @@ END_TEXT
       @options_menu.connect(SEL_COMMAND) do |sender, selector, event|
         dialog = OptionsDialog.new(self)
         dialog.slide_show_interval = @slide_show_interval
-        dialog.template_dir = @template_dir
+        dialog.slide_show_loops = @slide_show_loops
+        dialog.template_directory = @template_directory
         if dialog.execute == 1
           @slide_show_interval = dialog.slide_show_interval
-          @template_dir = dialog.template_dir
+          @slide_show_loops = dialog.slide_show_loops?
+          @template_directory = dialog.template_directory
         end
         app.runModalWhileShown(dialog)
       end
@@ -286,8 +296,8 @@ END_TEXT
 
     def slide_show_timer(sender, selector, event)
       if @playing
-        select_frame(@current_frame_index + 1)
-        if @current_frame_index < @book.size - 1
+        select_frame((@current_frame_index + 1).modulo(@book.size))
+        if @slide_show_loops or @current_frame_index < @book.size - 1
           @slide_show_timer = app.addTimeout(@slide_show_interval * 1000, method(:slide_show_timer))
         else
           @playing = false
@@ -394,13 +404,13 @@ END_TEXT
 
     # Open a new flip-book
     def on_cmd_open(sender, selector, event)
-      open_dir = FXFileDialog.getOpenDirectory(self, "Open flip-book directory", @current_directory)
+      open_dir = FXFileDialog.getOpenDirectory(self, "Open flip-book directory", @current_flip_book_directory)
       begin
         app.beginWaitCursor do
           @book = Book.new(open_dir)
           show_frames
         end
-        @current_directory = open_dir
+        @current_flip_book_directory = open_dir
       rescue => ex
         puts ex.class, ex, ex.backtrace.join("\n")
         dialog = FXMessageBox.new(self, "Open error!",
@@ -414,7 +424,7 @@ END_TEXT
 
     # Open a new flip-book
     def on_cmd_append(sender, selector, event)
-      open_dir = FXFileDialog.getOpenDirectory(self, "Append flip-book directory", @current_directory)
+      open_dir = FXFileDialog.getOpenDirectory(self, "Append flip-book directory", @current_flip_book_directory)
       begin
         app.beginWaitCursor do
           # Append new frames and select the first one.
@@ -422,7 +432,7 @@ END_TEXT
           @book.append(Book.new(open_dir))
           show_frames(new_frame)
         end
-        @current_directory = open_dir
+        @current_flip_book_directory = open_dir
       rescue => ex
         puts ex.class, ex, ex.backtrace.join("\n")
         dialog = FXMessageBox.new(self, "Open error!",
@@ -436,19 +446,19 @@ END_TEXT
 
     # Save this flip-book
     def on_cmd_save(sender, selector, event)
-      save_dir = FXFileDialog.getSaveFilename(self, "Save flip-book directory", @current_directory)
+      save_dir = FXFileDialog.getSaveFilename(self, "Save flip-book directory", @current_flip_book_directory)
       if File.exists? save_dir
         dialog = FXMessageBox.new(self, "Save error!",
                  "File/folder #{save_dir} already exists, so flip-book cannot be saved.", nil,
                  MBOX_OK|DECOR_TITLE|DECOR_BORDER)
         dialog.execute
       else
-        @current_directory = save_dir
+        @current_flip_book_directory = save_dir
         begin
-          @book.write(@current_directory, @template_dir)
+          @book.write(@current_flip_book_directory, @template_directory)
         rescue => ex
           dialog = FXMessageBox.new(self, "Save error!",
-                 "Failed to save flipbook to #{@current_directory}, but failed because the template files found in #{@template_dir} were not valid. Use the menu Options->Settings to set a valid path to a flip-book templates directory.", nil,
+                 "Failed to save flipbook to #{@current_flip_book_directory},\nbut failed because the template files found in #{@template_directory} were not valid.\nUse the menu Options->Settings to set a valid path to a flip-book templates directory.", nil,
                  MBOX_OK|DECOR_TITLE|DECOR_BORDER)
           dialog.execute
         end
@@ -459,34 +469,74 @@ END_TEXT
 
     # Quit the application
     def on_cmd_quit(sender, selector, event)
-      # Write new window size back to registry
-      app.reg().writeIntEntry("SETTINGS", "x", x)
-      app.reg().writeIntEntry("SETTINGS", "y", y)
-      app.reg().writeIntEntry("SETTINGS", "width", width)
-      app.reg().writeIntEntry("SETTINGS", "height", height)
 
-      # Current directory
-      #app.reg().writeStringEntry("SETTINGS", "directory", @file_list.directory)
+      @thumbnails_shown = @toggle_thumbs_menu.checkState == 1
+      @status_bar_shown = @toggle_status_menu.checkState == 1
+      @information_bar_shown = @toggle_info_menu.checkState == 1
+      @navigation_buttons_shown = @toggle_navigation_menu.checkState == 1
+
+      write_config
 
       # Quit
       app.exit(0)
+
+      nil
+    end
+
+    def read_config
+      settings = if File.exists? SETTINGS_FILE
+         File.open(SETTINGS_FILE) { |file| YAML::load(file) }
+      else
+        {}
+      end
+
+      SETTINGS_ATTRIBUTES.each_pair do |key, data|
+        name, default_value = data
+        value = settings.has_key?(key) ? settings[key] : default_value
+        if name.to_s[0] == '@'
+          instance_variable_set(name, value)
+        else
+          send("#{name}=".to_sym, value)
+        end
+      end
+
+      nil
+    end
+
+    def write_config
+      settings = {}
+      SETTINGS_ATTRIBUTES.each_pair do |key, data|
+        name, default_value = data
+        settings[key] = if name.to_s[0] == '@'
+          instance_variable_get(name)
+        else
+          send(name)
+        end
+      end
+
+      FileUtils::mkdir_p(File.dirname(SETTINGS_FILE))
+      File.open(SETTINGS_FILE, 'w') { |file| file.puts(settings.to_yaml) }
+
+      nil
     end
 
     def create
-      # Get size, etc. from registry
-      xx = app.reg().readIntEntry("SETTINGS", "x", 0)
-      yy = app.reg().readIntEntry("SETTINGS", "y", 0)
-      ww = app.reg().readIntEntry("SETTINGS", "width", DEFAULT_WINDOW_WIDTH)
-      hh = app.reg().readIntEntry("SETTINGS", "height", DEFAULT_WINDOW_HEIGHT)
+      read_config
 
-      #dir = app.reg().readStringEntry("SETTINGS", "directory", "~")
-           
-      # Reposition window to specified x, y, w and h
-      position(xx, yy, ww, hh)
+      @toggle_thumbs_menu.checkState = @thumbnails_shown
+      show_window(@thumbs_window, @thumbnails_shown)
 
-      # Create and show
-      super   # i.e. FXMainWindow::create()
-      show(PLACEMENT_SCREEN)
+      @toggle_status_menu.checkState = @status_bar_shown
+      show_window(@status_bar, @status_bar_shown)
+
+      @toggle_info_menu.checkState = @information_bar_shown
+      show_window(@info_bar, @information_bar_shown)
+
+      @toggle_navigation_menu.checkState = @navigation_buttons_shown
+      show_window(@button_bar, @navigation_buttons_shown)
+
+      super
+      show
 
       return 1
     end
