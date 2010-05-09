@@ -9,7 +9,7 @@ module Flipped
 
   class Gui < FXMainWindow
     APPLICATION = "Flipped"
-    WINDOW_TITLE = "#{Flipped} - The SiD flip-book tool"
+    WINDOW_TITLE = "#{APPLICATION} - The SiD flip-book tool"
 
     IMAGE_WIDTH = 640
     IMAGE_HEIGHT = 416
@@ -31,11 +31,7 @@ module Flipped
 
 Author: Spooner (Bil Bas)
 
-Features:
-  - Open flipbooks and view them manually or as a slideshow.
-  - Append flip-books to create longer books that can be saved.
-  - Delete frames (right click on the thumbnail)
-
+Allows the user to view and edit flip- books.
 END_TEXT
 
     def initialize(app)
