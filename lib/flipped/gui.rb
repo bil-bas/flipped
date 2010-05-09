@@ -2,6 +2,7 @@ require 'fox16'
 require 'fox16/colors' 
 
 require 'book'
+require 'options_dialog'
 
 module Flipped
   include Fox
@@ -15,7 +16,7 @@ module Flipped
     THUMB_SCALE = 0.25
     THUMB_WIDTH = IMAGE_WIDTH * THUMB_SCALE
     THUMB_HEIGHT = IMAGE_HEIGHT * THUMB_SCALE
-    DEFAULT_SLIDE_SHOW_INTERVAL = 5000
+    DEFAULT_SLIDE_SHOW_INTERVAL = 5
 
     NAV_BUTTON_OPTIONS = { :opts => Fox::BUTTON_NORMAL|Fox::LAYOUT_CENTER_X|Fox::LAYOUT_FIX_WIDTH|Fox::LAYOUT_FIX_HEIGHT,
                            :width => 90, :height => 50 }
@@ -69,6 +70,7 @@ END_TEXT
 
       # Initialise various things.
       @current_directory = Dir.pwd
+      @template_dir = Dir.pwd
       @current_frame_index = 0
 
       @thumb_viewers = [] # List of thumbnail viewing windows.
@@ -87,15 +89,15 @@ END_TEXT
       file_menu = FXMenuPane.new(self)
       FXMenuTitle.new(menu_bar, "&File", nil, file_menu)
 
-      @open_menu = FXMenuCommand.new(file_menu, "&Open flip-book...\tCtl-O\tOpen flip-book.", nil)
+      @open_menu = FXMenuCommand.new(file_menu, "&Open flip-book...\tCtl-O\tOpen flip-book.")
       @open_menu.connect(SEL_COMMAND, method(:on_cmd_open))
 
-      @append_menu = FXMenuCommand.new(file_menu, "A&ppend flip-book...\tCtl-P\tAppend flip-book to currently loaded flip-book.", nil)
+      @append_menu = FXMenuCommand.new(file_menu, "A&ppend flip-book...\tCtl-P\tAppend flip-book to currently loaded flip-book.")
       @append_menu.connect(SEL_COMMAND, method(:on_cmd_append))
       
       FXMenuSeparator.new(file_menu)
 
-      @save_menu = FXMenuCommand.new(file_menu, "&Save flip-book...\tCtl-S\tSave current flip-book.", nil)
+      @save_menu = FXMenuCommand.new(file_menu, "&Save flip-book...\tCtl-S\tSave current flip-book.")
       @save_menu.connect(SEL_COMMAND, method(:on_cmd_save))
 
       FXMenuSeparator.new(file_menu)
@@ -105,25 +107,36 @@ END_TEXT
       # Show menu.
       show_menu = FXMenuPane.new(self)
       FXMenuTitle.new(menu_bar, "&Show", nil, show_menu)
-      @toggle_navigation_menu = FXMenuCheck.new(show_menu, "&Buttons\tCtrl-B\tHide/show navigation buttons.", nil)
+      @toggle_navigation_menu = FXMenuCheck.new(show_menu, "&Buttons\tCtrl-B\tHide/show navigation buttons.")
       @toggle_navigation_menu.connect(SEL_COMMAND, method(:on_toggle_nav_buttons_bar))
       @toggle_navigation_menu.checkState = true
 
-      @toggle_info_menu = FXMenuCheck.new(show_menu, "&Information\tCtrl-I\tHide/show information about the book/frame.", nil)
+      @toggle_info_menu = FXMenuCheck.new(show_menu, "&Information\tCtrl-I\tHide/show information about the book/frame.")
       @toggle_info_menu.connect(SEL_COMMAND, method(:on_toggle_info))
       @toggle_info_menu.checkState = true
 
-      @toggle_status_menu = FXMenuCheck.new(show_menu, "Status bar\t\tHide/show status bar.", nil)
+      @toggle_status_menu = FXMenuCheck.new(show_menu, "Status bar\t\tHide/show status bar.")
       @toggle_status_menu.connect(SEL_COMMAND, method(:on_toggle_status_bar))
       @toggle_status_menu.checkState = true
 
-      @toggle_thumbs_menu = FXMenuCheck.new(show_menu, "&Thumbnails\tCtl-T\tHide/show thumbnail strip.", nil)
+      @toggle_thumbs_menu = FXMenuCheck.new(show_menu, "&Thumbnails\tCtl-T\tHide/show thumbnail strip.")
       @toggle_thumbs_menu.connect(SEL_COMMAND, method(:on_toggle_thumbs))
       @toggle_thumbs_menu.checkState = true
 
       # Options menu.
       options_menu = FXMenuPane.new(self)
       FXMenuTitle.new(menu_bar, "&Options", nil, options_menu)
+      @options_menu = FXMenuCommand.new(options_menu, "Settings...\t\tView/set configuration.")
+      @options_menu.connect(SEL_COMMAND) do |sender, selector, event|
+        dialog = OptionsDialog.new(self)
+        dialog.slide_show_interval = @slide_show_interval
+        dialog.template_dir = @template_dir
+        if dialog.execute == 1
+          @slide_show_interval = dialog.slide_show_interval
+          @template_dir = dialog.template_dir
+        end
+        app.runModalWhileShown(dialog)
+      end
 
       # Help menu
       help_menu = FXMenuPane.new(self)
@@ -253,7 +266,7 @@ END_TEXT
       @playing = !@playing
 
       if @playing
-        @slide_show_timer = getApp().addTimeout(@slide_show_interval, method(:slide_show_timer))
+        @slide_show_timer = getApp().addTimeout(@slide_show_interval * 1000, method(:slide_show_timer))
         @play_button.text = '||'
         @play_button.tipText = "Pause slide-show"
       else
@@ -265,11 +278,10 @@ END_TEXT
     end
 
     def slide_show_timer(sender, selector, event)
-
       if @playing
         select_frame(@current_frame_index + 1)
         if @current_frame_index < @book.size - 1
-          @slide_show_timer = getApp().addTimeout(@slide_show_interval, method(:slide_show_timer))
+          @slide_show_timer = getApp().addTimeout(@slide_show_interval * 1000, method(:slide_show_timer))
         else
           @playing = false
           @play_button.text = '|>'
@@ -425,7 +437,14 @@ END_TEXT
         dialog.execute
       else
         @current_directory = save_dir
-        @book.write(@current_directory, '../test_data/templates')
+        begin
+          @book.write(@current_directory, @template_dir)
+        rescue => ex
+          dialog = FXMessageBox.new(self, "Save error!",
+                 "Failed to save flipbook to #{@current_directory}, but failed because the template files found in #{@template_dir} were not valid. Use the menu Options->Settings to set a valid path to a flip-book templates directory.", nil,
+                 MBOX_OK|DECOR_TITLE|DECOR_BORDER)
+          dialog.execute
+        end
       end
 
       return 1
