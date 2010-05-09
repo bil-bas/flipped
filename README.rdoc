@@ -1,7 +1,7 @@
 = Flipped - The flip-book editing tool
 
-Project:: {Flipped at github}[http://github.com/Spooner/flipped]
-Author:: Bil Bas (aka Spooner)
+Project:: {Spooner/Flipped at github.com}[http://github.com/Spooner/flipped]
+Author:: Bil Bas (aka Spooner) bil dot bagpuss at gmail dot com
 
 == Description
 

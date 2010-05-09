@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager" verified="true">
-    <list default="true" readonly="true" id="09daf466-3604-48c6-8e7c-329650ff1ae4" name="Default" comment="">
+    <list default="true" readonly="true" id="09daf466-3604-48c6-8e7c-329650ff1ae4" name="Default" comment="Removed screenshot from rdoc to make it compatible with github.">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.rdoc" afterPath="$PROJECT_DIR$/README.rdoc" />
     </list>
@@ -75,7 +75,7 @@
       <file leaf-file-name="README.rdoc" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/README.rdoc">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="16" column="0" selection-start="594" selection-end="594" vertical-scroll-proportion="0.3231939">
+            <state line="3" column="63" selection-start="180" selection-end="180" vertical-scroll-proportion="0.096958175">
               <folding />
             </state>
           </provider>
@@ -436,7 +436,7 @@
     <option name="ENABLE_BACKGROUND_PROCESSES" value="true" />
     <option name="CHANGED_ON_SERVER_INTERVAL" value="5" />
     <option name="FORCE_NON_EMPTY_COMMENT" value="false" />
-    <option name="LAST_COMMIT_MESSAGE" value="Renamed left/right buttons as previous/next to keep myself sane." />
+    <option name="LAST_COMMIT_MESSAGE" value="Removed screenshot from rdoc to make it compatible with github." />
     <option name="MAKE_NEW_CHANGELIST_ACTIVE" value="true" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="false" />
     <option name="CHECK_FILES_UP_TO_DATE_BEFORE_COMMIT" value="false" />
@@ -452,6 +452,7 @@
     <MESSAGE value="Added index to Book (Book[])" />
     <MESSAGE value="Prevented buttons from &quot;sticking&quot;." />
     <MESSAGE value="Renamed left/right buttons as previous/next to keep myself sane." />
+    <MESSAGE value="Removed screenshot from rdoc to make it compatible with github." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager />
@@ -540,7 +541,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/README.rdoc">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="0" selection-start="594" selection-end="594" vertical-scroll-proportion="0.3231939">
+        <state line="3" column="63" selection-start="180" selection-end="180" vertical-scroll-proportion="0.096958175">
           <folding />
         </state>
       </provider>
