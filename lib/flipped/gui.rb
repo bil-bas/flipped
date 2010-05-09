@@ -252,9 +252,7 @@ END_TEXT
     def play_button_pressed(sender, selector, event)
       @playing = !@playing
 
-      @play_button.disable
       if @playing
-        @play_button.enable
         @slide_show_timer = getApp().addTimeout(@slide_show_interval, method(:slide_show_timer))
         @play_button.text = '||'
         @play_button.tipText = "Pause slide-show"
@@ -334,7 +332,6 @@ END_TEXT
     end
 
     # Event when clicking on a thumbnail - delete.
-    # TODO: Open up a menu.
     def on_thumb_right_click(sender, selector, event)
       index = @thumb_viewers.index(sender.parent)
 

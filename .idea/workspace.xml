@@ -32,7 +32,7 @@
       <file leaf-file-name="gui.rb" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="304" column="20" selection-start="9877" selection-end="9877" vertical-scroll-proportion="0.13572854">
+            <state line="254" column="17" selection-start="8541" selection-end="8541" vertical-scroll-proportion="0.6506986">
               <folding />
             </state>
           </provider>
@@ -612,7 +612,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="304" column="20" selection-start="9877" selection-end="9877" vertical-scroll-proportion="0.13572854">
+        <state line="254" column="17" selection-start="8541" selection-end="8541" vertical-scroll-proportion="0.6506986">
           <folding />
         </state>
       </provider>
