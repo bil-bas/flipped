@@ -72,6 +72,7 @@ END_TEXT
       # Place to show current frame image full-size.      
       @image_viewer = FXImageView.new(@main_frame, :opts => LAYOUT_FILL_X|LAYOUT_FILL_Y)
       @image_viewer.backColor = IMAGE_BACKGROUND_COLOR
+      @image_viewer.connect(SEL_RIGHTBUTTONPRESS, method(:on_cmd_previous))
       @image_viewer.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_next))
 
       # Show info about the book and current frame.
@@ -110,6 +111,24 @@ END_TEXT
       FXMenuSeparator.new(file_menu)
 
       FXMenuCommand.new(file_menu, "&Quit\tCtl-Q").connect(SEL_COMMAND, method(:on_cmd_quit))
+
+      # Navigation menu.
+      nav_menu = FXMenuPane.new(self)
+      FXMenuTitle.new(menu_bar, "&Navigate", nil, nav_menu)
+      @start_menu = FXMenuCommand.new(nav_menu, "Skip to start\tHome\tSelect the first frame.")
+      @start_menu.connect(SEL_COMMAND, method(:on_cmd_start))
+
+      @previous_menu = FXMenuCommand.new(nav_menu, "Previous frame\tLeft\tSelect the previous frame.")
+      @previous_menu.connect(SEL_COMMAND, method(:on_cmd_previous))
+
+      @play_menu = FXMenuCommand.new(nav_menu, "Play/Pause\tSpace\tPlay or pause in slide-show mode.")
+      @play_menu.connect(SEL_COMMAND, method(:on_cmd_play))
+
+      @next_menu = FXMenuCommand.new(nav_menu, "Next frame\tRight\tSelect the next frame.")
+      @next_menu.connect(SEL_COMMAND, method(:on_cmd_next))
+
+      @end_menu = FXMenuCommand.new(nav_menu, "Skip to end\tEnd\tSelect the last frame.")
+      @end_menu.connect(SEL_COMMAND, method(:on_cmd_end))
 
       # Show menu.
       show_menu = FXMenuPane.new(self)
@@ -193,7 +212,7 @@ END_TEXT
       @previous_button.tipText = "Previous frame"
 
       @play_button = FXButton.new(@button_bar, '|>', NAV_BUTTON_OPTIONS)
-      @play_button.connect(SEL_LEFTBUTTONPRESS, method(:play_button_pressed))
+      @play_button.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_play))
       @play_button.tipText = "Play slide-show"
 
       @next_button = FXButton.new(@button_bar, '>', NAV_BUTTON_OPTIONS)
@@ -261,12 +280,12 @@ END_TEXT
     end
 
     def on_cmd_previous(sender, selector, event)
-      select_frame(@current_frame_index - 1)
+      select_frame([@current_frame_index - 1, 0].max)
 
       return 1
     end
 
-    def play_button_pressed(sender, selector, event)
+    def on_cmd_play(sender, selector, event)
       @playing = !@playing
 
       @play_button.disable
@@ -324,21 +343,25 @@ END_TEXT
         "Empty flip-book"
       end
 
-      @start_button.disable
-      @previous_button.disable
-      @play_button.disable
-      @next_button.disable
-      @end_button.disable      
-
-      if index > 0
-        @start_button.enable
-        @previous_button.enable
+      # Avoid button-locking bug.
+      [@start_button, @previous_button, @play_button, @next_button, @end_button].each do |widget|
+        widget.disable
       end
 
-      if index < @book.size - 1
-        @play_button.enable
-        @end_button.enable
-        @next_button.enable
+      [@start_button, @start_menu, @previous_button, @previous_menu].each do |widget|
+        if index > 0   
+          widget.enable
+        else
+          widget.disable
+        end
+      end
+
+      [@play_button, @play_menu, @end_button, @end_menu, @next_button, @next_menu].each do |widget|
+        if index < @book.size - 1
+          widget.enable
+        else
+          widget.disable
+        end
       end
 
       nil
