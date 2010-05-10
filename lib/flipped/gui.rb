@@ -121,7 +121,7 @@ END_TEXT
       @previous_menu = FXMenuCommand.new(nav_menu, "Previous frame\tLeft\tSelect the previous frame.")
       @previous_menu.connect(SEL_COMMAND, method(:on_cmd_previous))
 
-      @play_menu = FXMenuCommand.new(nav_menu, "Play/Pause\tSpace\tPlay or pause in slide-show mode.")
+      @play_menu = FXMenuCommand.new(nav_menu, "Play/Pause\tSpace\tPlay/pause in slide-show mode.")
       @play_menu.connect(SEL_COMMAND, method(:on_cmd_play))
 
       @next_menu = FXMenuCommand.new(nav_menu, "Next frame\tRight\tSelect the next frame.")
@@ -205,23 +205,23 @@ END_TEXT
 
       @start_button = FXButton.new(@button_bar, '<<<', NAV_BUTTON_OPTIONS)
       @start_button.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_start))
-      @start_button.tipText = "Skip to first frame"
+      @start_button.tipText = "Skip to first frame (Home)"
 
       @previous_button = FXButton.new(@button_bar, '<', NAV_BUTTON_OPTIONS)
       @previous_button.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_previous))
-      @previous_button.tipText = "Previous frame"
+      @previous_button.tipText = "Previous frame (Left)"
 
       @play_button = FXButton.new(@button_bar, '|>', NAV_BUTTON_OPTIONS)
       @play_button.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_play))
-      @play_button.tipText = "Play slide-show"
+      @play_button.tipText = "Play/pause slide-show (Space)"
 
       @next_button = FXButton.new(@button_bar, '>', NAV_BUTTON_OPTIONS)
       @next_button.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_next))
-      @next_button.tipText = "Next frame"
+      @next_button.tipText = "Next frame (Right)"
 
       @end_button = FXButton.new(@button_bar, '>>>', NAV_BUTTON_OPTIONS)
       @end_button.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_end))
-      @end_button.tipText = "Skip to last frame"
+      @end_button.tipText = "Skip to last frame (End)"
 
       nil
     end
@@ -280,7 +280,7 @@ END_TEXT
     end
 
     def on_cmd_previous(sender, selector, event)
-      select_frame([@current_frame_index - 1, 0].max)
+      select_frame(@current_frame_index - 1) unless @current_frame_index == 0
 
       return 1
     end
@@ -320,7 +320,7 @@ END_TEXT
     end
 
     def on_cmd_next(sender, selector, event)
-      select_frame([@current_frame_index + 1, @book.size - 1].min)
+      select_frame(@current_frame_index + 1) unless @current_frame_index == @book.size - 1
 
       return 1
     end
