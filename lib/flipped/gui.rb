@@ -49,6 +49,8 @@ module Flipped
 Author: Spooner (Bil Bas)
 
 Allows the user to view and edit flip- books.
+
+Uses the FXRuby GUI library #{Fox::FXApp.copyright}
 END_TEXT
 
     def initialize(app)
@@ -489,7 +491,6 @@ END_TEXT
 
     # Quit the application
     def on_cmd_quit(sender, selector, event)
-
       @thumbnails_shown = @toggle_thumbs_menu.checkState == 1
       @status_bar_shown = @toggle_status_menu.checkState == 1
       @information_bar_shown = @toggle_info_menu.checkState == 1
@@ -498,7 +499,7 @@ END_TEXT
       write_config
 
       # Quit
-      app.exit(0)
+      app.exit
       
       return 1
     end
@@ -562,6 +563,10 @@ END_TEXT
     end
 
     def add_hot_keys
+      # Not a hotkey, but ensure that all attempts to quit are caught so
+      # we can save settings.
+      connect(SEL_CLOSE, method(:on_cmd_quit))
+      
       accelTable.addAccel(fxparseAccel("Alt+F4"), self, FXSEL(SEL_CLOSE, 0))
     end
   end
