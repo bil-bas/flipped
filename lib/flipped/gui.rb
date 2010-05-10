@@ -25,8 +25,8 @@ module Flipped
                            :width => 90, :height => 50 }
 
     SETTINGS_ATTRIBUTES = {
-      :window_x => [:x, 0],
-      :window_y => [:y, 0],
+      :window_x => [:x, 100],
+      :window_y => [:y, 100],
       :window_width => [:width, 800],
       :window_height => [:height, 800],
 
