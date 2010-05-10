@@ -432,13 +432,14 @@ END_TEXT
       begin
         app.beginWaitCursor do
           @book = Book.new(open_dir)
-          show_frames
+          @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
+          show_frames(0)
         end
         @current_flip_book_directory = open_dir
       rescue => ex
         log_error(ex)
         dialog = FXMessageBox.new(self, "Open error!",
-                 "Failed to load flipbook from #{open_dir}, probably because it is not a flipbook directory.", nil,
+                 "Failed to load flipbook from #{open_dir}, probably because it is not a flip-book directory.", nil,
                  MBOX_OK|DECOR_TITLE|DECOR_BORDER)
         dialog.execute
       end
@@ -466,7 +467,7 @@ END_TEXT
       rescue => ex
         log_error(ex)
         dialog = FXMessageBox.new(self, "Open error!",
-                 "Failed to load flipbook from #{open_dir}, probably because it is not a flipbook directory", nil,
+                 "Failed to load flipbook from #{open_dir}, probably because it is not a flip-book directory", nil,
                  MBOX_OK|DECOR_TITLE|DECOR_BORDER)
         dialog.execute
       end
