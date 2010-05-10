@@ -82,7 +82,6 @@ END_TEXT
 
       # Initialise various things.
       @current_frame_index = 0
-      @thumb_viewers = [] # List of thumbnail viewing windows.
       @book = Book.new # Currently loaded flipbook.
       @playing = false # Is mode on?
 
@@ -156,12 +155,6 @@ END_TEXT
       end
     end
 
-    def show_message(type, caption, text)
-
-
-      nil
-    end
-
     def on_toggle_thumbs(sender, selector, event)
       show_window(@thumbs_window, sender.checked?)
     end
@@ -228,31 +221,30 @@ END_TEXT
 
     # Convenience function to construct a PNG icon.
     def show_frames(selected = 0)
-      @thumb_viewers.each do |viewer|
-        @thumbs_row.removeChild(viewer)
+      # Trim off excess thumb viewers.
+      (@book.size...@thumbs_row.numChildren).reverse_each do |i|
+        @thumbs_row.removeChild(@thumbs_row.childAtIndex(i))
       end
-      @thumb_viewers.clear
 
-      @book.frames.each_with_index do |frame, i|
-        packer = FXVerticalFrame.new(@thumbs_row)
-        image_view = FXImageView.new(packer, :opts => LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
-                                      :width => THUMB_HEIGHT, :height => THUMB_HEIGHT)
+      # Create extra thumb viewers.
+      (@thumbs_row.numChildren...@book.size).each do |i|
+        FXVerticalFrame.new(@thumbs_row) do |packer|
+          image_view = FXImageView.new(packer, :opts => LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
+                                        :width => THUMB_HEIGHT, :height => THUMB_HEIGHT)
 
-        image_view.connect(SEL_LEFTBUTTONPRESS, method(:on_thumb_left_click))
-        image_view.connect(SEL_RIGHTBUTTONPRESS, method(:on_thumb_right_click))
+          image_view.connect(SEL_LEFTBUTTONPRESS, method(:on_thumb_left_click))
+          image_view.connect(SEL_RIGHTBUTTONPRESS, method(:on_thumb_right_click))
 
-        label = FXLabel.new(packer, "#{i + 1}", :opts => LAYOUT_FILL_X)
-
-        packer.create
-
-        @thumb_viewers.push packer      
+          label = FXLabel.new(packer, "#{i + 1}", :opts => LAYOUT_FILL_X)
+          packer.create
+        end
         
-        img = FXPNGImage.new(getApp(), frame, IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP)
-        img.create
-        img.scale(THUMB_WIDTH, THUMB_HEIGHT)
-        img.crop((THUMB_WIDTH - THUMB_HEIGHT) / 2, 0, THUMB_HEIGHT, THUMB_HEIGHT)
+        image = FXPNGImage.new(app, @book[i], IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP)
+        image.create
+        image.crop((image.width - image.height) / 2, 0, image.height, image.height)
+        image.scale(THUMB_HEIGHT, THUMB_HEIGHT)
 
-        image_view.image = img
+        @thumbs_row.childAtIndex(i).childAtIndex(0).image = image
       end
 
       update_menus
@@ -354,7 +346,7 @@ END_TEXT
 
     # Event when clicking on a thumbnail - select.
     def on_thumb_left_click(sender, selector, event)
-      index = @thumb_viewers.index(sender.parent)
+      index = @thumbs_row.indexOfChild(sender.parent)
       select_frame(index)
 
       return 1
@@ -362,7 +354,7 @@ END_TEXT
 
     # Event when clicking on a thumbnail - delete.
     def on_thumb_right_click(sender, selector, event)
-      index = @thumb_viewers.index(sender.parent)
+      index = @thumbs_row.indexOfChild(sender.parent)
 
       FXMenuPane.new(self) do |menu_pane|
         FXMenuCommand.new(menu_pane, "Delete frame\t\tDelete frame #{index + 1}." ).connect(SEL_COMMAND) do
@@ -398,6 +390,11 @@ END_TEXT
       indices.sort.reverse_each {|index| @book.delete_at(index) }
 
       show_frames([indices.first, @book.size - 1].min)
+
+      # Re-number everything after the first one deleted.
+      (indices.min...@thumbs_row.numChildren).each do |i|
+        @thumbs_row.childAtIndex(i).childAtIndex(1).text = "#{i + 1}"
+      end
 
       nil
     end
@@ -479,8 +476,8 @@ END_TEXT
 
       # Quit
       app.exit(0)
-
-      nil
+      
+      return 1
     end
 
     def read_config
