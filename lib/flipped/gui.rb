@@ -152,10 +152,11 @@ END_TEXT
       FXMenuTitle.new(menu_bar, "&Options", nil, options_menu)
       @options_menu = FXMenuCommand.new(options_menu, "Settings...\t\tView/set configuration.")
       @options_menu.connect(SEL_COMMAND) do |sender, selector, event|
-        dialog = OptionsDialog.new(self)
-        dialog.slide_show_interval = @slide_show_interval
-        dialog.slide_show_loops = @slide_show_loops
-        dialog.template_directory = @template_directory
+        dialog = OptionsDialog.new(self,
+          :slide_show_interval => @slide_show_interval,
+          :slide_show_loops => @slide_show_loops,
+          :template_directory => @template_directory)
+
         if dialog.execute == 1
           @slide_show_interval = dialog.slide_show_interval
           @slide_show_loops = dialog.slide_show_loops?

@@ -12,52 +12,46 @@ module Flipped
     NUM_INTERVALS_SEEN = 20
 
     def slide_show_interval
-      @slide_show_interval_field.getItemData(@slide_show_interval_field.currentItem)
-    end
-
-    def slide_show_interval=(value)
-      @slide_show_interval_field.currentItem = value - 1
+      @slide_show_interval.value
     end
 
     def slide_show_loops?
-      @slide_show_loops_check_box.checkState == 1
-    end
-
-    def slide_show_loops=(value)
-      @slide_show_loops_check_box.checkState = value
+      @slide_show_loops.value
     end
 
     def template_directory
       @template_directory_field.text
     end
 
-    def template_directory=(value)
-      @template_directory_field.text = value
-    end
-
-    def initialize(owner)
+    def initialize(owner, options = {})
       super(owner, "Settings", :opts => DECOR_TITLE|DECOR_BORDER)
 
       # 3 columns wide.
       grid = FXMatrix.new(self, :n => 3, :opts => MATRIX_BY_COLUMNS|LAYOUT_FILL_X)
 
       # Slide-show duration.
-      FXLabel.new(grid, "Slide-show duration (secs)")
-      @slide_show_interval_field = FXComboBox.new(grid, 10) do |combo|
+
+      FXLabel.new(grid, "Slide-show interval (secs)")
+      @slide_show_interval = FXDataTarget.new(options[:slide_show_interval])
+      FXComboBox.new(grid, 10, :target => @slide_show_interval, :selector => FXDataTarget::ID_VALUE) do |combo|
         (MIN_INTERVAL..MAX_INTERVAL).each {|i| combo.appendItem(i.to_s, i) }
+        combo.currentItem = options[:slide_show_interval] - 1
         combo.editable = false
         combo.numVisible = NUM_INTERVALS_SEEN
       end
       FXLabel.new(grid, "")
 
       FXLabel.new(grid, "Slide-show loops?")
-      @slide_show_loops_check_box = FXCheckButton.new(grid, '')
+      @slide_show_loops = FXDataTarget.new(options[:slide_show_loops])
+      @slide_show_loops_check_box = FXCheckButton.new(grid, '', :target => @slide_show_loops, :selector => FXDataTarget::ID_VALUE)
+      @slide_show_loops_check_box.checkState = options[:slide_show_loops]
       FXLabel.new(grid, "")
 
       # Template directory.
       FXLabel.new(grid, "Template directory")
       @template_directory_field = FXTextField.new(grid, 40) do |text_field|
         text_field.editable = false
+        text_field.text = options[:template_directory]
         text_field.disable
       end
 

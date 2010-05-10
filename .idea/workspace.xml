@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ChangeListManager" verified="true">
     <list default="true" readonly="true" id="09daf466-3604-48c6-8e7c-329650ff1ae4" name="Default" comment="Removed screenshot from rdoc to make it compatible with github.">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/gui.rb" afterPath="$PROJECT_DIR$/lib/flipped/gui.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config/settings.yml" afterPath="$PROJECT_DIR$/config/settings.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/options_dialog.rb" afterPath="$PROJECT_DIR$/lib/flipped/options_dialog.rb" />
     </list>
     <ignored path="flipped.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -28,19 +29,19 @@
   <component name="FileColors" enabled="true" enabledForTabs="true" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="gui.rb" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="gui.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="28" column="27" selection-start="768" selection-end="768" vertical-scroll-proportion="0.40462428">
+            <state line="162" column="57" selection-start="6548" selection-end="6548" vertical-scroll-proportion="-17.36">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="options_dialog.rb" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="options_dialog.rb" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/flipped/options_dialog.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="58" column="25" selection-start="1523" selection-end="1523" vertical-scroll-proportion="0.0">
+            <state line="44" column="70" selection-start="1238" selection-end="1238" vertical-scroll-proportion="0.80330884">
               <folding />
             </state>
           </provider>
@@ -109,9 +110,9 @@
         <option value="$PROJECT_DIR$/README.rdoc" />
         <option value="$PROJECT_DIR$/lib/flipped/book.rb" />
         <option value="$PROJECT_DIR$/spec/book_spec.rb" />
-        <option value="$PROJECT_DIR$/lib/flipped/options_dialog.rb" />
         <option value="$PROJECT_DIR$/lib/flipped.rbw" />
         <option value="$PROJECT_DIR$/lib/flipped/gui.rb" />
+        <option value="$PROJECT_DIR$/lib/flipped/options_dialog.rb" />
       </list>
     </option>
   </component>
@@ -598,13 +599,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped/options_dialog.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="25" selection-start="1523" selection-end="1523" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped/book.rb">
       <provider selected="true" editor-type-id="text-editor">
         <state line="30" column="0" selection-start="941" selection-end="941" vertical-scroll-proportion="0.0">
@@ -614,7 +608,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="27" selection-start="768" selection-end="768" vertical-scroll-proportion="0.40462428">
+        <state line="162" column="57" selection-start="6548" selection-end="6548" vertical-scroll-proportion="-17.36">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped/options_dialog.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="44" column="70" selection-start="1238" selection-end="1238" vertical-scroll-proportion="0.80330884">
           <folding />
         </state>
       </provider>
