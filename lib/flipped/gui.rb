@@ -427,6 +427,8 @@ END_TEXT
     # Open a new flip-book
     def on_cmd_open(sender, selector, event)
       open_dir = FXFileDialog.getOpenDirectory(self, "Open flip-book directory", @current_flip_book_directory)
+      return if open_dir.empty?
+      
       begin
         app.beginWaitCursor do
           @book = Book.new(open_dir)
@@ -434,7 +436,7 @@ END_TEXT
         end
         @current_flip_book_directory = open_dir
       rescue => ex
-        puts ex.class, ex, ex.backtrace.join("\n")
+        log_error(ex)
         dialog = FXMessageBox.new(self, "Open error!",
                  "Failed to load flipbook from #{open_dir}, probably because it is not a flipbook directory.", nil,
                  MBOX_OK|DECOR_TITLE|DECOR_BORDER)
@@ -444,9 +446,15 @@ END_TEXT
       return 1
     end
 
+    def log_error(exception)
+      puts "#{exception.class}: #{exception}\n#{exception.backtrace.join("\n")}"
+    end
+
     # Open a new flip-book
     def on_cmd_append(sender, selector, event)
       open_dir = FXFileDialog.getOpenDirectory(self, "Append flip-book directory", @current_flip_book_directory)
+      return if open_dir.empty?
+
       begin
         app.beginWaitCursor do
           # Append new frames and select the first one.
@@ -456,7 +464,7 @@ END_TEXT
         end
         @current_flip_book_directory = open_dir
       rescue => ex
-        puts ex.class, ex, ex.backtrace.join("\n")
+        log_error(ex)
         dialog = FXMessageBox.new(self, "Open error!",
                  "Failed to load flipbook from #{open_dir}, probably because it is not a flipbook directory", nil,
                  MBOX_OK|DECOR_TITLE|DECOR_BORDER)
@@ -469,6 +477,8 @@ END_TEXT
     # Save this flip-book
     def on_cmd_save(sender, selector, event)
       save_dir = FXFileDialog.getSaveFilename(self, "Save flip-book directory", @current_flip_book_directory)
+      return if save_dir.empty?
+
       if File.exists? save_dir
         dialog = FXMessageBox.new(self, "Save error!",
                  "File/folder #{save_dir} already exists, so flip-book cannot be saved.", nil,
@@ -479,6 +489,7 @@ END_TEXT
         begin
           @book.write(@current_flip_book_directory, @template_directory)
         rescue => ex
+          log_error(ex)
           dialog = FXMessageBox.new(self, "Save error!",
                  "Failed to save flipbook to #{@current_flip_book_directory},\nbut failed because the template files found in #{@template_directory} were not valid.\nUse the menu Options->Settings to set a valid path to a flip-book templates directory.", nil,
                  MBOX_OK|DECOR_TITLE|DECOR_BORDER)
