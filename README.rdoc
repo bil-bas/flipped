@@ -34,7 +34,14 @@ both more effectively view flipbooks and enabling simple editing of flipbooks.
 
 === Using binary (Windows only)
 
-I will create a stand-alone binary distribution for Windows very soon.
+Get the latest release from {github}[http://github.com/Spooner/flipped/downloads].
+
+Unpack the archive somewhere, for example into a directory inside your Sleep Is Death folder.
+
+Click on 'flipped-directory/bin/flipped.exe'.
+
+The executable takes slightly longer to load than the source code, but does not have any dependencies on having the
+correct Ruby interpreter or libraries installed.
 
 === Using source-code
 
@@ -76,7 +83,10 @@ Either:
 a) Download latest git snapshot {zip/tar package}[http://github.com/Spooner/flipped/archives/master].
 
 b) Using git (if you don't know what git is, just get the snapshot, above):
-  git://github.com/Spooner/flipped.git
+   git://github.com/Spooner/flipped.git
+
+c) Just use the source code included in the general release along with the binary (see 'Using binary (Windows only)',
+   above)
 
 It is probably easiest to put Flipped in a directory inside SleepIsDeath, but it doesn't matter where it is.
  
@@ -111,6 +121,7 @@ Full text of the license is provided in COPYING.txt
 == Third Party Credits
 
 * {FXRuby}[http://fxruby.org] library by Lyle Johnson, based on the FOX Toolkit by Jeroen van der Zijp.
+* {Ocra}[http://ocra.rubyforge.org/], used to create the standalone Windows executable.
 * Default templates directory, taken from {SleepIsDeath}[(http://sleepisdeath.net] v14c, by Jason Rohrer.
 * {RubyMine}[http://www.jetbrains.com/ruby/] Ruby IDE was used to develop the application. Enormous thanks to JetBrains
   for generously giving me a license for their excellent IDE in order to develop free, open-source applications.

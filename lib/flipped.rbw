@@ -1,16 +1,26 @@
 #!/usr/bin/env ruby -w
 
-$LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), 'flipped'))
+begin
 
-require 'gui'
-include Flipped
+  $LOAD_PATH.unshift File.expand_path(File.join(File.dirname(__FILE__), 'flipped'))
 
-application = FXApp.new(Gui::APPLICATION)
+  require 'gui'
+  include Flipped
 
-window = Gui.new(application)
+  application = FXApp.new(Gui::APPLICATION)
 
-# Handle interrupts to terminate program gracefully
-application.addSignal("SIGINT", window.method(:on_cmd_quit))
+  window = Gui.new(application)
 
-application.create
-application.run
+  # Handle interrupts to terminate program gracefully
+  application.addSignal("SIGINT", window.method(:on_cmd_quit))
+
+  unless defined?(Ocra)
+    application.create 
+    application.run
+  end
+rescue Exception => e
+  # Log any uncaught exceptions.
+  File.open("error.log", 'w') do |f|
+    f.puts "#{e.class}: #{e.message}\n#{e.backtrace.join("\n")}"
+  end
+end
