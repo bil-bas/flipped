@@ -170,10 +170,11 @@ module Flipped
       end
 
       # Copy all other files and directories across intact.
-      Dir[File.join(template_dir, "*")].each do |filename|
+      template_files_pattern = File.join(template_dir.split("\\") + ["*"]) # Unwindows the path.
+      Dir[template_files_pattern].each do |filename|
         base_name = File.basename(filename)
         unless ALL_TEMPLATE_FILES.include?(base_name)
-          cp_r(filename, File.join(out_dir, base_name))
+          cp_r(filename, out_dir)
         end
       end
 

@@ -14,6 +14,9 @@ describe Book do
     @output_dir = File.join('..', 'test_data', 'output', 'joined')
     @template_dir = File.join('..', 'test_data', 'templates')
 
+    FileUtils.rm_r @output_dir if File.exists? @output_dir
+    FileUtils.mkdir_p @output_dir
+
     @book1 = Book.new(@book1_dir)
     @book2 = Book.new(@book2_dir)
     @empty_book = Book.new
