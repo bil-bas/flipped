@@ -14,6 +14,8 @@ describe Book do
     @output_dir = File.join('..', 'test_data', 'output', 'joined')
     @template_dir = File.join('..', 'test_data', 'templates')
 
+    @template_dir_windows = "..\\test_data\\templates"
+
     FileUtils.rm_r @output_dir if File.exists? @output_dir
     FileUtils.mkdir_p @output_dir
 
@@ -88,6 +90,10 @@ describe Book do
   describe "self.valid_template_directory?()" do
     it "should return true for a valid template directory" do
       Book.valid_template_directory?(@template_dir).should be_true
+    end
+
+    it "should return true for a valid template directory, even in Windows format" do
+      Book.valid_template_directory?(@template_dir_windows).should be_true
     end
 
     it "should return false for an invalid template directory" do
