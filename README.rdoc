@@ -83,10 +83,11 @@ Either:
 a) Download latest git snapshot {zip/tar package}[http://github.com/Spooner/flipped/archives/master].
 
 b) Using git (if you don't know what git is, just get the snapshot, above):
+
    git://github.com/Spooner/flipped.git
 
 c) Just use the source code included in the general release along with the binary (see 'Using binary (Windows only)',
-   above)
+above)
 
 It is probably easiest to put Flipped in a directory inside SleepIsDeath, but it doesn't matter where it is.
  
