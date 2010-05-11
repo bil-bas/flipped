@@ -24,6 +24,10 @@ module Flipped
     NAV_BUTTON_OPTIONS = { :opts => Fox::BUTTON_NORMAL|Fox::LAYOUT_CENTER_X|Fox::LAYOUT_FIX_WIDTH|Fox::LAYOUT_FIX_HEIGHT,
                            :width => 90, :height => 50 }
 
+    MIN_INTERVAL = 1
+    MAX_INTERVAL = 30
+    NUM_INTERVALS_SEEN = 15
+
     SETTINGS_ATTRIBUTES = {
       :window_x => [:x, 100],
       :window_y => [:y, 100],
@@ -32,8 +36,8 @@ module Flipped
 
       :current_flip_book_directory => [:@current_flip_book_directory, Dir.pwd],
       :template_directory => [:@template_directory, Dir.pwd],
-      :slide_show_interval => [:@slide_show_interval, 5],
-      :slide_show_loops => [:@slide_show_loops, false],
+      :slide_show_interval => [:slide_show_interval, 5],
+      :slide_show_loops => [:slide_show_loops, false],
 
       :navigation_buttons_shown => [:@navigation_buttons_shown, true],
       :information_bar_shown => [:@information_bar_shown, true],
@@ -90,6 +94,24 @@ END_TEXT
 
       select_frame(0)
       update_menus
+    end
+
+  protected
+    attr_accessor :slide_show_interval
+    def slide_show_interval #:nodoc
+      @slide_show_interval_target.value
+    end
+    def slide_show_interval=(value) #:nodoc
+      @slide_show_interval_target.value = value
+    end
+
+    def slide_show_loops? #:nodoc
+      @slide_show_loops_target.value
+    end
+    alias_method :slide_show_loops, :slide_show_loops?
+    attr_writer :slide_show_loops
+    def slide_show_loops=(value) #:nodoc
+      @slide_show_loops_target.value = value
     end
 
     def create_menu
@@ -150,16 +172,27 @@ END_TEXT
       # Options menu.
       options_menu = FXMenuPane.new(self)
       FXMenuTitle.new(menu_bar, "&Options", nil, options_menu)
+      
+      @slide_show_loops_target = FXDataTarget.new
+      @slide_show_loops_target.connect(SEL_COMMAND) do |sender, selector, event|
+        select_frame(@current_frame_index) # Update buttons.
+      end
+      FXMenuCheck.new(options_menu, "Slide-show &loops?\tCtrl-L\tLoop in slide-show mode.", :target => @slide_show_loops_target, :selector => FXDataTarget::ID_VALUE)
+
+      @slide_show_interval_target = FXDataTarget.new
+      interval_menu = FXMenuPane.new(menu_bar)
+      (MIN_INTERVAL..MAX_INTERVAL).each do |i|
+        FXMenuRadio.new(interval_menu, "#{i}", :target => @slide_show_interval_target, :selector => FXDataTarget::ID_OPTION + i)
+      end
+      FXMenuCascade.new(options_menu, "Slide-show interval", :popupMenu => interval_menu)
+      
+      FXMenuSeparator.new(options_menu)
+      
       @options_menu = FXMenuCommand.new(options_menu, "Settings...\t\tView/set configuration.")
       @options_menu.connect(SEL_COMMAND) do |sender, selector, event|
-        dialog = OptionsDialog.new(self,
-          :slide_show_interval => @slide_show_interval,
-          :slide_show_loops => @slide_show_loops,
-          :template_directory => @template_directory)
+        dialog = OptionsDialog.new(self, :template_directory => @template_directory)
 
         if dialog.execute == 1
-          @slide_show_interval = dialog.slide_show_interval
-          @slide_show_loops = dialog.slide_show_loops?
           @template_directory = dialog.template_directory
         end
         app.runModalWhileShown(dialog)
@@ -225,6 +258,19 @@ END_TEXT
       @end_button = FXButton.new(@button_bar, '>>>', NAV_BUTTON_OPTIONS)
       @end_button.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_end))
       @end_button.tipText = "Skip to last frame (End)"
+
+      options_frame = FXVerticalFrame.new(@button_bar)
+
+      FXCheckButton.new(options_frame, "Loops?\tLoop around in slide-show mode (Ctrl-L)\tLoop back to start of flip-book when in slide-show mode (Ctrl-L).",
+        :target => @slide_show_loops_target, :selector => FXDataTarget::ID_VALUE)
+
+      interval_frame = FXHorizontalFrame.new(options_frame)
+      FXLabel.new(interval_frame, "Interval\tDelay between showing frames (secs)\tDelay, in seconds, between showing frames when in slide-show mode.")
+      FXComboBox.new(interval_frame, 3, :target => @slide_show_interval_target, :selector => FXDataTarget::ID_VALUE) do |combo|
+        (MIN_INTERVAL..MAX_INTERVAL).each {|i| combo.appendItem(i.to_s, i) }
+        combo.editable = false
+        combo.numVisible = NUM_INTERVALS_SEEN
+      end
 
       nil
     end
@@ -295,7 +341,7 @@ END_TEXT
       @play_button.enable
 
       if @playing
-        @slide_show_timer = app.addTimeout(@slide_show_interval * 1000, method(:slide_show_timer))
+        create_slide_show_timer
         @play_button.text = '||'
         @play_button.tipText = "Pause slide-show"
       else
@@ -308,11 +354,15 @@ END_TEXT
       return 1
     end
 
-    def slide_show_timer(sender, selector, event)
+    def create_slide_show_timer
+      @slide_show_timer = app.addTimeout(slide_show_interval * 1000, method(:on_slide_show_timer))
+    end
+
+    def on_slide_show_timer(sender, selector, event)
       if @playing
         select_frame((@current_frame_index + 1).modulo(@book.size))
-        if @slide_show_loops or @current_frame_index < @book.size - 1
-          @slide_show_timer = app.addTimeout(@slide_show_interval * 1000, method(:slide_show_timer))
+        if slide_show_loops? or @current_frame_index < @book.size - 1
+          create_slide_show_timer
         else
           @playing = false
           @play_button.text = '|>'
@@ -359,7 +409,16 @@ END_TEXT
         end
       end
 
-      [@play_button, @play_menu, @end_button, @end_menu, @next_button, @next_menu].each do |widget|
+      # Play is always enabled if we are in looping mode.
+      if index < @book.size - 1 or (slide_show_loops? and @book.size > 0)
+        @play_button.enable
+        @play_menu.enable
+      else
+        @play_button.disable
+        @play_menu.disable
+      end
+
+      [@end_button, @end_menu, @next_button, @next_menu].each do |widget|
         if index < @book.size - 1
           widget.enable
         else

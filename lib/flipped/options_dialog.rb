@@ -6,19 +6,6 @@ module Flipped
   include Fox
 
   class OptionsDialog < FXDialogBox
-
-    MIN_INTERVAL = 1
-    MAX_INTERVAL = 30
-    NUM_INTERVALS_SEEN = 20
-
-    def slide_show_interval
-      @slide_show_interval.value
-    end
-
-    def slide_show_loops?
-      @slide_show_loops.value
-    end
-
     def template_directory
       @template_directory_field.text
     end
@@ -28,24 +15,6 @@ module Flipped
 
       # 3 columns wide.
       grid = FXMatrix.new(self, :n => 3, :opts => MATRIX_BY_COLUMNS|LAYOUT_FILL_X)
-
-      # Slide-show duration.
-
-      FXLabel.new(grid, "Slide-show interval (secs)")
-      @slide_show_interval = FXDataTarget.new(options[:slide_show_interval])
-      FXComboBox.new(grid, 10, :target => @slide_show_interval, :selector => FXDataTarget::ID_VALUE) do |combo|
-        (MIN_INTERVAL..MAX_INTERVAL).each {|i| combo.appendItem(i.to_s, i) }
-        combo.currentItem = options[:slide_show_interval] - 1
-        combo.editable = false
-        combo.numVisible = NUM_INTERVALS_SEEN
-      end
-      FXLabel.new(grid, "")
-
-      FXLabel.new(grid, "Slide-show loops?")
-      @slide_show_loops = FXDataTarget.new(options[:slide_show_loops])
-      @slide_show_loops_check_box = FXCheckButton.new(grid, '', :target => @slide_show_loops, :selector => FXDataTarget::ID_VALUE)
-      @slide_show_loops_check_box.checkState = options[:slide_show_loops]
-      FXLabel.new(grid, "")
 
       # Template directory.
       FXLabel.new(grid, "Template directory")
