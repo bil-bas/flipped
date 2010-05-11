@@ -26,10 +26,10 @@ module Flipped
 
       FXButton.new(grid, "Browse...", :opts => FRAME_RAISED|FRAME_THICK) do |button|
         button.connect(SEL_COMMAND) do |sender, selector, event|
-          directory = FXFileDialog.getOpenDirectory(self, "Select template directory", @template_dir_field.text)
+          directory = FXFileDialog.getOpenDirectory(self, "Select template directory", @template_directory_field.text)
 
           if Book.valid_template_directory?(directory)
-            @template_dir_field.text = directory
+            @template_directory_field.text = directory
           else
             dialog = FXMessageBox.new(self, "Settings error!",
                   "Template directory #{directory} is invalid. Reverting to previous setting.",

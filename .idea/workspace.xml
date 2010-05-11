@@ -2,13 +2,11 @@
 <project version="4">
   <component name="ChangeListManager" verified="true">
     <list default="true" readonly="true" id="09daf466-3604-48c6-8e7c-329650ff1ae4" name="Default" comment="Removed screenshot from rdoc to make it compatible with github.">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/gui.rb" afterPath="$PROJECT_DIR$/lib/flipped/gui.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/options_dialog.rb" afterPath="$PROJECT_DIR$/lib/flipped/options_dialog.rb" />
     </list>
-    <ignored path="flipped.iws" />
     <ignored path=".idea/workspace.xml" />
+    <ignored path="flipped.iws" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,19 +27,19 @@
   <component name="FileColors" enabled="true" enabledForTabs="true" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="gui.rb" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="gui.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="28" column="22" selection-start="730" selection-end="748" vertical-scroll-proportion="-4.7495184">
+            <state line="28" column="22" selection-start="730" selection-end="748" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="options_dialog.rb" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="options_dialog.rb" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/flipped/options_dialog.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="16" column="82" selection-start="385" selection-end="385" vertical-scroll-proportion="0.0">
+            <state line="31" column="45" selection-start="1036" selection-end="1037" vertical-scroll-proportion="0.7051793">
               <folding />
             </state>
           </provider>
@@ -111,8 +109,8 @@
         <option value="$PROJECT_DIR$/lib/flipped/book.rb" />
         <option value="$PROJECT_DIR$/spec/book_spec.rb" />
         <option value="$PROJECT_DIR$/lib/flipped.rbw" />
-        <option value="$PROJECT_DIR$/lib/flipped/options_dialog.rb" />
         <option value="$PROJECT_DIR$/lib/flipped/gui.rb" />
+        <option value="$PROJECT_DIR$/lib/flipped/options_dialog.rb" />
       </list>
     </option>
   </component>
@@ -201,7 +199,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Favorites" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -268,14 +265,15 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Favorites" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="options.splitter.main.proportions" value="0.3" />
-    <property name="options.lastSelected" value="org.jetbrains.plugins.ruby.settings.RubyIdeSdkConfigurable" />
     <property name="recentsLimit" value="5" />
-    <property name="options.searchVisible" value="true" />
+    <property name="options.lastSelected" value="org.jetbrains.plugins.ruby.settings.RubyIdeSdkConfigurable" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="RunManager" selected="Ruby.flipped">
     <configuration default="false" name="book_spec" type="RubyRunConfigurationType" factoryName="Ruby" temporary="true">
@@ -486,14 +484,14 @@
     <supportedVersion>125</supportedVersion>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1046" height="1010" extended-state="0" />
+    <frame x="0" y="0" width="840" height="1010" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17757936" sideWeight="0.665529" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22319202" sideWeight="0.665529" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3993174" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3265074" sideWeight="0.9769526" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
@@ -577,9 +575,24 @@
         <state line="0" column="0" selection-start="0" selection-end="57" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
+    <entry file="file://C:/Ruby19/lib/ruby/gems/1.9.1/gems/fxruby-1.6.20-x86-mingw32/lib/fox16/kwargs.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="522" column="0" selection-start="28103" selection-end="28103" vertical-scroll-proportion="0.33206832" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped/book.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="30" column="0" selection-start="941" selection-end="941" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/Rakefile">
       <provider selected="true" editor-type-id="text-editor">
         <state line="15" column="3" selection-start="360" selection-end="360" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped.rbw">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="0" selection-start="107" selection-end="107" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/spec/book_spec.rb">
@@ -592,37 +605,16 @@
         <state line="0" column="26" selection-start="26" selection-end="26" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped/book.rb">
+    <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="0" selection-start="941" selection-end="941" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped.rbw">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="0" selection-start="107" selection-end="107" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://C:/Ruby19/lib/ruby/gems/1.9.1/gems/fxruby-1.6.20-x86-mingw32/lib/fox16/kwargs.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="522" column="0" selection-start="28103" selection-end="28103" vertical-scroll-proportion="0.33206832">
+        <state line="28" column="22" selection-start="730" selection-end="748" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped/options_dialog.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="16" column="82" selection-start="385" selection-end="385" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="28" column="22" selection-start="730" selection-end="748" vertical-scroll-proportion="-4.7495184">
+        <state line="31" column="45" selection-start="1036" selection-end="1037" vertical-scroll-proportion="0.7051793">
           <folding />
         </state>
       </provider>
