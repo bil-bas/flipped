@@ -12,9 +12,9 @@ describe Book do
     @book1_dir = File.join('..', 'test_data', 'flipBooks', '00001')
     @book2_dir = File.join('..', 'test_data', 'flipBooks', '00002')
     @output_dir = File.join('..', 'test_data', 'output', 'joined')
-    @template_dir = File.join('..', 'test_data', 'templates')
+    @template_dir = File.join('..', 'templates')
 
-    @template_dir_windows = "..\\test_data\\templates"
+    @template_dir_windows = "..\\templates"
 
     FileUtils.rm_r @output_dir if File.exists? @output_dir
     FileUtils.mkdir_p @output_dir
