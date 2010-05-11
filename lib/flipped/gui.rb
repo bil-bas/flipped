@@ -28,6 +28,8 @@ module Flipped
     MAX_INTERVAL = 30
     NUM_INTERVALS_SEEN = 15
 
+    DEFAULT_TEMPLATE_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'templates'))
+
     SETTINGS_ATTRIBUTES = {
       :window_x => [:x, 100],
       :window_y => [:y, 100],
@@ -35,7 +37,7 @@ module Flipped
       :window_height => [:height, 800],
 
       :current_flip_book_directory => [:@current_flip_book_directory, Dir.pwd],
-      :template_directory => [:@template_directory, Dir.pwd],
+      :template_directory => [:@template_directory, DEFAULT_TEMPLATE_DIR],
       :slide_show_interval => [:slide_show_interval, 5],
       :slide_show_loops => [:slide_show_loops, false],
 
