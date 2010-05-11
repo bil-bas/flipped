@@ -1,11 +1,13 @@
 = Flipped - The flip-book tool
 
-Project:: {Spooner/Flipped at github.com}[http://github.com/Spooner/flipped]
+Project:: {Spooner/Flipped}[http://github.com/Spooner/flipped] (at github)
 Author:: Bil Bas (aka Spooner) bil dot bagpuss at gmail dot com
+License:: GPL v3
 
 == Description
 
-A tool/library for the game, {Sleep is Death}[http://sleepisdeath.net].
+A tool/library for the game, {Sleep is Death}[http://sleepisdeath.net], aiming at improving the viewing and enabling
+simple editing of flip-book folders.
 
 The Flipped::Book class manages the flipbook data and could be used as a library for making other tools, since it is not
 coupled to the interface in any way.
@@ -17,67 +19,98 @@ both more effectively view flipbooks and enabling simple editing of flipbooks.
 
 === Viewing
 
-* View individual frames, with optional thumbnails for easy navigation.
-* Start/previous/next/end navigation buttons.
-* Play/pause flipbooks.
+* View individual frames, with thumbnails for easy navigation.
+* Start/previous/next/end navigation.
+* Play/pause flip-books.
 
 === Editing
 
 * Merge existing flip-books (makes playing games with breaks/pauses a lot more manageable, believe me!).
-* Delete individual frames.
-* Save edited flipbook in format identical to that created by the game. This also allows the re-creation of flip-books with new formats in the templates folder.
+* Delete frames (individual, by range or all identical).
+* Save edited flip-book in format identical to that created by the game. This also allows the re-creation of flip-books
+  with new formats, by altering your templates folder.
 
 == Installation
 
-=== 1. Install Ruby
+=== Using binary (Windows only)
+
+I will create a stand-alone binary distribution for Windows very soon.
+
+=== Using source-code
+
+==== 1. Install Ruby
 
 The application was created and tested using Ruby 1.9.1. It is only guaranteed to work with that or a later version of
 Ruby.
 
-==== Windows
+===== Windows
 
 I recommend installing the 1.9.1 installer, found here: http://rubyinstaller.org/download.html (you require
 "Ruby 1.9.1-p378 (RC2)" or later)
 
 * NOTE: I will build an exe version for windows to save on this effort for windozians.
 
-==== Mac and *nix
+===== Mac and *nix
 
-I'm sure you can find and install Ruby using the info and links at {ruby-lang.org}[http://www.ruby-lang.org/en/downloads/]
+I'm sure you can find and install Ruby using the info and links at
+{ruby-lang.org}[http://www.ruby-lang.org/en/downloads/], although it is possible you already have Ruby installed. You
+might need to ensure you are running the application with Ruby v1.9.x though, since it may not work with earlier
+versions.
 
-Please be aware that Flipped was created on Windows, so there may be issues running it in other operating systems.
+Please be aware that Flipped was created on Windows 7, so there may be issues running it in other operating systems.
 I will make every effort to make the code cross-platform, but should I be informed of any problems on other OSs,
 I will prioritise fixing them.
 
-=== 2. Install required libraries
+==== 2. Install required libraries
 
 After installing Ruby, open a command window and type:
 
   gem install fxruby --no-ri --no-rdoc
 
-This will take a minute or two to automatically install the library.
+This will take a minute or so to automatically install the library.
 
-=== 3 Get the source code for Flipped
+==== 3 Get the source code for Flipped
 
-Download latest {zip/tar package}[http://github.com/Spooner/flipped/archives/master].
+Either:
 
-Using git (if you don't know what git is, just get the package, above):
+a) Download latest git snapshot {zip/tar package}[http://github.com/Spooner/flipped/archives/master].
+
+b) Using git (if you don't know what git is, just get the snapshot, above):
   git://github.com/Spooner/flipped.git
 
-It is probably easiest to put flipped in a directory inside SleepIsDeath, but it doesn't matter where it is.
+It is probably easiest to put Flipped in a directory inside SleepIsDeath, but it doesn't matter where it is.
  
-=== 4. Run application
+==== 4. Run application
 
-Click on 'flipped-directory/lib/flipped.rbw' to start the application.
+Click on 'flipped-directory/lib/flipped.rbw' to start the application. If it doesn't start up properly, double check
+that you have performed step #2, above.
+
+== License
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Full text of the license is provided in COPYING.txt
 
 == Thanks
 
-* Thanks to SiliconEidolon for testing and feedback.
+* Thanks to SiliconEidolon and ubik for testing and feedback.
 * Thanks to {SiDtube}[http://sidtube.com] for providing a marvellous community site for SiD players.
 * Thanks to {github}[http://github.com] for hosting my project.
 
 == Third Party Credits
 
 * {FXRuby}[http://fxruby.org] library by Lyle Johnson, based on the FOX Toolkit by Jeroen van der Zijp.
-* Resource cache and templates, used by unit tests, taken from {SleepIsDeath}[(http://sleepisdeath.net], by Jason Rohrer.
-* {RubyMine}[http://www.jetbrains.com/ruby/] Ruby IDE was used to develop the application. 
+* Default templates directory, taken from {SleepIsDeath}[(http://sleepisdeath.net] v14c, by Jason Rohrer.
+* {RubyMine}[http://www.jetbrains.com/ruby/] Ruby IDE was used to develop the application. Enormous thanks to JetBrains
+  for generously giving me a license for their excellent IDE in order to develop free, open-source applications.
