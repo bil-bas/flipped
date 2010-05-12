@@ -80,7 +80,7 @@ END_TEXT
       # Place to show current frame image full-size.      
       @image_viewer = FXImageView.new(@main_frame, :opts => LAYOUT_FILL_X|LAYOUT_FILL_Y)
       @image_viewer.backColor = IMAGE_BACKGROUND_COLOR
-      @image_viewer.connect(SEL_RIGHTBUTTONPRESS, method(:on_cmd_previous))
+      @image_viewer.connect(SEL_RIGHTBUTTONPRESS, method(:on_image_right_click))
       @image_viewer.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_next))
 
       # Show info about the book and current frame.
@@ -446,10 +446,25 @@ END_TEXT
       return 1
     end
 
-    # Event when clicking on a thumbnail - delete.
+    # Event when clicking on a thumbnail - context menu.
     def on_thumb_right_click(sender, selector, event)
       index = @thumbs_row.indexOfChild(sender.parent)
+      image_context_menu(index, event.root_x, event.root_y)
+      
+      return 1
+    end
 
+    # Event when right-clicking on the main image - context menu.
+    def on_image_right_click(sender, selector, event)
+      if @book.size > 0
+        image_context_menu(@current_frame_index, event.root_x, event.root_y)
+        return 1
+      else
+        return 0
+      end      
+    end
+
+    def image_context_menu(index, x, y)
       FXMenuPane.new(self) do |menu_pane|
         FXMenuCommand.new(menu_pane, "Delete frame\t\tDelete frame #{index + 1}." ).connect(SEL_COMMAND) do
           delete_frames(index)
@@ -473,11 +488,11 @@ END_TEXT
         end
 
         menu_pane.create
-        menu_pane.popup(nil, event.root_x, event.root_y)
+        menu_pane.popup(nil, x, y)
         app.runModalWhileShown(menu_pane)
       end
 
-      return 1
+      nil
     end
 
     def delete_frames(*indices)
