@@ -80,8 +80,8 @@ END_TEXT
       # Place to show current frame image full-size.      
       @image_viewer = FXImageView.new(@main_frame, :opts => LAYOUT_FILL_X|LAYOUT_FILL_Y)
       @image_viewer.backColor = IMAGE_BACKGROUND_COLOR
-      @image_viewer.connect(SEL_RIGHTBUTTONPRESS, method(:on_image_right_click))
-      @image_viewer.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_next))
+      @image_viewer.connect(SEL_RIGHTBUTTONRELEASE, method(:on_image_right_click))
+      @image_viewer.connect(SEL_LEFTBUTTONRELEASE, method(:on_cmd_next))
 
       # Show info about the book and current frame.
       @info_bar = FXLabel.new(@main_frame, 'No flip-book loaded', nil, LAYOUT_FILL_X,
@@ -313,8 +313,8 @@ END_TEXT
           image_view = FXImageView.new(packer, :opts => LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
                                         :width => THUMB_HEIGHT, :height => THUMB_HEIGHT)
 
-          image_view.connect(SEL_LEFTBUTTONPRESS, method(:on_thumb_left_click))
-          image_view.connect(SEL_RIGHTBUTTONPRESS, method(:on_thumb_right_click))
+          image_view.connect(SEL_LEFTBUTTONRELEASE, method(:on_thumb_left_click))
+          image_view.connect(SEL_RIGHTBUTTONRELEASE, method(:on_thumb_right_click))
 
           label = FXLabel.new(packer, "#{i + 1}", :opts => LAYOUT_FILL_X)
           packer.create
