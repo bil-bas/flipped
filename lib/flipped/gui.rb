@@ -90,11 +90,10 @@ END_TEXT
       add_button_bar(@main_frame)
 
       # Initialise various things.
-      @current_frame_index = 0
       @book = Book.new # Currently loaded flipbook.
       @playing = false # Is mode on?
 
-      select_frame(0)
+      select_frame(-1)
       update_menus
     end
 
@@ -303,7 +302,6 @@ END_TEXT
       nil
     end
 
-    # Convenience function to construct a PNG icon.
     def show_frames(selected = 0)
       # Trim off excess thumb viewers.
       (@book.size...@thumbs_row.numChildren).reverse_each do |i|
