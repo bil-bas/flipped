@@ -196,7 +196,6 @@ END_TEXT
         if dialog.execute == 1
           @template_directory = dialog.template_directory
         end
-        app.runModalWhileShown(dialog)
       end
 
       # Help menu

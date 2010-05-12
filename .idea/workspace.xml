@@ -2,15 +2,15 @@
 <project version="4">
   <component name="ChangeListManager" verified="true">
     <list default="true" readonly="true" id="09daf466-3604-48c6-8e7c-329650ff1ae4" name="Default" comment="Removed screenshot from rdoc to make it compatible with github.">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/media/icons/start.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/media/icons/next.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/media/icons/next.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/media/icons/start.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/gui.rb" afterPath="$PROJECT_DIR$/lib/flipped/gui.rb" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/media/icons/previous.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/media/icons/pause.png" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/media/icons/play.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Rakefile" afterPath="$PROJECT_DIR$/Rakefile" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/media/icons/play.png" />
       <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/media/icons/end.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped.rbw" afterPath="$PROJECT_DIR$/lib/flipped.rbw" />
     </list>
@@ -39,7 +39,7 @@
       <file leaf-file-name="gui.rb" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="386" column="44" selection-start="13971" selection-end="13971" vertical-scroll-proportion="4.94">
+            <state line="178" column="60" selection-start="6858" selection-end="6858" vertical-scroll-proportion="-8.954">
               <folding />
             </state>
           </provider>
@@ -617,7 +617,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="386" column="44" selection-start="13971" selection-end="13971" vertical-scroll-proportion="4.94">
+        <state line="178" column="60" selection-start="6858" selection-end="6858" vertical-scroll-proportion="-8.954">
           <folding />
         </state>
       </provider>
