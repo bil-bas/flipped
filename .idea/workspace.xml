@@ -2,11 +2,20 @@
 <project version="4">
   <component name="ChangeListManager" verified="true">
     <list default="true" readonly="true" id="09daf466-3604-48c6-8e7c-329650ff1ae4" name="Default" comment="Removed screenshot from rdoc to make it compatible with github.">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/media/icons/start.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/media/icons/next.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/gui.rb" afterPath="$PROJECT_DIR$/lib/flipped/gui.rb" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/media/icons/previous.png" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.rdoc" afterPath="$PROJECT_DIR$/README.rdoc" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/media/icons/pause.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/media/icons/play.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Rakefile" afterPath="$PROJECT_DIR$/Rakefile" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/media/icons/end.png" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped.rbw" afterPath="$PROJECT_DIR$/lib/flipped.rbw" />
     </list>
-    <ignored path=".idea/workspace.xml" />
     <ignored path="flipped.iws" />
+    <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,10 +36,10 @@
   <component name="FileColors" enabled="true" enabledForTabs="true" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="gui.rb" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="gui.rb" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="577" column="6" selection-start="20078" selection-end="20078" vertical-scroll-proportion="0.0">
+            <state line="26" column="54" selection-start="805" selection-end="805" vertical-scroll-proportion="0.26693228">
               <folding />
             </state>
           </provider>
@@ -57,7 +66,7 @@
       <file leaf-file-name="Rakefile" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Rakefile">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="71" column="29" selection-start="1899" selection-end="1899" vertical-scroll-proportion="0.0">
+            <state line="43" column="65" selection-start="1152" selection-end="1152" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -75,7 +84,7 @@
       <file leaf-file-name="flipped.rbw" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/flipped.rbw">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="21" column="32" selection-start="475" selection-end="475" vertical-scroll-proportion="0.0">
+            <state line="36" column="24" selection-start="1146" selection-end="1146" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -90,10 +99,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="README.rdoc" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="README.rdoc" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/README.rdoc">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="127" column="2" selection-start="4962" selection-end="4962" vertical-scroll-proportion="1.7419355">
+            <state line="127" column="2" selection-start="4962" selection-end="4962" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -116,12 +125,12 @@
         <option value="$PROJECT_DIR$/lib/flipped/options_dialog.rb" />
         <option value="$PROJECT_DIR$/lib/flipped/book.rb" />
         <option value="$PROJECT_DIR$/spec/book_spec.rb" />
-        <option value="$PROJECT_DIR$/lib/flipped/gui.rb" />
         <option value="$PROJECT_DIR$/lib/init.rb" />
-        <option value="$PROJECT_DIR$/lib/flipped.rbw" />
-        <option value="$PROJECT_DIR$/Rakefile" />
         <option value="$PROJECT_DIR$/build/package.rb" />
         <option value="$PROJECT_DIR$/README.rdoc" />
+        <option value="$PROJECT_DIR$/Rakefile" />
+        <option value="$PROJECT_DIR$/lib/flipped.rbw" />
+        <option value="$PROJECT_DIR$/lib/flipped/gui.rb" />
       </list>
     </option>
   </component>
@@ -152,6 +161,65 @@
     </navigator>
     <panes>
       <pane id="Favorites" />
+      <pane id="Scope">
+        <subPane subId="Problems" />
+        <subPane subId="All">
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="flipped">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="flipped">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="flipped">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="flipped">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="lib">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT USER_OBJECT="Root">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="flipped">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="flipped">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="lib">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT USER_OBJECT="flipped">
+              <option name="myItemId" value="" />
+              <option name="myItemType" value="" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -232,65 +300,6 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="Scope">
-        <subPane subId="Problems" />
-        <subPane subId="All">
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="flipped">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="flipped">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="flipped">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="flipped">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="lib">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT USER_OBJECT="Root">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="flipped">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="flipped">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="lib">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT USER_OBJECT="flipped">
-              <option name="myItemId" value="" />
-              <option name="myItemType" value="" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -300,7 +309,7 @@
     <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
   </component>
-  <component name="RunManager" selected="Rake.build:release">
+  <component name="RunManager" selected="Ruby.flipped">
     <configuration default="false" name="flipped" type="RubyRunConfigurationType" factoryName="Ruby" temporary="true">
       <module name="flipped" />
       <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="-e STDOUT.sync=true;STDERR.sync=true;load($0=ARGV.shift)" />
@@ -569,16 +578,9 @@
         <state line="522" column="0" selection-start="28103" selection-end="28103" vertical-scroll-proportion="0.33206832" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="577" column="6" selection-start="20078" selection-end="20078" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped/options_dialog.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="45" selection-start="1036" selection-end="1037" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="31" column="45" selection-start="1036" selection-end="1037" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped/book.rb">
@@ -586,9 +588,14 @@
         <state line="190" column="41" selection-start="6150" selection-end="6150" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped.rbw">
+    <entry file="file://$PROJECT_DIR$/Rakefile">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="32" selection-start="475" selection-end="475" vertical-scroll-proportion="0.0" />
+        <state line="43" column="65" selection-start="1152" selection-end="1152" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/package.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="12" selection-start="166" selection-end="166" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/spec/book_spec.rb">
@@ -596,23 +603,21 @@
         <state line="16" column="31" selection-start="546" selection-end="546" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Rakefile">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="71" column="29" selection-start="1899" selection-end="1899" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/build/package.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="12" selection-start="166" selection-end="166" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/README.rdoc">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="127" column="2" selection-start="4962" selection-end="4962" vertical-scroll-proportion="1.7419355">
+        <state line="127" column="2" selection-start="4962" selection-end="4962" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped.rbw">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="36" column="24" selection-start="1146" selection-end="1146" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="26" column="54" selection-start="805" selection-end="805" vertical-scroll-proportion="0.26693228">
           <folding />
         </state>
       </provider>

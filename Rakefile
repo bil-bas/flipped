@@ -41,9 +41,9 @@ namespace :compile do
 
   task APP => APP_EXE
   
-  prerequisites = FileList["lib/#{APP}.rbw", 'lib/**/*.rb']
+  prerequisites = FileList["lib/#{APP}.rb*", "lib/#{APP}/**/*.rb"]
   file APP_EXE => prerequisites do |t|
-    system "ocra lib/#{APP}.rb* lib/#{APP}/*.rb"
+    system "ocra #{prerequisites.join(' ')}"
     mkdir_p BINARY_DIR
     move "lib/#{APP}.exe", APP_EXE
     puts 'Done.'

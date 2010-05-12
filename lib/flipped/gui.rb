@@ -13,7 +13,9 @@ module Flipped
     APPLICATION = "Flipped"
     WINDOW_TITLE = "#{APPLICATION} - The SiD flip-book tool"
 
-    SETTINGS_FILE = File.expand_path(File.join('..', 'config', 'settings.yml'))
+    SETTINGS_FILE = File.join(INSTALLATION_ROOT, 'config', 'settings.yml')
+    ICON_DIR = File.join(INSTALLATION_ROOT, 'media', 'icons')
+    DEFAULT_TEMPLATE_DIR = File.join(INSTALLATION_ROOT, 'templates')
 
     IMAGE_WIDTH = 640
     IMAGE_HEIGHT = 416
@@ -22,13 +24,11 @@ module Flipped
     THUMB_HEIGHT = IMAGE_HEIGHT * THUMB_SCALE
 
     NAV_BUTTON_OPTIONS = { :opts => Fox::BUTTON_NORMAL|Fox::LAYOUT_CENTER_X|Fox::LAYOUT_FIX_WIDTH|Fox::LAYOUT_FIX_HEIGHT,
-                           :width => 90, :height => 50 }
+                           :width => 50, :height => 50 }
 
     MIN_INTERVAL = 1
     MAX_INTERVAL = 30
     NUM_INTERVALS_SEEN = 15
-
-    DEFAULT_TEMPLATE_DIR = File.expand_path(File.join(File.dirname(__FILE__), '..', '..', 'templates'))
 
     SETTINGS_ATTRIBUTES = {
       :window_x => [:x, 100],
@@ -212,6 +212,20 @@ END_TEXT
       end
     end
 
+    # Convenience function to construct a PNG icon
+    def load_icon(name)
+      begin
+        filename = File.join(ICON_DIR, "#{name}.png")
+        icon = File.open(filename, 'rb') do |f|
+          FXPNGIcon.new(getApp(), f.read)
+        end
+        icon.create
+        icon
+      rescue => ex
+        raise RuntimeError, "Couldn't load icon: #{filename} (#{ex.message})"
+      end
+    end
+
     def on_toggle_thumbs(sender, selector, event)
       show_window(@thumbs_window, sender.checked?)
     end
@@ -241,24 +255,24 @@ END_TEXT
     def add_button_bar(window)
       @button_bar = FXHorizontalFrame.new(window, :opts => LAYOUT_CENTER_X)
 
-      @start_button = FXButton.new(@button_bar, '<<<', NAV_BUTTON_OPTIONS)
-      @start_button.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_start))
+      @start_button = FXButton.new(@button_bar, '', load_icon('start'), NAV_BUTTON_OPTIONS)
+      @start_button.connect(SEL_COMMAND, method(:on_cmd_start))
       @start_button.tipText = "Skip to first frame (Home)"
 
-      @previous_button = FXButton.new(@button_bar, '<', NAV_BUTTON_OPTIONS)
-      @previous_button.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_previous))
+      @previous_button = FXButton.new(@button_bar, '', load_icon('previous'), NAV_BUTTON_OPTIONS)
+      @previous_button.connect(SEL_COMMAND, method(:on_cmd_previous))
       @previous_button.tipText = "Previous frame (Left)"
 
-      @play_button = FXButton.new(@button_bar, '|>', NAV_BUTTON_OPTIONS)
-      @play_button.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_play))
-      @play_button.tipText = "Play/pause slide-show (Space)"
+      @play_button = FXButton.new(@button_bar, '', load_icon('play'), NAV_BUTTON_OPTIONS)
+      @play_button.connect(SEL_COMMAND, method(:on_cmd_play))
+      @play_button.tipText = "Play slide-show (Space)"
 
-      @next_button = FXButton.new(@button_bar, '>', NAV_BUTTON_OPTIONS)
-      @next_button.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_next))
+      @next_button = FXButton.new(@button_bar, '', load_icon('next'), NAV_BUTTON_OPTIONS)
+      @next_button.connect(SEL_COMMAND, method(:on_cmd_next))
       @next_button.tipText = "Next frame (Right)"
 
-      @end_button = FXButton.new(@button_bar, '>>>', NAV_BUTTON_OPTIONS)
-      @end_button.connect(SEL_LEFTBUTTONPRESS, method(:on_cmd_end))
+      @end_button = FXButton.new(@button_bar, '', load_icon('end'), NAV_BUTTON_OPTIONS)
+      @end_button.connect(SEL_COMMAND, method(:on_cmd_end))
       @end_button.tipText = "Skip to last frame (End)"
 
       options_frame = FXVerticalFrame.new(@button_bar)
@@ -339,18 +353,15 @@ END_TEXT
     def on_cmd_play(sender, selector, event)
       @playing = !@playing
 
-      @play_button.disable
-      @play_button.enable
-
       if @playing
         create_slide_show_timer
-        @play_button.text = '||'
-        @play_button.tipText = "Pause slide-show"
+        @play_button.icon = load_icon 'pause'
+        @play_button.tipText = "Pause slide-show (Space)"
       else
         app.removeTimeout(@slide_show_timer)
         @slide_show_timer = nil
-        @play_button.text = '|>'      
-        @play_button.tipText = "Play slide-show"
+        @play_button.icon = load_icon 'play'
+        @play_button.tipText = "Play slide-show (Space)"
       end
 
       return 1
@@ -367,7 +378,8 @@ END_TEXT
           create_slide_show_timer
         else
           @playing = false
-          @play_button.text = '|>'
+          @play_button.icon = load_icon 'play'
+          @play_button.tipText = "Play slide-show (Space)"
         end        
       end
 
@@ -396,11 +408,6 @@ END_TEXT
         "Frame #{index + 1} of #{@book.size}"
       else
         "Empty flip-book"
-      end
-
-      # Avoid button-locking bug.
-      [@start_button, @previous_button, @play_button, @next_button, @end_button].each do |widget|
-        widget.disable
       end
 
       [@start_button, @start_menu, @previous_button, @previous_menu].each do |widget|
