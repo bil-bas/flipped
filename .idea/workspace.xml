@@ -31,7 +31,7 @@
       <file leaf-file-name="gui.rb" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="415" column="66" selection-start="13908" selection-end="13908" vertical-scroll-proportion="-0.500998">
+            <state line="390" column="31" selection-start="13475" selection-end="13475" vertical-scroll-proportion="-0.61676645">
               <folding />
             </state>
           </provider>
@@ -41,15 +41,6 @@
         <entry file="file://$PROJECT_DIR$/lib/flipped/settings_manager.rb">
           <provider selected="true" editor-type-id="text-editor">
             <state line="54" column="7" selection-start="1534" selection-end="1534" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="base.rb" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://C:/Ruby19/lib/ruby/gems/1.9.1/gems/i18n-0.3.7/lib/i18n/backend/base.rb">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="114" column="0" selection-start="4680" selection-end="4680" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -67,7 +58,7 @@
       <file leaf-file-name="book.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/flipped/book.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="190" column="41" selection-start="6150" selection-end="6150" vertical-scroll-proportion="0.0">
+            <state line="63" column="0" selection-start="1858" selection-end="1858" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -326,7 +317,7 @@
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
   </component>
-  <component name="RunManager" selected="Rake.compile:flipped">
+  <component name="RunManager" selected="Ruby.flipped">
     <configuration default="false" name="flipped" type="RubyRunConfigurationType" factoryName="Ruby" temporary="true">
       <module name="flipped" />
       <RUBY_RUN_CONFIG NAME="RUBY_ARGS" VALUE="-e STDOUT.sync=true;STDERR.sync=true;load($0=ARGV.shift)" />
@@ -605,11 +596,6 @@
         <state line="114" column="0" selection-start="4680" selection-end="4680" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped/book.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="190" column="41" selection-start="6150" selection-end="6150" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Rakefile">
       <provider selected="true" editor-type-id="text-editor">
         <state line="43" column="65" selection-start="1152" selection-end="1152" vertical-scroll-proportion="0.0" />
@@ -637,13 +623,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped.rbw">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="49" selection-start="301" selection-end="323" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/config/locales/en.yml">
       <provider selected="true" editor-type-id="text-editor">
         <state line="17" column="13" selection-start="364" selection-end="364" vertical-scroll-proportion="2.72">
@@ -651,9 +630,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped/book.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="63" column="0" selection-start="1858" selection-end="1858" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped.rbw">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="49" selection-start="301" selection-end="323" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Ruby19/lib/ruby/gems/1.9.1/gems/fxruby-1.6.20-x86-mingw32/lib/fox16/aliases.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5494" column="0" selection-start="122824" selection-end="122824" vertical-scroll-proportion="0.33271718">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="415" column="66" selection-start="13908" selection-end="13908" vertical-scroll-proportion="-0.500998">
+        <state line="390" column="31" selection-start="13475" selection-end="13475" vertical-scroll-proportion="-0.61676645">
           <folding />
         </state>
       </provider>

@@ -88,6 +88,8 @@ module Flipped
       :toggle_looping => ['@key[:loops]', 'Ctrl-L'],
     }
 
+    FRAMES_RENDERED_PER_CHORE = 5
+
     IMAGE_BACKGROUND_COLOR = Fox::FXRGB(0, 0, 0)
 
     HELP_TEXT = <<END_TEXT
@@ -139,6 +141,7 @@ END_TEXT
       # Initialise various things.
       @book = Book.new # Currently loaded flip-book.
       @slide_show_timer = nil # Not initially playing.
+      @thumbs_to_add = [] # List of thumbs that need updating in a chore.
 
       select_frame(-1)
     end
@@ -341,7 +344,7 @@ END_TEXT
 
       # Create extra thumb viewers.
       (@thumbs_row.numChildren...@book.size).each do |i|
-        FXVerticalFrame.new(@thumbs_row) do |packer|
+        thumb_frame = FXVerticalFrame.new(@thumbs_row) do |packer|
           image_view = FXImageView.new(packer, :opts => LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
                                         :width => THUMB_HEIGHT, :height => THUMB_HEIGHT)
 
@@ -350,19 +353,48 @@ END_TEXT
 
           label = FXLabel.new(packer, "#{i + 1}", :opts => LAYOUT_FILL_X)
           packer.create
-        end
-        
-        image = FXPNGImage.new(app, @book[i], IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP)
-        image.create
-        image.crop((image.width - image.height) / 2, 0, image.height, image.height)
-        image.scale(THUMB_HEIGHT, THUMB_HEIGHT)
+         end
 
-        @thumbs_row.childAtIndex(i).childAtIndex(0).image = image
+        app.addChore(method :on_thumbs_chore) if @thumbs_to_add.empty?
+        @thumbs_to_add.push thumb_frame
       end
 
       select_frame(selected)
 
       nil
+    end
+
+    def on_thumbs_chore(sender, selector, event)
+      frames_to_render = FRAMES_RENDERED_PER_CHORE
+
+      while (not @thumbs_to_add.empty?) and (frames_to_render > 0)
+        thumb_frame = @thumbs_to_add.shift
+
+        # Horrible fudge for this - I can't see an easy way to find out if the frame still exists!
+        begin
+          exists = thumb_frame.created?
+        rescue Exception
+          exists = false
+        end
+
+        if exists
+          image_view = thumb_frame.childAtIndex(0)
+          index = thumb_frame.childAtIndex(1).text.to_i - 1
+
+          image = FXPNGImage.new(app, @book[index], IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP)
+          image.create
+          image.crop((image.width - image.height) / 2, 0, image.height, image.height)
+          image.scale(THUMB_HEIGHT, THUMB_HEIGHT)
+
+          image_view.image = image
+          
+          frames_to_render -= 1
+        end
+      end
+
+      app.addChore(method :on_thumbs_chore) unless @thumbs_to_add.empty?
+      
+      return 1
     end
 
     def on_cmd_start(sender, selector, event)
