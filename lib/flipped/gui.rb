@@ -1,7 +1,15 @@
-require 'fox16'
-require 'fox16/colors'
+begin
+  # This way works fine on Windows.
+  require 'fox16'
+rescue Exception => ex  
+  # Try it this way, for Ubuntu (and perhaps other Linuxi?).
+  require 'rubygems'
+  gem 'fxruby'
+end
+
 require 'yaml'
 require 'fileutils'
+require 'i18n'
 
 require 'book'
 require 'options_dialog'
@@ -14,6 +22,8 @@ module Flipped
     WINDOW_TITLE = "#{APPLICATION} - The SiD flip-book tool"
 
     SETTINGS_FILE = File.join(INSTALLATION_ROOT, 'config', 'settings.yml')
+    KEYS_FILE = File.join(INSTALLATION_ROOT, 'config', 'keys.yml')
+    
     ICON_DIR = File.join(INSTALLATION_ROOT, 'media', 'icons')
     DEFAULT_TEMPLATE_DIR = File.join(INSTALLATION_ROOT, 'templates')
 
@@ -31,30 +41,50 @@ module Flipped
     NUM_INTERVALS_SEEN = 15
 
     SETTINGS_ATTRIBUTES = {
-      :window_x => [:x, 100],
-      :window_y => [:y, 100],
-      :window_width => [:width, 800],
-      :window_height => [:height, 800],
+      :window_x => ['x', 100],
+      :window_y => ['y', 100],
+      :window_width => ['width', 800],
+      :window_height => ['height', 800],
 
-      :current_flip_book_directory => [:@current_flip_book_directory, Dir.pwd],
-      :template_directory => [:@template_directory, DEFAULT_TEMPLATE_DIR],
-      :slide_show_interval => [:slide_show_interval, 5],
-      :slide_show_loops => [:slide_show_loops, false],
+      :current_flip_book_directory => ['@current_flip_book_directory', Dir.pwd],
+      :template_directory => ['@template_directory', DEFAULT_TEMPLATE_DIR],
+      :slide_show_interval => ['slide_show_interval', 5],
+      :slide_show_loops => ['slide_show_loops', false],
 
-      :navigation_buttons_shown => [:@navigation_buttons_shown, true],
-      :information_bar_shown => [:@information_bar_shown, true],
-      :status_bar_shown => [:@status_bar_shown, true],
-      :thumbnails_shown => [:@thumbnails_shown, true],
+      :navigation_buttons_shown => ['@navigation_buttons_shown', true],
+      :information_bar_shown => ['@information_bar_shown', true],
+      :status_bar_shown => ['@status_bar_shown', true],
+      :thumbnails_shown => ['@thumbnails_shown', true],
     }
 
-    IMAGE_BACKGROUND_COLOR = Fox::FXColor::Black
+    KEYS_ATTRIBUTES = {
+      :open => ['@key[:open]', 'Ctrl-O'],
+      :append => ['@key[:append]', 'Ctrl-A'],
+      :save_as => ['@key[:save_as]', 'Ctrl-S'],
+      :quit => ['@key[:quit]', 'Ctrl-Q'],
+
+      :start => ['@key[:start]', 'Home'],
+      :previous => ['@key[:previous]', 'Left'],
+      :play => ['@key[:play]', 'Space'],
+      :next => ['@key[:next]', 'Right'],
+      :end => ['@key[:end]', 'End'],
+
+      :toggle_nav_buttons_bar => ['@key[:toggle_nav_buttons_bar]', 'Ctrl-B'],
+      :toggle_status_bar => ['@key[:toggle_status_bar]', 'Ctrl-U'],
+      :toggle_thumbs => ['@key[:toggle_thumbs]', 'Ctrl-T'],
+      :toggle_info => ['@key[:toggle_info]', 'Ctrl-I'],
+
+      :loops => ['@key[:loops]', 'Ctrl-L'],
+    }
+
+    IMAGE_BACKGROUND_COLOR = Fox::FXRGB(0, 0, 0)
 
     HELP_TEXT = <<END_TEXT
 #{APPLICATION} is a flip-book tool for SleepIsDeath (http://sleepisdeath.net).
 
 Author: Spooner (Bil Bas)
 
-Allows the user to view and edit flip- books.
+Allows the user to view and edit flip-books.
 
 Uses the FXRuby GUI library #{Fox::FXApp.copyright}
 END_TEXT
@@ -62,10 +92,15 @@ END_TEXT
     def initialize(app)
       super(app, WINDOW_TITLE, :opts => DECOR_ALL)
 
+      I18n.load_path << Dir[File.join(INSTALLATION_ROOT, 'config', 'locales', '*.yml')]
+
+      @key = {}
+      read_config(KEYS_ATTRIBUTES, KEYS_FILE)
+      
       FXToolTip.new(getApp(), TOOLTIP_NORMAL)
       @status_bar = FXStatusBar.new(self, :opts => LAYOUT_FILL_X|LAYOUT_SIDE_BOTTOM)
       
-      create_menu
+      create_menu_bar
       add_hot_keys
 
       @main_frame = FXVerticalFrame.new(self, LAYOUT_FILL_X|LAYOUT_FILL_Y)
@@ -91,7 +126,7 @@ END_TEXT
 
       # Initialise various things.
       @book = Book.new # Currently loaded flipbook.
-      @playing = false # Is mode on?
+      @slide_show_timer = nil # Not initially playing.
 
       select_frame(-1)
       update_menus
@@ -115,99 +150,104 @@ END_TEXT
       @slide_show_loops_target.value = value
     end
 
-    def create_menu
+    def t(key, options = nil)
+      str = I18n.t key, options
+      raise Exception.new("Missing variable in '#{key}': '#{str}'") if str =~ /{{/
+      str
+    end
+
+    def create_menu_bar
       menu_bar = FXMenuBar.new(self, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|FRAME_RAISED)
 
       # File menu
       file_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, "&File", nil, file_menu)
+      FXMenuTitle.new(menu_bar, t('file'), nil, file_menu)
 
-      @open_menu = FXMenuCommand.new(file_menu, "&Open flip-book...\tCtl-O\tOpen flip-book.")
-      @open_menu.connect(SEL_COMMAND, method(:on_cmd_open))
-
-      @append_menu = FXMenuCommand.new(file_menu, "A&ppend flip-book...\tCtl-P\tAppend flip-book to currently loaded flip-book.")
-      @append_menu.connect(SEL_COMMAND, method(:on_cmd_append))
-      
+      create_menu(file_menu, :open)
+      @append_menu = create_menu(file_menu, :append)
       FXMenuSeparator.new(file_menu)
-
-      @save_menu = FXMenuCommand.new(file_menu, "&Save flip-book...\tCtl-S\tSave current flip-book.")
-      @save_menu.connect(SEL_COMMAND, method(:on_cmd_save))
-
+      @save_menu = create_menu(file_menu, :save_as)
       FXMenuSeparator.new(file_menu)
-
-      FXMenuCommand.new(file_menu, "&Quit\tCtl-Q").connect(SEL_COMMAND, method(:on_cmd_quit))
+      create_menu(file_menu, :quit)
 
       # Navigation menu.
       nav_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, "&Navigate", nil, nav_menu)
-      @start_menu = FXMenuCommand.new(nav_menu, "Skip to start\tHome\tSelect the first frame.")
-      @start_menu.connect(SEL_COMMAND, method(:on_cmd_start))
+      FXMenuTitle.new(menu_bar, t('navigate'), nil, nav_menu)
 
-      @previous_menu = FXMenuCommand.new(nav_menu, "Previous frame\tLeft\tSelect the previous frame.")
-      @previous_menu.connect(SEL_COMMAND, method(:on_cmd_previous))
-
-      @play_menu = FXMenuCommand.new(nav_menu, "Play/Pause\tSpace\tPlay/pause in slide-show mode.")
-      @play_menu.connect(SEL_COMMAND, method(:on_cmd_play))
-
-      @next_menu = FXMenuCommand.new(nav_menu, "Next frame\tRight\tSelect the next frame.")
-      @next_menu.connect(SEL_COMMAND, method(:on_cmd_next))
-
-      @end_menu = FXMenuCommand.new(nav_menu, "Skip to end\tEnd\tSelect the last frame.")
-      @end_menu.connect(SEL_COMMAND, method(:on_cmd_end))
+      @start_menu = create_menu(nav_menu, :start)
+      @previous_menu = create_menu(nav_menu, :previous)
+      @play_menu = create_menu(nav_menu, :play)
+      @next_menu = create_menu(nav_menu, :next)
+      @end_menu = create_menu(nav_menu, :end)
 
       # Show menu.
       show_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, "&Show", nil, show_menu)
-      @toggle_navigation_menu = FXMenuCheck.new(show_menu, "&Buttons\tCtrl-B\tHide/show navigation buttons.")
-      @toggle_navigation_menu.connect(SEL_COMMAND, method(:on_toggle_nav_buttons_bar))
-
-      @toggle_info_menu = FXMenuCheck.new(show_menu, "&Information\tCtrl-I\tHide/show information about the book/frame.")
-      @toggle_info_menu.connect(SEL_COMMAND, method(:on_toggle_info))
-
-      @toggle_status_menu = FXMenuCheck.new(show_menu, "Status bar\t\tHide/show status bar.")
-      @toggle_status_menu.connect(SEL_COMMAND, method(:on_toggle_status_bar))
-
-      @toggle_thumbs_menu = FXMenuCheck.new(show_menu, "&Thumbnails\tCtl-T\tHide/show thumbnail strip.")
-      @toggle_thumbs_menu.connect(SEL_COMMAND, method(:on_toggle_thumbs))
+      FXMenuTitle.new(menu_bar, t('show'), nil, show_menu)
+      @toggle_navigation_menu = create_menu(show_menu, :toggle_nav_buttons_bar, FXMenuCheck)
+      @toggle_info_menu = create_menu(show_menu, :toggle_info, FXMenuCheck)
+      @toggle_status_menu = create_menu(show_menu, :toggle_status_bar, FXMenuCheck)
+      @toggle_thumbs_menu = create_menu(show_menu, :toggle_thumbs, FXMenuCheck)
 
       # Options menu.
       options_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, "&Options", nil, options_menu)
+      FXMenuTitle.new(menu_bar, t('options'), nil, options_menu)
       
       @slide_show_loops_target = FXDataTarget.new
       @slide_show_loops_target.connect(SEL_COMMAND) do |sender, selector, event|
         select_frame(@current_frame_index) # Update buttons.
       end
-      FXMenuCheck.new(options_menu, "Slide-show &loops?\tCtrl-L\tLoop in slide-show mode.", :target => @slide_show_loops_target, :selector => FXDataTarget::ID_VALUE)
+      FXMenuCheck.new(options_menu, "#{t('loops.menu')}\t#{@key[:loops]}\t#{t('loops.help', :key => @key[:loops])}.",
+                       :target => @slide_show_loops_target, :selector => FXDataTarget::ID_VALUE)
 
       @slide_show_interval_target = FXDataTarget.new
+      # Ensure that playback changes to use the new interval.
+      @slide_show_interval_target.connect(SEL_COMMAND) do |sender, selector, event|
+        # Toggle the playing state, so we use the new interval immediately.
+        if playing?
+          play(false)
+          play(true)
+        end
+      end
+
       interval_menu = FXMenuPane.new(menu_bar)
       (MIN_INTERVAL..MAX_INTERVAL).each do |i|
         FXMenuRadio.new(interval_menu, "#{i}", :target => @slide_show_interval_target, :selector => FXDataTarget::ID_OPTION + i)
       end
-      FXMenuCascade.new(options_menu, "Slide-show interval", :popupMenu => interval_menu)
+      FXMenuCascade.new(options_menu, "#{t('interval.menu')}\t\t#{t('interval.help')}", :popupMenu => interval_menu)
       
       FXMenuSeparator.new(options_menu)
       
-      @options_menu = FXMenuCommand.new(options_menu, "Settings...\t\tView/set configuration.")
-      @options_menu.connect(SEL_COMMAND) do |sender, selector, event|
-        dialog = OptionsDialog.new(self, :template_directory => @template_directory)
-
-        if dialog.execute == 1
-          @template_directory = dialog.template_directory
-        end
-      end
+      @options_menu = create_menu(options_menu, :settings)
 
       # Help menu
       help_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, "&Help", nil, help_menu, LAYOUT_RIGHT)
+      FXMenuTitle.new(menu_bar, t('help'), nil, help_menu, LAYOUT_RIGHT)
 
-      FXMenuCommand.new(help_menu, "&About #{APPLICATION}...").connect(SEL_COMMAND) do
-        help_dialog = FXMessageBox.new(self, "About #{APPLICATION}",
-          HELP_TEXT, nil,
-          MBOX_OK|DECOR_TITLE|DECOR_BORDER)
-        help_dialog.execute
+      create_menu(help_menu, :about)
+    end
+
+    def on_cmd_about(sender, selector, event)
+      dialog = FXMessageBox.new(self, "About #{APPLICATION}", HELP_TEXT, nil, MBOX_OK|DECOR_TITLE|DECOR_BORDER)
+      dialog.execute
+
+      return 1
+    end
+
+    def on_cmd_settings(sender, selector, event)
+      dialog = OptionsDialog.new(self, :template_directory => @template_directory)
+
+      if dialog.execute == 1
+        @template_directory = dialog.template_directory
       end
+
+      return 1
+    end
+
+    def create_menu(owner, name, type = FXMenuCommand, options = {})
+      text = [t("#{name}.menu"), @key[name], t("#{name}.help", :key => @key[name])].join("\t")
+      menu = type.new(owner, text, options)
+      menu.connect(SEL_COMMAND, method(:"on_cmd_#{name}"))
+      menu
     end
 
     # Convenience function to construct a PNG icon
@@ -224,19 +264,19 @@ END_TEXT
       end
     end
 
-    def on_toggle_thumbs(sender, selector, event)
+    def on_cmd_toggle_thumbs(sender, selector, event)
       show_window(@thumbs_window, sender.checked?)
     end
 
-    def on_toggle_status_bar(sender, selector, event)
+    def on_cmd_toggle_status_bar(sender, selector, event)
       show_window(@status_bar, sender.checked?)
     end
 
-    def on_toggle_nav_buttons_bar(sender, selector, event)     
+    def on_cmd_toggle_nav_buttons_bar(sender, selector, event)
       show_window(@button_bar, sender.checked?)
     end
 
-    def on_toggle_info(sender, selector, event)
+    def on_cmd_toggle_info(sender, selector, event)
       show_window(@info_bar, sender.checked?)
     end
 
@@ -253,33 +293,19 @@ END_TEXT
     def add_button_bar(window)
       @button_bar = FXHorizontalFrame.new(window, :opts => LAYOUT_CENTER_X)
 
-      @start_button = FXButton.new(@button_bar, '', load_icon('start'), NAV_BUTTON_OPTIONS)
-      @start_button.connect(SEL_COMMAND, method(:on_cmd_start))
-      @start_button.tipText = "Skip to first frame (Home)"
-
-      @previous_button = FXButton.new(@button_bar, '', load_icon('previous'), NAV_BUTTON_OPTIONS)
-      @previous_button.connect(SEL_COMMAND, method(:on_cmd_previous))
-      @previous_button.tipText = "Previous frame (Left)"
-
-      @play_button = FXButton.new(@button_bar, '', load_icon('play'), NAV_BUTTON_OPTIONS)
-      @play_button.connect(SEL_COMMAND, method(:on_cmd_play))
-      @play_button.tipText = "Play slide-show (Space)"
-
-      @next_button = FXButton.new(@button_bar, '', load_icon('next'), NAV_BUTTON_OPTIONS)
-      @next_button.connect(SEL_COMMAND, method(:on_cmd_next))
-      @next_button.tipText = "Next frame (Right)"
-
-      @end_button = FXButton.new(@button_bar, '', load_icon('end'), NAV_BUTTON_OPTIONS)
-      @end_button.connect(SEL_COMMAND, method(:on_cmd_end))
-      @end_button.tipText = "Skip to last frame (End)"
+      @start_button = create_button(@button_bar, :start)
+      @previous_button = create_button(@button_bar, :previous)
+      @play_button = create_button(@button_bar, :play)
+      @next_button = create_button(@button_bar, :next)
+      @end_button = create_button(@button_bar, :end)
 
       options_frame = FXVerticalFrame.new(@button_bar)
 
-      FXCheckButton.new(options_frame, "Loops?\tLoop around in slide-show mode (Ctrl-L)\tLoop back to start of flip-book when in slide-show mode (Ctrl-L).",
+      FXCheckButton.new(options_frame, "#{t('loops.label')}\t#{t('loops.tip')}\t#{t('loops.help', :key => @key[:loops])}",
         :target => @slide_show_loops_target, :selector => FXDataTarget::ID_VALUE)
 
       interval_frame = FXHorizontalFrame.new(options_frame)
-      FXLabel.new(interval_frame, "Interval\tDelay between showing frames (secs)\tDelay, in seconds, between showing frames when in slide-show mode.")
+      FXLabel.new(interval_frame, "#{t('interval.label')}\t#{t('interval.tip')}\t#{t('interval.help', :key => @key[:interval])}")
       FXComboBox.new(interval_frame, 3, :target => @slide_show_interval_target, :selector => FXDataTarget::ID_VALUE) do |combo|
         (MIN_INTERVAL..MAX_INTERVAL).each {|i| combo.appendItem(i.to_s, i) }
         combo.editable = false
@@ -287,6 +313,13 @@ END_TEXT
       end
 
       nil
+    end
+
+    def create_button(menu, name)
+      button = FXButton.new(menu, "\t#{t("#{name}.tip")}\t#{t("#{name}.help", :key => @key[name])}", load_icon(name), NAV_BUTTON_OPTIONS)
+      button.connect(SEL_COMMAND, method(:"on_cmd_#{name}"))
+
+      button
     end
 
     def update_menus
@@ -348,39 +381,44 @@ END_TEXT
     end
 
     def on_cmd_play(sender, selector, event)
-      @playing = !@playing
-
-      if @playing
-        create_slide_show_timer
-        @play_button.icon = load_icon 'pause'
-        @play_button.tipText = "Pause slide-show (Space)"
-      else
-        app.removeTimeout(@slide_show_timer)
-        @slide_show_timer = nil
-        @play_button.icon = load_icon 'play'
-        @play_button.tipText = "Play slide-show (Space)"
-      end
+      play(!playing?)
 
       return 1
-    end
-
-    def create_slide_show_timer
-      @slide_show_timer = app.addTimeout(slide_show_interval * 1000, method(:on_slide_show_timer))
     end
 
     def on_slide_show_timer(sender, selector, event)
-      if @playing
+      if playing?
         select_frame((@current_frame_index + 1).modulo(@book.size))
-        if slide_show_loops? or @current_frame_index < @book.size - 1
-          create_slide_show_timer
-        else
-          @playing = false
-          @play_button.icon = load_icon 'play'
-          @play_button.tipText = "Play slide-show (Space)"
-        end        
+        play((@current_frame_index < @book.size - 1) || slide_show_loops?)
+      else
+        play(false)
       end
 
       return 1
+    end
+
+    def playing?
+      not @slide_show_timer.nil?
+    end
+
+    def play(value)
+      if value
+        @slide_show_timer = app.addTimeout(slide_show_interval * 1000, method(:on_slide_show_timer))
+      else
+        app.removeTimeout(@slide_show_timer) if @slide_show_timer
+        @slide_show_timer = nil
+      end
+
+      name = (value ? :pause : :play)
+      
+      @play_menu.text = t("#{name}.menu")
+      @play_menu.helpText = t("#{name}.help", :key => @key[name])
+
+      @play_button.icon = load_icon(name)
+      @play_button.tipText = t("#{name}.tip")
+      @play_button.helpText = t("#{name}.help", :key => @key[name])
+
+      nil
     end
 
     def on_cmd_next(sender, selector, event)
@@ -463,19 +501,19 @@ END_TEXT
 
     def image_context_menu(index, x, y)
       FXMenuPane.new(self) do |menu_pane|
-        FXMenuCommand.new(menu_pane, "Delete frame\t\tDelete frame #{index + 1}." ).connect(SEL_COMMAND) do
+        FXMenuCommand.new(menu_pane, "#{t('delete.menu')}\t\t#{t('delete.help', :index => index + 1)}").connect(SEL_COMMAND) do
           delete_frames(index)
         end
 
-        FXMenuCommand.new(menu_pane, "Delete frame and all frames before it\t\tDelete frames 1 to #{index + 1}." ).connect(SEL_COMMAND) do
+        FXMenuCommand.new(menu_pane, "#{t('delete_before.menu')}\t\t#{t('delete_before.help', :index => index + 1)}").connect(SEL_COMMAND) do
           delete_frames(*(0..index).to_a)
         end
 
-        FXMenuCommand.new(menu_pane, "Delete frame and all frames after it\t\tDelete frames #{index + 1} to #{@book.size}." ).connect(SEL_COMMAND) do
+        FXMenuCommand.new(menu_pane, "#{t('delete_after.menu')}\t\t#{t('delete_after.help', :index => index + 1, :to => @book.size - 1)}").connect(SEL_COMMAND) do
           delete_frames(*(index..(@book.size - 1)).to_a)
         end
 
-        FXMenuCommand.new(menu_pane, "Delete identical frames\t\tDelete all frames showing exactly the same image as this one." ).connect(SEL_COMMAND) do
+        FXMenuCommand.new(menu_pane, "#{t('delete_identical.menu')}\t\t#{t('delete_identical.help', :index => index + 1)}").connect(SEL_COMMAND) do
           frame_data = @book[index]
           identical_frame_indices = []
           @book.frames.each_with_index do |frame, i|
@@ -557,7 +595,7 @@ END_TEXT
     end
 
     # Save this flip-book
-    def on_cmd_save(sender, selector, event)
+    def on_cmd_save_as(sender, selector, event)
       save_dir = FXFileDialog.getSaveFilename(self, "Save flip-book directory", @current_flip_book_directory)
       return if save_dir.empty?
 
@@ -589,7 +627,8 @@ END_TEXT
       @information_bar_shown = @toggle_info_menu.checkState == 1
       @navigation_buttons_shown = @toggle_navigation_menu.checkState == 1
 
-      write_config
+      write_config(SETTINGS_ATTRIBUTES, SETTINGS_FILE)
+      write_config(KEYS_ATTRIBUTES, KEYS_FILE)
 
       # Quit
       app.exit
@@ -597,45 +636,62 @@ END_TEXT
       return 1
     end
 
-    def read_config
-      settings = if File.exists? SETTINGS_FILE
-         File.open(SETTINGS_FILE) { |file| YAML::load(file) }
+    def read_config(attributes, filename)
+      settings = if File.exists? filename
+         File.open(filename) { |file| YAML::load(file) }
       else
         {}
       end
 
-      SETTINGS_ATTRIBUTES.each_pair do |key, data|
+      attributes.each_pair do |key, data|
         name, default_value = data
         value = settings.has_key?(key) ? settings[key] : default_value
-        if name.to_s[0] == '@'
-          instance_variable_set(name, value)
-        else
-          send("#{name}=".to_sym, value)
+        if name[0] == '@'
+          if name =~ /^(.*)\[(.*)\]$/ # @frog[:cheese]
+            name, hash_key = $1, $2
+            if hash_key[0] == ':'
+              hash_key = hash_key[1..-1].to_sym
+            end
+            instance_variable_get(name)[hash_key] = value
+          else  # @frog
+            instance_variable_set(name, value)
+          end
+        else # frog (method) 
+          send("#{name}=", value)
         end
       end
 
       nil
     end
 
-    def write_config
+    def write_config(attributes, filename)
       settings = {}
-      SETTINGS_ATTRIBUTES.each_pair do |key, data|
+      attributes.each_pair do |key, data|
         name, default_value = data
-        settings[key] = if name.to_s[0] == '@'
-          instance_variable_get(name)
+        settings[key] = if name[0] == '@'
+          if name =~ /^(.*)\[(.*)\]$/ # @frog[:cheese]
+            name, hash_key = $1, $2
+            if hash_key[0] == ':'
+              hash_key = hash_key[1..-1].to_sym
+            end
+
+            instance_variable_get(name)[hash_key]
+          else
+            instance_variable_get(name) # @frog
+          end
         else
-          send(name)
+          send(name) # frog (method)
         end
       end
 
-      FileUtils::mkdir_p(File.dirname(SETTINGS_FILE))
-      File.open(SETTINGS_FILE, 'w') { |file| file.puts(settings.to_yaml) }
+      FileUtils::mkdir_p(File.dirname(filename))
+      File.open(filename, 'w') { |file| file.puts(settings.to_yaml) }
 
       nil
     end
 
     def create
-      read_config
+      read_config(SETTINGS_ATTRIBUTES, SETTINGS_FILE)
 
       @toggle_thumbs_menu.checkState = @thumbnails_shown
       show_window(@thumbs_window, @thumbnails_shown)
