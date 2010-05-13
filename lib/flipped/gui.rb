@@ -463,10 +463,25 @@ END_TEXT
     end
 
     def select_frame(index)
+      if index >= 0
+        # Invert the new frame thumbnail.
+        label = @thumbs_row.childAtIndex(index).childAtIndex(1)
+        label.backColor, label.textColor = label.textColor, label.backColor
+
+        # Show the image in the main area.
+        img = FXPNGImage.new(app, @book[index], IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP)
+        img.create
+        @image_viewer.image = img
+      end
+      
+      # Invert the old frame thumbnail.
+      if defined?(@current_frame_index) and (@current_frame_index >= 0) and
+              (@current_frame_index < @thumbs_row.numChildren - 1)
+        label = @thumbs_row.childAtIndex(@current_frame_index).childAtIndex(1)
+        label.backColor, label.textColor = label.textColor, label.backColor
+      end
+      
       @current_frame_index = index
-      img = FXPNGImage.new(app, @book[@current_frame_index], IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP)
-      img.create
-      @image_viewer.image = img
 
       @info_bar.text = if @book.size > 0
         "Frame #{index + 1} of #{@book.size}"
