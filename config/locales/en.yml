@@ -1,6 +1,6 @@
 en:
   # File menu
-  file: File
+  file: "&File"
 
   open:
     menu: Open flip-book...
@@ -19,7 +19,7 @@ en:
     help: Exit the application ({{key}})
 
   # Navigation buttons/menu
-  navigate: Navigate
+  navigate: "&Navigate"
   
   end:
     menu: End
@@ -52,7 +52,7 @@ en:
     help: Skip back to the start of the flip-book ({{key}}).
 
   # Show/hide menu
-  show: Show
+  show: "&Show"
   
   toggle_nav_buttons_bar:
     menu: Buttons
@@ -71,7 +71,7 @@ en:
     help: Hide/show thumbnail strip ({{key}}).
 
   # Options menu
-  options: Options
+  options: "&Options"
 
   loops:
     menu: Slide-show loops?
@@ -90,7 +90,7 @@ en:
     help: Edit aplication settings.
 
   # Help menu
-  help: Help
+  help: "&Help"
 
   about:
     menu: About Flipped...
