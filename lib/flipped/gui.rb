@@ -592,6 +592,11 @@ END_TEXT
         @thumbs_row.childAtIndex(i).childAtIndex(1).text = "#{i + 1}"
       end
 
+      # Clear the main image if all the frames are gone.
+      if @book.size == 0
+        @image_viewer.image = nil
+      end
+
       nil
     end
 
