@@ -12,6 +12,7 @@
         <dependency name="i18n" version="0" bound="GREATER_OR_EQUAL" git="false" />
       </requirement>
       <source manual="true" />
+      <source from="lib/flipped/gui.rb" />
     </requirement>
   </component>
   <component name="NewModuleRootManager">

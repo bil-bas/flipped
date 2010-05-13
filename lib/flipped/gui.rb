@@ -1,10 +1,15 @@
 begin
   # This way works fine on Windows.
   require 'fox16'
-rescue Exception => ex  
-  # Try it this way, for Ubuntu (and perhaps other Linuxi?).
+  require 'i18n'
+rescue Exception => ex
+  # Try it this way, for Ubuntu, which doesn't set RUBYOPT properly (and perhaps other Linuxi?).
   require 'rubygems'
   gem 'fxruby'
+  require 'fox16'
+  require 'fox16/colors'
+  gem 'i18n'
+  require 'i18n'
 end
 
 require 'yaml'

@@ -6,7 +6,7 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/gui.rb" afterPath="$PROJECT_DIR$/lib/flipped/gui.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/lib/flipped/settings_manager.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/flipped.iml" afterPath="$PROJECT_DIR$/.idea/flipped.iml" />
     </list>
     <ignored path="flipped.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -30,10 +30,10 @@
   <component name="FileColors" enabled="true" enabledForTabs="true" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="gui.rb" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="gui.rb" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="22" column="4" selection-start="395" selection-end="395" vertical-scroll-proportion="-14.96">
+            <state line="5" column="67" selection-start="167" selection-end="167" vertical-scroll-proportion="0.16966067">
               <folding />
             </state>
           </provider>
@@ -57,10 +57,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="en.yml" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="en.yml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/config/locales/en.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="17" column="13" selection-start="364" selection-end="364" vertical-scroll-proportion="0.56007755">
+            <state line="17" column="13" selection-start="364" selection-end="364" vertical-scroll-proportion="-11.56">
               <folding />
             </state>
           </provider>
@@ -144,8 +144,8 @@
         <option value="$PROJECT_DIR$/config/keys.yml" />
         <option value="$PROJECT_DIR$/lib/flipped/managed_settings.rb" />
         <option value="$PROJECT_DIR$/lib/flipped/settings_manager.rb" />
-        <option value="$PROJECT_DIR$/lib/flipped/gui.rb" />
         <option value="$PROJECT_DIR$/config/locales/en.yml" />
+        <option value="$PROJECT_DIR$/lib/flipped/gui.rb" />
       </list>
     </option>
   </component>
@@ -531,7 +531,7 @@
     <supportedVersion>125</supportedVersion>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="840" height="1010" extended-state="1" />
+    <frame x="0" y="0" width="840" height="1010" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -646,16 +646,16 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
+    <entry file="file://$PROJECT_DIR$/config/locales/en.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="4" selection-start="395" selection-end="395" vertical-scroll-proportion="-14.96">
+        <state line="17" column="13" selection-start="364" selection-end="364" vertical-scroll-proportion="-11.56">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/config/locales/en.yml">
+    <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="13" selection-start="364" selection-end="364" vertical-scroll-proportion="0.56007755">
+        <state line="5" column="67" selection-start="167" selection-end="167" vertical-scroll-proportion="0.16966067">
           <folding />
         </state>
       </provider>
