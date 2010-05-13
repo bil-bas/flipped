@@ -1,3 +1,4 @@
+# Require Gems
 begin
   # This way works fine on Windows.
   require 'fox16'
@@ -12,10 +13,11 @@ rescue Exception => ex
   require 'i18n'
 end
 
+# Standard libraries.
 require 'yaml'
 require 'fileutils'
-require 'i18n'
 
+# Rest of the app.
 require 'book'
 require 'options_dialog'
 require 'settings_manager'
@@ -56,6 +58,7 @@ module Flipped
 
       :current_flip_book_directory => ['@current_flip_book_directory', Dir.pwd],
       :template_directory => ['@template_directory', DEFAULT_TEMPLATE_DIR],
+      
       :slide_show_interval => ['slide_show_interval', 5],
       :slide_show_loops => ['slide_show_loops', false],
 
@@ -82,7 +85,7 @@ module Flipped
       :toggle_thumbs => ['@key[:toggle_thumbs]', 'Ctrl-T'],
       :toggle_info => ['@key[:toggle_info]', 'Ctrl-I'],
 
-      :loops => ['@key[:loops]', 'Ctrl-L'],
+      :toggle_looping => ['@key[:loops]', 'Ctrl-L'],
     }
 
     IMAGE_BACKGROUND_COLOR = Fox::FXRGB(0, 0, 0)
@@ -95,6 +98,7 @@ Author: Spooner (Bil Bas)
 Allows the user to view and edit flip-books.
 
 Uses the FXRuby GUI library #{Fox::FXApp.copyright}
+#{"Windows executable generated with Ocra" if ENV['OCRA_EXECUTABLE']}
 END_TEXT
 
     def initialize(app)
@@ -133,11 +137,10 @@ END_TEXT
       add_button_bar(@main_frame)
 
       # Initialise various things.
-      @book = Book.new # Currently loaded flipbook.
+      @book = Book.new # Currently loaded flip-book.
       @slide_show_timer = nil # Not initially playing.
 
       select_frame(-1)
-      update_menus
     end
 
   protected
@@ -330,18 +333,6 @@ END_TEXT
       button
     end
 
-    def update_menus
-      if @book.size > 0
-        @append_menu.enable
-        @save_menu.enable
-      else
-        @append_menu.disable
-        @save_menu.disable
-      end
-
-      nil
-    end
-
     def show_frames(selected = 0)
       # Trim off excess thumb viewers.
       (@book.size...@thumbs_row.numChildren).reverse_each do |i|
@@ -368,8 +359,6 @@ END_TEXT
 
         @thumbs_row.childAtIndex(i).childAtIndex(0).image = image
       end
-
-      update_menus
 
       select_frame(selected)
 
@@ -420,11 +409,11 @@ END_TEXT
       name = (value ? :pause : :play)
       
       @play_menu.text = t("#{name}.menu")
-      @play_menu.helpText = t("#{name}.help", :key => @key[name])
+      @play_menu.helpText = t("#{name}.help", :key => @key[:play])
 
       @play_button.icon = load_icon(name)
       @play_button.tipText = t("#{name}.tip")
-      @play_button.helpText = t("#{name}.help", :key => @key[name])
+      @play_button.helpText = t("#{name}.help", :key => @key[:play])
 
       nil
     end
@@ -476,6 +465,14 @@ END_TEXT
         else
           widget.disable
         end
+      end
+
+      if @book.size > 0
+        @append_menu.enable
+        @save_menu.enable
+      else
+        @append_menu.disable
+        @save_menu.disable
       end
 
       nil
@@ -576,6 +573,8 @@ END_TEXT
 
     def log_error(exception)
       puts "#{exception.class}: #{exception}\n#{exception.backtrace.join("\n")}"
+
+      nil
     end
 
     # Open a new flip-book
@@ -594,7 +593,7 @@ END_TEXT
       rescue => ex
         log_error(ex)
         dialog = FXMessageBox.new(self, "Open error!",
-                 "Failed to load flipbook from #{open_dir}, probably because it is not a flip-book directory", nil,
+                 "Failed to load flip-book from #{open_dir}, probably because it is not a flip-book directory", nil,
                  MBOX_OK|DECOR_TITLE|DECOR_BORDER)
         dialog.execute
       end
