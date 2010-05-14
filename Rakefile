@@ -27,7 +27,7 @@ namespace :rdoc do
     rdoc.rdoc_dir = RDOC_DIR
     rdoc.options << '--line-numbers'
     rdoc.rdoc_files.add(%w(*.rdoc lib/**/*.rb))
-    rdoc.title = 'Flipped - The flip-book tool'
+    rdoc.title = 'Flipped - The SiD flip-book tool'
   end
 end
 

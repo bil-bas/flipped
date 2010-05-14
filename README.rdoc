@@ -6,14 +6,10 @@ License:: GPL v3
 
 == Description
 
-A tool/library for the game, {Sleep is Death}[http://sleepisdeath.net], aiming at improving the viewing and enabling
-simple editing of flip-book folders.
+A gui-based tool for the game, {Sleep is Death}[http://sleepisdeath.net], aiming at improving the viewing, and enabling
+simple editing of, flip-book folders.
 
-The Flipped::Book class manages the flipbook data and could be used as a library for making other tools, since it is not
-coupled to the interface in any way.
-
-The Flipped::Gui class, which creates an interface for the Book class, manages the actual tool, allowing the user to
-both more effectively view flipbooks and enabling simple editing of flipbooks.
+* {Wiki}[http://wiki.github.com/Spooner/flipped/] (including screenshots).
 
 == Features
 
@@ -32,18 +28,24 @@ both more effectively view flipbooks and enabling simple editing of flipbooks.
 
 == Installation
 
+Installation has been tested on Windows 7 x64 and Kubuntu 10.04 x64. It should also be possible on OS X, but this has
+not been tested.
+
 === Using binary (Windows only)
 
-Get the latest release from {github}[http://github.com/Spooner/flipped/downloads].
+1. Get the latest release from {github}[http://github.com/Spooner/flipped/downloads].
 
-Unpack the archive somewhere, for example into a directory inside your Sleep Is Death folder.
+2. Unpack the archive somewhere, for example into a directory inside your Sleep Is Death folder.
 
-Click on 'flipped-directory/bin/flipped.exe'.
+3. Click on 'flipped/bin/flipped.exe'.
 
-The executable takes slightly longer to load than the source code, but does not have any dependencies on having the
-correct Ruby interpreter or libraries installed.
+The executable takes a few seconds longer to load than the source code, but does not have any dependencies on having the
+correct Ruby interpreter or libraries installed. It is strongly recommended that you try to run from the sources if you
+can manage it.
 
-=== Using source-code
+=== Using source-code (Any system, including Windows)
+
+This should work on any system, but requires a bit of setup.
 
 ==== 1. Install Ruby
 
@@ -55,46 +57,74 @@ Ruby.
 I recommend installing the 1.9.1 installer, found here: http://rubyinstaller.org/download.html (you require
 "Ruby 1.9.1-p378 (RC2)" or later)
 
-* NOTE: I will build an exe version for windows to save on this effort for windozians.
+===== Linux
 
-===== Mac and *nix
+Install Ruby and the FOX gui toolkit (instructions specifically for Ubuntu/Debian):
 
-I'm sure you can find and install Ruby using the info and links at
-{ruby-lang.org}[http://www.ruby-lang.org/en/downloads/], although it is possible you already have Ruby installed. You
-might need to ensure you are running the application with Ruby v1.9.x though, since it may not work with earlier
-versions.
+  sudo apt-get install ruby1.9.1-full libfox-1.6-dev
 
-Please be aware that Flipped was created on Windows 7, so there may be issues running it in other operating systems.
-I will make every effort to make the code cross-platform, but should I be informed of any problems on other OSs,
-I will prioritise fixing them.
+===== Mac
+
+The application hasn't been tested on a Mac, but should work. Please follow the instructions for
+{installing Ruby on OS X}[http://www.ruby-lang.org/en/downloads/]. You may also need to install the FOX toolkit before
+you can install the {FOX Toolkit}[http://www.fox-toolkit.org/] to allow FXRuby to be installed in the next stage.
+If you manage to run on a Mac and can explain the steps required, or have problems, then please contact the author
+(see email address above).
 
 ==== 2. Install required libraries
 
-After installing Ruby, open a command window and type:
+After installing Ruby, you must install a few required libraries. This will take a minute or two to automatically
+download and install the libraries. Open a command window and type:
+
+===== Windows
 
   gem install fxruby --no-ri --no-rdoc
+  gem install i18n --no-ri --no-rdoc
 
-This will take a minute or so to automatically install the library.
+===== Linux
+
+  sudo gem1.9.1 install fxruby --no-ri --no-rdoc
+  sudo gem1.9.1 install i18n --no-ri --no-rdoc
 
 ==== 3 Get the source code for Flipped
 
-Either:
+Choose one of:
 
-a) Download latest git snapshot {zip/tar package}[http://github.com/Spooner/flipped/archives/master].
+a. Get the latest stable release from {github}[http://github.com/Spooner/flipped/downloads] (recommended).
 
-b) Using git (if you don't know what git is, just get the snapshot, above):
+b. Using git (if you don't know what git is, just get the latest snapshot, below):
 
    git://github.com/Spooner/flipped.git
 
-c) Just use the source code included in the general release along with the binary (see 'Using binary (Windows only)',
-above)
+c. Download latest git snapshot {zip/tar package}[http://github.com/Spooner/flipped/archives/master].
 
 It is probably easiest to put Flipped in a directory inside SleepIsDeath, but it doesn't matter where it is.
  
 ==== 4. Run application
 
+===== Windows
+
 Click on 'flipped-directory/lib/flipped.rbw' to start the application. If it doesn't start up properly, double check
 that you have performed step #2, above.
+
+===== Linux
+
+Just clicking on the application probably won't work unless you've manually set up some aliases and paths. However, this should
+work regardless:
+
+    ruby1.9.1 ./flipped/lib/flipped.rbw
+
+== Classes
+
+Flipped::Book manages the flipbook data and could be used as a library for making other tools, since it is not
+coupled to the interface in any way.
+
+Flipped::Gui, which creates an interface for the Book class, manages the actual tool, allowing the user to
+both more effectively view flipbooks and enabling simple editing of flipbooks.
+
+Flipped::SettingsManager manages settings and key bindings.
+
+Flipped::OptionsDialog is a dialog specifically for setting options that are not set elsewhere.
 
 == License
 
@@ -113,13 +143,11 @@ that you have performed step #2, above.
 
 Full text of the license is provided in COPYING.txt
 
-== Thanks
+== Credits
 
 * Thanks to SiliconEidolon and ubik for testing and feedback.
 * Thanks to {SiDtube}[http://sidtube.com] for providing a marvellous community site for SiD players.
 * Thanks to {github}[http://github.com] for hosting my project.
-
-== Third Party Credits
 
 * {FXRuby}[http://fxruby.org] library by Lyle Johnson, based on the FOX Toolkit by Jeroen van der Zijp.
 * {Ocra}[http://ocra.rubyforge.org/], used to create the standalone Windows executable.
