@@ -70,6 +70,11 @@ module Flipped
       @frames.dup
     end
 
+    # Is the book empty? 
+    def empty?
+      @frames.size == 0
+    end
+
     # Adds another book to the end of this one.
     #
     # === Parameters

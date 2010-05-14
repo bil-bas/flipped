@@ -20,22 +20,31 @@ describe Book do
     FileUtils.mkdir_p @output_dir
 
     @book1 = Book.new(@book1_dir)
-    @book2 = Book.new(@book2_dir)
-    @empty_book = Book.new
+    @book2 = Book.new(@book2_dir)  
 
     @book1_size = 8
     @book2_size = 3
   end
 
   describe "initialize() empty" do
+    before :each do
+       @empty_book = Book.new
+    end
+
     it "should be empty" do
-      @empty_book.size == 0
+      @empty_book.size.should == 0
+      @empty_book.frames.size.should == 0
+      @empty_book.empty?.should be_true
     end
   end
 
   describe "initialize(directory) from flipbook" do
     it "should return the number of frames read in from the flipbook" do
       @book1.size.should == @book1_size
+    end
+
+    it "should be empty" do
+      @book1.empty?.should be_false
     end
   end
 

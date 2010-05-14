@@ -483,10 +483,10 @@ END_TEXT
       
       @current_frame_index = index
 
-      @info_bar.text = if @book.size > 0
-        "Frame #{index + 1} of #{@book.size}"
-      else
+      @info_bar.text = if @book.empty?
         "Empty flip-book"
+      else
+        "Frame #{index + 1} of #{@book.size}"
       end
 
       [@start_button, @start_menu, @previous_button, @previous_menu].each do |widget|
@@ -498,7 +498,7 @@ END_TEXT
       end
 
       # Play is always enabled if we are in looping mode.
-      if index < @book.size - 1 or (slide_show_loops? and @book.size > 0)
+      if (index < @book.size - 1) or (slide_show_loops? and not @book.empty?)
         @play_button.enable
         @play_menu.enable
       else
@@ -514,12 +514,12 @@ END_TEXT
         end
       end
 
-      if @book.size > 0
-        @append_menu.enable
-        @save_menu.enable
-      else
+      if @book.empty?
         @append_menu.disable
         @save_menu.disable
+      else
+        @append_menu.enable
+        @save_menu.enable
       end
 
       nil
@@ -536,6 +536,7 @@ END_TEXT
     # Event when clicking on a thumbnail - context menu.
     def on_thumb_right_click(sender, selector, event)
       index = @thumbs_row.indexOfChild(sender.parent)
+      select_frame(index)
       image_context_menu(index, event.root_x, event.root_y)
       
       return 1
@@ -543,12 +544,11 @@ END_TEXT
 
     # Event when right-clicking on the main image - context menu.
     def on_image_right_click(sender, selector, event)
-      if @book.size > 0
+      unless @book.empty?
         image_context_menu(@current_frame_index, event.root_x, event.root_y)
-        return 1
-      else
-        return 0
-      end      
+      end
+
+      return 1
     end
 
     def image_context_menu(index, x, y)
@@ -593,7 +593,7 @@ END_TEXT
       end
 
       # Clear the main image if all the frames are gone.
-      if @book.size == 0
+      if @book.empty?
         @image_viewer.image = nil
       end
 
