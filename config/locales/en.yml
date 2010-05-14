@@ -51,6 +51,24 @@ en:
     tip: Skip to start
     help: Skip back to the start of the flip-book ({{key}}).
 
+  # Edit menu
+  edit: "&Edit"
+  delete:
+    menu: Delete frame
+    help: Delete currently selected frame ({{key}}).
+
+  delete_before:
+    menu: Delete frame and all frames before it
+    help: Delete frames up to and including the current frame ({{key}}).
+
+  delete_after:
+    menu: Delete frame and all frames after it
+    help: Delete current frame and all frames after it ({{key}}).
+
+  delete_identical:
+    menu: Delete identical frames
+    help: Delete all frames showing exactly the same image as frame ({{key}}).
+
   # Show/hide menu
   show: "&Show"
   
@@ -95,20 +113,3 @@ en:
   about:
     menu: About Flipped...
     help: Information about the application.
-
-  # Context menu
-  delete:
-    menu: Delete frame
-    help: Delete frame {{index}}.
-
-  delete_before:
-    menu: Delete frame and all frames before it
-    help: Delete frames 1 to {{index}}.
-
-  delete_after:
-    menu: Delete frame and all frames after it
-    help: Delete frames {{index}} to {{to}}.
-
-  delete_identical:
-    menu: Delete identical frames
-    help: Delete all frames showing exactly the same image as frame {{index}}.    

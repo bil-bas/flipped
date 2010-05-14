@@ -2,6 +2,7 @@
 begin
   # This way works fine on Windows.
   require 'fox16'
+  require 'fox16/colors'
   require 'i18n'
 rescue Exception => ex
   # Try it this way, for Ubuntu, which doesn't set RUBYOPT properly (and perhaps other Linuxi?).
@@ -86,11 +87,18 @@ module Flipped
       :toggle_info => ['@key[:toggle_info]', 'Ctrl-I'],
 
       :toggle_looping => ['@key[:loops]', 'Ctrl-L'],
+
+      :delete => ['@key[:delete]', 'Ctrl-X'],
+      :delete_before => ['@key[:delete_before]', ''],
+      :delete_after => ['@key[:delete_after]', ''],
+      :delete_identical => ['@key[:delete_identical]', 'Ctrl-Shift-X'],
     }
 
     FRAMES_RENDERED_PER_CHORE = 5
 
-    IMAGE_BACKGROUND_COLOR = Fox::FXRGB(0, 0, 0)
+    IMAGE_BACKGROUND_COLOR = Fox::FXColor::Black
+    THUMB_BACKGROUND_COLOR = Fox::FXColor::White
+    THUMB_SELECTED_COLOR = Fox::FXRGB(50, 50, 50)
 
     HELP_TEXT = <<END_TEXT
 #{APPLICATION} is a flip-book tool for SleepIsDeath (http://sleepisdeath.net).
@@ -125,6 +133,7 @@ END_TEXT
         :opts => LAYOUT_FIX_X|LAYOUT_FILL_Y,
         :padLeft => 0, :padRight => 0, :padTop => 0, :padBottom => 0,
         :width => THUMB_WIDTH)
+      @thumbs_row.backColor = THUMB_BACKGROUND_COLOR
 
       # Place to show current frame image full-size.      
       @image_viewer = FXImageView.new(@main_frame, :opts => LAYOUT_FILL_X|LAYOUT_FILL_Y)
@@ -193,6 +202,15 @@ END_TEXT
       @play_menu = create_menu(nav_menu, :play)
       @next_menu = create_menu(nav_menu, :next)
       @end_menu = create_menu(nav_menu, :end)
+
+      # edit menu
+      edit_menu = FXMenuPane.new(self)
+      FXMenuTitle.new(menu_bar, t('edit'), nil, edit_menu)
+
+      @delete_menu = create_menu(edit_menu, :delete)
+      @delete_before_menu = create_menu(edit_menu, :delete_before)
+      @delete_after_menu = create_menu(edit_menu, :delete_after)
+      @delete_identical_menu = create_menu(edit_menu, :delete_identical)
 
       # Show menu.
       show_menu = FXMenuPane.new(self)
@@ -345,6 +363,7 @@ END_TEXT
       # Create extra thumb viewers.
       (@thumbs_row.numChildren...@book.size).each do |i|
         thumb_frame = FXVerticalFrame.new(@thumbs_row) do |packer|
+          packer.backColor = FXColor::White
           image_view = FXImageView.new(packer, :opts => LAYOUT_FIX_WIDTH|LAYOUT_FIX_HEIGHT,
                                         :width => THUMB_HEIGHT, :height => THUMB_HEIGHT)
 
@@ -352,6 +371,9 @@ END_TEXT
           image_view.connect(SEL_RIGHTBUTTONRELEASE, method(:on_thumb_right_click))
 
           label = FXLabel.new(packer, "#{i + 1}", :opts => LAYOUT_FILL_X)
+          label.backColor = FXColor::White
+          label.connect(SEL_LEFTBUTTONRELEASE, method(:on_thumb_left_click))
+          label.connect(SEL_RIGHTBUTTONRELEASE, method(:on_thumb_right_click))
           packer.create
          end
 
@@ -463,22 +485,27 @@ END_TEXT
     end
 
     def select_frame(index)
+      # Invert the old frame thumbnail.
+      if defined?(@current_frame_index) and (@current_frame_index >= 0) and
+              (@current_frame_index < @thumbs_row.numChildren)
+        
+        packer = @thumbs_row.childAtIndex(@current_frame_index)
+        packer.backColor = THUMB_BACKGROUND_COLOR
+        label = packer.childAtIndex(1)
+        label.backColor, label.textColor = THUMB_BACKGROUND_COLOR, THUMB_SELECTED_COLOR
+      end
+
       if index >= 0
         # Invert the new frame thumbnail.
-        label = @thumbs_row.childAtIndex(index).childAtIndex(1)
-        label.backColor, label.textColor = label.textColor, label.backColor
+        packer = @thumbs_row.childAtIndex(index)
+        packer.backColor = THUMB_SELECTED_COLOR
+        label = packer.childAtIndex(1)
+        label.backColor, label.textColor = THUMB_SELECTED_COLOR, THUMB_BACKGROUND_COLOR
 
         # Show the image in the main area.
         img = FXPNGImage.new(app, @book[index], IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP)
         img.create
         @image_viewer.image = img
-      end
-      
-      # Invert the old frame thumbnail.
-      if defined?(@current_frame_index) and (@current_frame_index >= 0) and
-              (@current_frame_index < @thumbs_row.numChildren - 1)
-        label = @thumbs_row.childAtIndex(@current_frame_index).childAtIndex(1)
-        label.backColor, label.textColor = label.textColor, label.backColor
       end
       
       @current_frame_index = index
@@ -514,14 +541,10 @@ END_TEXT
         end
       end
 
-      if @book.empty?
-        @append_menu.disable
-        @save_menu.disable
-      else
-        @append_menu.enable
-        @save_menu.enable
+      [@append_menu, @save_menu, @delete_menu, @delete_after_menu, @delete_before_menu, @delete_identical_menu].each do |m|
+        if @book.empty? then m.disable else m.enable end
       end
-
+      
       nil
     end
 
@@ -551,28 +574,38 @@ END_TEXT
       return 1
     end
 
+    def on_cmd_delete(sender, selector, event)
+      delete_frames(@current_frame_index)
+      return 1
+    end
+
+    def on_cmd_delete_before(sender, selector, event)
+      delete_frames(*(0..@current_frame_index).to_a)
+      return 1
+    end
+
+    def on_cmd_delete_after(sender, selector, event)
+      delete_frames(*(@current_frame_index..(@book.size - 1)).to_a)
+      return 1
+    end
+
+    def on_cmd_delete_identical(sender, selector, event)
+      frame_data = @book[@current_frame_index]
+      identical_frame_indices = []
+      @book.frames.each_with_index do |frame, i|
+        identical_frame_indices.push(i) if frame == frame_data
+      end
+      delete_frames(*identical_frame_indices)
+
+      return 1
+    end
+
     def image_context_menu(index, x, y)
       FXMenuPane.new(self) do |menu_pane|
-        FXMenuCommand.new(menu_pane, "#{t('delete.menu')}\t\t#{t('delete.help', :index => index + 1)}").connect(SEL_COMMAND) do
-          delete_frames(index)
-        end
-
-        FXMenuCommand.new(menu_pane, "#{t('delete_before.menu')}\t\t#{t('delete_before.help', :index => index + 1)}").connect(SEL_COMMAND) do
-          delete_frames(*(0..index).to_a)
-        end
-
-        FXMenuCommand.new(menu_pane, "#{t('delete_after.menu')}\t\t#{t('delete_after.help', :index => index + 1, :to => @book.size - 1)}").connect(SEL_COMMAND) do
-          delete_frames(*(index..(@book.size - 1)).to_a)
-        end
-
-        FXMenuCommand.new(menu_pane, "#{t('delete_identical.menu')}\t\t#{t('delete_identical.help', :index => index + 1)}").connect(SEL_COMMAND) do
-          frame_data = @book[index]
-          identical_frame_indices = []
-          @book.frames.each_with_index do |frame, i|
-            identical_frame_indices.push(i) if frame == frame_data
-          end
-          delete_frames(*identical_frame_indices)
-        end
+        create_menu(menu_pane, :delete)
+        create_menu(menu_pane, :delete_before)
+        create_menu(menu_pane, :delete_after)
+        create_menu(menu_pane, :delete_identical)
 
         menu_pane.create
         menu_pane.popup(nil, x, y)
@@ -583,7 +616,10 @@ END_TEXT
     end
 
     def delete_frames(*indices)
-      indices.sort.reverse_each {|index| @book.delete_at(index) }
+      indices.sort.reverse_each do |index|
+        @book.delete_at(index)
+        @thumbs_row.removeChild(@thumbs_row.childAtIndex(index))
+      end
 
       show_frames([indices.first, @book.size - 1].min)
 
