@@ -4,7 +4,6 @@
     <list default="true" readonly="true" id="09daf466-3604-48c6-8e7c-329650ff1ae4" name="Default" comment="Removed screenshot from rdoc to make it compatible with github.">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config/locales/en.yml" afterPath="$PROJECT_DIR$/config/locales/en.yml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/gui.rb" afterPath="$PROJECT_DIR$/lib/flipped/gui.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/spec/book_spec.rb" afterPath="$PROJECT_DIR$/spec/book_spec.rb" />
     </list>
@@ -30,10 +29,19 @@
   <component name="FileColors" enabled="true" enabledForTabs="true" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="gui.rb" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="gui.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="100" column="48" selection-start="3215" selection-end="3215" vertical-scroll-proportion="0.746507">
+            <state line="88" column="48" selection-start="2797" selection-end="2797" vertical-scroll-proportion="-9.96">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="base.rb" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://C:/Ruby19/lib/ruby/gems/1.9.1/gems/i18n-0.3.7/lib/i18n/backend/base.rb">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="199" column="0" selection-start="8162" selection-end="8162" vertical-scroll-proportion="0.33269963">
               <folding />
             </state>
           </provider>
@@ -42,7 +50,7 @@
       <file leaf-file-name="settings_manager.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/flipped/settings_manager.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="54" column="7" selection-start="1534" selection-end="1534" vertical-scroll-proportion="0.0">
+            <state line="11" column="70" selection-start="361" selection-end="361" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -51,7 +59,7 @@
       <file leaf-file-name="en.yml" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/config/locales/en.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="69" column="78" selection-start="1611" selection-end="1611" vertical-scroll-proportion="-15.2">
+            <state line="61" column="71" selection-start="1382" selection-end="1382" vertical-scroll-proportion="-12.92">
               <folding />
             </state>
           </provider>
@@ -121,7 +129,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/lib/book.rb" />
         <option value="$PROJECT_DIR$/lib/flipped.rb" />
         <option value="$PROJECT_DIR$/rakefile" />
         <option value="$PROJECT_DIR$/lib/flipped/options_dialog.rb" />
@@ -130,11 +137,12 @@
         <option value="$PROJECT_DIR$/README.rdoc" />
         <option value="$PROJECT_DIR$/Rakefile" />
         <option value="$PROJECT_DIR$/lib/flipped.rbw" />
-        <option value="$PROJECT_DIR$/config/keys.yml" />
         <option value="$PROJECT_DIR$/lib/flipped/managed_settings.rb" />
         <option value="$PROJECT_DIR$/lib/flipped/settings_manager.rb" />
         <option value="$PROJECT_DIR$/lib/flipped/book.rb" />
         <option value="$PROJECT_DIR$/spec/book_spec.rb" />
+        <option value="C:/Ruby19/lib/ruby/gems/1.9.1/gems/i18n-0.3.7/lib/i18n/backend/base.rb" />
+        <option value="$PROJECT_DIR$/config/keys.yml" />
         <option value="$PROJECT_DIR$/config/locales/en.yml" />
         <option value="$PROJECT_DIR$/lib/flipped/gui.rb" />
       </list>
@@ -605,11 +613,6 @@
         <state line="31" column="45" selection-start="1036" selection-end="1037" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://C:/Ruby19/lib/ruby/gems/1.9.1/gems/i18n-0.3.7/lib/i18n/backend/base.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="114" column="0" selection-start="4680" selection-end="4680" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Rakefile">
       <provider selected="true" editor-type-id="text-editor">
         <state line="43" column="65" selection-start="1152" selection-end="1152" vertical-scroll-proportion="0.0" />
@@ -623,13 +626,6 @@
     <entry file="file://$PROJECT_DIR$/README.rdoc">
       <provider selected="true" editor-type-id="text-editor">
         <state line="127" column="2" selection-start="4962" selection-end="4962" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped/settings_manager.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="54" column="7" selection-start="1534" selection-end="1534" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped.rbw">
@@ -667,16 +663,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped/settings_manager.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="70" selection-start="361" selection-end="361" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/config/locales/en.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="69" column="78" selection-start="1611" selection-end="1611" vertical-scroll-proportion="-15.2">
+        <state line="61" column="71" selection-start="1382" selection-end="1382" vertical-scroll-proportion="-12.92">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="100" column="48" selection-start="3215" selection-end="3215" vertical-scroll-proportion="0.746507">
+        <state line="88" column="48" selection-start="2797" selection-end="2797" vertical-scroll-proportion="-9.96">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://C:/Ruby19/lib/ruby/gems/1.9.1/gems/i18n-0.3.7/lib/i18n/backend/base.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="199" column="0" selection-start="8162" selection-end="8162" vertical-scroll-proportion="0.33269963">
           <folding />
         </state>
       </provider>
