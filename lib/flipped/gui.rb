@@ -22,6 +22,7 @@ require 'fileutils'
 require 'book'
 require 'options_dialog'
 require 'settings_manager'
+require 'image_canvas'
 
 module Flipped
   include Fox
@@ -136,7 +137,7 @@ END_TEXT
       @thumbs_row.backColor = THUMB_BACKGROUND_COLOR
 
       # Place to show current frame image full-size.      
-      @image_viewer = FXImageView.new(@main_frame, :opts => LAYOUT_FILL_X|LAYOUT_FILL_Y)
+      @image_viewer = ImageCanvas.new(@main_frame, :opts => LAYOUT_FILL_X|LAYOUT_FILL_Y)
       @image_viewer.backColor = IMAGE_BACKGROUND_COLOR
       @image_viewer.connect(SEL_RIGHTBUTTONRELEASE, method(:on_image_right_click))
       @image_viewer.connect(SEL_LEFTBUTTONRELEASE, method(:on_cmd_next))
@@ -503,9 +504,7 @@ END_TEXT
         label.backColor, label.textColor = THUMB_SELECTED_COLOR, THUMB_BACKGROUND_COLOR
 
         # Show the image in the main area.
-        img = FXPNGImage.new(app, @book[index], IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP)
-        img.create
-        @image_viewer.image = img
+        @image_viewer.data = @book[index]
       end
       
       @current_frame_index = index
@@ -630,7 +629,7 @@ END_TEXT
 
       # Clear the main image if all the frames are gone.
       if @book.empty?
-        @image_viewer.image = nil
+        @image_viewer.data = nil
       end
 
       nil
