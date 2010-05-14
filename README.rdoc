@@ -61,7 +61,7 @@ I recommend installing the 1.9.1 installer, found here: http://rubyinstaller.org
 
 Install Ruby and the FOX gui toolkit (instructions specifically for Ubuntu/Debian):
 
-  sudo apt-get install ruby1.9.1-full libfox-1.6-dev
+    sudo apt-get install ruby1.9.1-full libfox-1.6-dev
 
 ===== Mac
 
@@ -73,18 +73,18 @@ If you manage to run on a Mac and can explain the steps required, or have proble
 
 ==== 2. Install required libraries
 
-After installing Ruby, you must install a few required libraries. This will take a minute or two to automatically
-download and install the libraries. Open a command window and type:
+After installing Ruby, you must install a few required libraries (specifically FXRuby and i18n).
+This will take a minute or two to automatically download and install the libraries.
 
 ===== Windows
 
-  gem install fxruby --no-ri --no-rdoc
-  gem install i18n --no-ri --no-rdoc
+Click on 'flipped/install_libraries.bat'.
 
 ===== Linux
 
-  sudo gem1.9.1 install fxruby --no-ri --no-rdoc
-  sudo gem1.9.1 install i18n --no-ri --no-rdoc
+Open a command window and type:
+
+    sudo gem1.9.1 install fxruby i18n --no-ri --no-rdoc
 
 ==== 3 Get the source code for Flipped
 
@@ -94,7 +94,7 @@ a. Get the latest stable release from {github}[http://github.com/Spooner/flipped
 
 b. Using git (if you don't know what git is, just get the latest snapshot, below):
 
-   git://github.com/Spooner/flipped.git
+       git://github.com/Spooner/flipped.git
 
 c. Download latest git snapshot {zip/tar package}[http://github.com/Spooner/flipped/archives/master].
 
@@ -104,15 +104,15 @@ It is probably easiest to put Flipped in a directory inside SleepIsDeath, but it
 
 ===== Windows
 
-Click on 'flipped-directory/lib/flipped.rbw' to start the application. If it doesn't start up properly, double check
-that you have performed step #2, above.
+Click on 'flipped/lib/flipped.rbw' to start the application. If it doesn't start up properly, double check
+that you have performed step #1 and #2, above.
 
 ===== Linux
 
-Just clicking on the application probably won't work unless you've manually set up some aliases and paths. However, this should
-work regardless:
+Just clicking on the application probably won't work unless you've manually set up some aliases and paths. However,
+this should work regardless:
 
-    ruby1.9.1 ./flipped/lib/flipped.rbw
+  ruby1.9.1 ./flipped/lib/flipped.rbw
 
 == Classes
 
