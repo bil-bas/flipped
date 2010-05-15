@@ -3,10 +3,11 @@
   <component name="ChangeListManager" verified="true">
     <list default="true" readonly="true" id="09daf466-3604-48c6-8e7c-329650ff1ae4" name="Default" comment="Removed screenshot from rdoc to make it compatible with github.">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/install_libraries.sh" afterPath="$PROJECT_DIR$/install_libraries.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/image_canvas.rb" afterPath="$PROJECT_DIR$/lib/flipped/image_canvas.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/gui.rb" afterPath="$PROJECT_DIR$/lib/flipped/gui.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/package.rb" afterPath="$PROJECT_DIR$/build/package.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/install_ruby.sh" afterPath="$PROJECT_DIR$/install_ruby.sh" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped.rbw" afterPath="$PROJECT_DIR$/lib/flipped.rbw" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.rdoc" afterPath="$PROJECT_DIR$/README.rdoc" />
     </list>
     <ignored path="flipped.iws" />
@@ -31,10 +32,10 @@
   <component name="FileColors" enabled="true" enabledForTabs="true" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="gui.rb" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="gui.rb" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="408" column="89" selection-start="14315" selection-end="14390" vertical-scroll-proportion="0.0">
+            <state line="406" column="62" selection-start="14248" selection-end="14258" vertical-scroll-proportion="0.7285429">
               <folding />
             </state>
           </provider>
@@ -43,7 +44,7 @@
       <file leaf-file-name="image_canvas.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/flipped/image_canvas.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="43" column="47" selection-start="1004" selection-end="1043" vertical-scroll-proportion="0.0">
+            <state line="34" column="40" selection-start="938" selection-end="938" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -67,10 +68,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="package.rb" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="package.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/build/package.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="32" column="26" selection-start="600" selection-end="600" vertical-scroll-proportion="0.59889096">
+            <state line="32" column="26" selection-start="600" selection-end="600" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -79,7 +80,7 @@
       <file leaf-file-name="flipped.rbw" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/flipped.rbw">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="10" column="25" selection-start="426" selection-end="426" vertical-scroll-proportion="0.0">
+            <state line="31" column="0" selection-start="1018" selection-end="1018" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -138,15 +139,15 @@
         <option value="C:/Ruby19/lib/ruby/gems/1.9.1/gems/i18n-0.3.7/lib/i18n/backend/base.rb" />
         <option value="$PROJECT_DIR$/config/keys.yml" />
         <option value="$PROJECT_DIR$/config/locales/en.yml" />
-        <option value="$PROJECT_DIR$/lib/flipped/gui.rb" />
-        <option value="$PROJECT_DIR$/lib/flipped/image_canvas.rb" />
         <option value="$PROJECT_DIR$/install_libraries.bat" />
         <option value="$PROJECT_DIR$/Rakefile" />
         <option value="$PROJECT_DIR$/install_libraries.sh" />
         <option value="$PROJECT_DIR$/install_ruby.sh" />
         <option value="$PROJECT_DIR$/README.rdoc" />
-        <option value="$PROJECT_DIR$/lib/flipped.rbw" />
         <option value="$PROJECT_DIR$/build/package.rb" />
+        <option value="$PROJECT_DIR$/lib/flipped.rbw" />
+        <option value="$PROJECT_DIR$/lib/flipped/image_canvas.rb" />
+        <option value="$PROJECT_DIR$/lib/flipped/gui.rb" />
       </list>
     </option>
   </component>
@@ -254,6 +255,20 @@
               <option name="myItemId" value="config" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="flipped" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="flipped" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="config" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="locales" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
@@ -343,7 +358,7 @@
     <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
   </component>
-  <component name="RunManager" selected="Rake.build:release">
+  <component name="RunManager" selected="Ruby.flipped">
     <configuration default="false" name="book_spec" type="RSpecRunConfigurationType" factoryName="RSpec" temporary="true">
       <predefined_log_file id="RUBY_RSPEC" enabled="true" />
       <module name="flipped" />
@@ -640,23 +655,9 @@
         <state line="35" column="41" selection-start="970" selection-end="970" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped/image_canvas.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="43" column="47" selection-start="1004" selection-end="1043" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Rakefile">
       <provider selected="true" editor-type-id="text-editor">
         <state line="6" column="28" selection-start="141" selection-end="141" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="408" column="89" selection-start="14315" selection-end="14390" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -689,16 +690,30 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped.rbw">
+    <entry file="file://$PROJECT_DIR$/build/package.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="25" selection-start="426" selection-end="426" vertical-scroll-proportion="0.0">
+        <state line="32" column="26" selection-start="600" selection-end="600" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build/package.rb">
+    <entry file="file://$PROJECT_DIR$/lib/flipped.rbw">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="32" column="26" selection-start="600" selection-end="600" vertical-scroll-proportion="0.59889096">
+        <state line="31" column="0" selection-start="1018" selection-end="1018" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped/image_canvas.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="34" column="40" selection-start="938" selection-end="938" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="406" column="62" selection-start="14248" selection-end="14258" vertical-scroll-proportion="0.7285429">
           <folding />
         </state>
       </provider>

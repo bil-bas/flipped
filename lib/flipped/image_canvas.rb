@@ -32,7 +32,7 @@ module Flipped
 
         # Re-size to fit in the window.
         size = [height, width].min
-        @back_buffer.scale(size, size, 1)
+        @back_buffer.scale(size, size, 0) # Low quality, pixelised.
       end
 
       nil

@@ -407,7 +407,7 @@ END_TEXT
           image = FXPNGImage.new(app, @book[index], IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP)
           image.create
           image.crop((image.width - image.height) / 2, 0, image.height, image.height)
-          image.scale(THUMB_HEIGHT, THUMB_HEIGHT)
+          image.scale(THUMB_HEIGHT, THUMB_HEIGHT, 0) # Low quality, pixelised.
 
           image_view.image = image
           
