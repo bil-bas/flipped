@@ -4,9 +4,7 @@ require 'rake/clean'
 require 'fileutils'
 include FileUtils
 
-RELEASE_VERSION = '0.1.0'
-
-RUBYSCRIPT2EXE = File.join('build', 'rubyscript2exe.rb')
+RELEASE_VERSION = '0.2.0RC1'
 
 RDOC_DIR = File.join('doc', 'rdoc')
 BINARY_DIR = 'bin'
