@@ -1,4 +1,4 @@
-#!/usr/bin/sh
+#!/bin/sh
 
 echo Installing required libraries. This could take a minute or two...
 

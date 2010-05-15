@@ -2,12 +2,11 @@
 <project version="4">
   <component name="ChangeListManager" verified="true">
     <list default="true" readonly="true" id="09daf466-3604-48c6-8e7c-329650ff1ae4" name="Default" comment="Removed screenshot from rdoc to make it compatible with github.">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/install_ruby.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/install_libraries.sh" afterPath="$PROJECT_DIR$/install_libraries.sh" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Rakefile" afterPath="$PROJECT_DIR$/Rakefile" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/build/package.rb" afterPath="$PROJECT_DIR$/build/package.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/flipped.iml" afterPath="$PROJECT_DIR$/.idea/flipped.iml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/install_libraries.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/install_ruby.sh" afterPath="$PROJECT_DIR$/install_ruby.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped.rbw" afterPath="$PROJECT_DIR$/lib/flipped.rbw" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/README.rdoc" afterPath="$PROJECT_DIR$/README.rdoc" />
     </list>
     <ignored path="flipped.iws" />
@@ -77,19 +76,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="install_libraries.sh" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/install_libraries.sh">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="flipped.rbw" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="flipped.rbw" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/flipped.rbw">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="18" column="0" selection-start="597" selection-end="597" vertical-scroll-proportion="0.0">
+            <state line="0" column="0" selection-start="0" selection-end="23" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -107,16 +97,25 @@
       <file leaf-file-name="README.rdoc" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/README.rdoc">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="67" column="34" selection-start="2397" selection-end="2397" vertical-scroll-proportion="0.0">
+            <state line="87" column="61" selection-start="3313" selection-end="3313" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="install_libraries.bat" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/install_libraries.bat">
+      <file leaf-file-name="install_libraries.sh" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/install_libraries.sh">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1" column="0" selection-start="10" selection-end="10" vertical-scroll-proportion="0.0">
+            <state line="0" column="3" selection-start="3" selection-end="3" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="install_ruby.sh" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/install_ruby.sh">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="3" selection-start="3" selection-end="3" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -132,9 +131,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/lib/flipped/options_dialog.rb" />
-        <option value="$PROJECT_DIR$/lib/init.rb" />
-        <option value="$PROJECT_DIR$/lib/flipped.rbw" />
         <option value="$PROJECT_DIR$/lib/flipped/managed_settings.rb" />
         <option value="$PROJECT_DIR$/lib/flipped/settings_manager.rb" />
         <option value="$PROJECT_DIR$/lib/flipped/book.rb" />
@@ -145,9 +141,12 @@
         <option value="$PROJECT_DIR$/lib/flipped/gui.rb" />
         <option value="$PROJECT_DIR$/lib/flipped/image_canvas.rb" />
         <option value="$PROJECT_DIR$/install_libraries.bat" />
-        <option value="$PROJECT_DIR$/README.rdoc" />
         <option value="$PROJECT_DIR$/Rakefile" />
         <option value="$PROJECT_DIR$/build/package.rb" />
+        <option value="$PROJECT_DIR$/install_libraries.sh" />
+        <option value="$PROJECT_DIR$/install_ruby.sh" />
+        <option value="$PROJECT_DIR$/README.rdoc" />
+        <option value="$PROJECT_DIR$/lib/flipped.rbw" />
       </list>
     </option>
   </component>
@@ -344,7 +343,7 @@
     <property name="options.searchVisible" value="true" />
     <property name="options.splitter.details.proportions" value="0.2" />
   </component>
-  <component name="RunManager" selected="Rake.compile:flipped">
+  <component name="RunManager" selected="Rake.build:release">
     <configuration default="false" name="book_spec" type="RSpecRunConfigurationType" factoryName="RSpec" temporary="true">
       <predefined_log_file id="RUBY_RSPEC" enabled="true" />
       <module name="flipped" />
@@ -606,11 +605,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/lib/flipped/options_dialog.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="31" column="45" selection-start="1036" selection-end="1037" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://C:/Ruby19/lib/ruby/gems/1.9.1/gems/fxruby-1.6.20-x86-mingw32/lib/fox16/aliases.rb">
       <provider selected="true" editor-type-id="text-editor">
         <state line="5494" column="0" selection-start="122824" selection-end="122824" vertical-scroll-proportion="0.33271718" />
@@ -641,31 +635,14 @@
         <state line="72" column="24" selection-start="2040" selection-end="2040" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped.rbw">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="0" selection-start="597" selection-end="597" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/spec/book_spec.rb">
       <provider selected="true" editor-type-id="text-editor">
         <state line="35" column="41" selection-start="970" selection-end="970" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/install_libraries.bat">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="10" selection-end="10" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped/image_canvas.rb">
       <provider selected="true" editor-type-id="text-editor">
         <state line="43" column="47" selection-start="1004" selection-end="1043" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/README.rdoc">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="67" column="34" selection-start="2397" selection-end="2397" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -691,9 +668,37 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/install_libraries.bat">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1" column="0" selection-start="10" selection-end="10" vertical-scroll-proportion="0.03142329">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/install_libraries.sh">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+        <state line="0" column="3" selection-start="3" selection-end="3" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/install_ruby.sh">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="3" selection-start="3" selection-end="3" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.rdoc">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="87" column="61" selection-start="3313" selection-end="3313" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped.rbw">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="23" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>

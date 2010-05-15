@@ -1,4 +1,4 @@
-#!/usr/bin/env ruby -w
+#!/usr/bin/ruby1.9.1 -w
 
 begin
   # Root of executing script files (where .rbw is _actually_ running from).

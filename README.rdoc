@@ -60,11 +60,7 @@ I recommend installing the 1.9.1 installer, found here: http://rubyinstaller.org
 
 ===== Linux
 
-Install Ruby and the FOX gui toolkit (instructions specifically for Ubuntu/Debian):
-
-    sudo apt-get install ruby1.9.1-full libfox-1.6-dev
-
-(or just run 'flipped/install_ruby.sh')
+Install Ruby and the FOX gui toolkit (specifically for Ubuntu/Debian), by running 'flipped/install_ruby.sh'.
 
 ===== Mac
 
@@ -85,11 +81,8 @@ Click on 'flipped/install_libraries.bat'.
 
 ===== Linux
 
-Open a command window and type:
-
-    sudo gem1.9.1 install fxruby i18n --no-ri --no-rdoc
-
-(or just run 'flipped/install_libraries.sh')
+This will require compilation of the FXRuby gem (so you'll need gcc installed and it will take a while)).
+Execute 'flipped/install_libraries.sh' (specific to Ubuntu/Debian).
 
 ==== 3 Get the source code for Flipped
 
