@@ -40,8 +40,9 @@ not been tested.
 3. Click on 'flipped/bin/flipped.exe'.
 
 The executable takes a few seconds longer to load than the source code, but does not have any dependencies on having the
-correct Ruby interpreter or libraries installed. It is strongly recommended that you try to run from the sources if you
-can manage it.
+correct Ruby interpreter or libraries installed. There is also a bug in that the application crashes after it has exited
+(but other that throwing up an error window, it works completely correctly). For these reasons, it is strongly recommended
+that you try to run from the sources if you can manage it.
 
 === Using source-code (Any system, including Windows)
 
@@ -62,6 +63,8 @@ I recommend installing the 1.9.1 installer, found here: http://rubyinstaller.org
 Install Ruby and the FOX gui toolkit (instructions specifically for Ubuntu/Debian):
 
     sudo apt-get install ruby1.9.1-full libfox-1.6-dev
+
+(or just run 'flipped/install_ruby.sh')
 
 ===== Mac
 
@@ -85,6 +88,8 @@ Click on 'flipped/install_libraries.bat'.
 Open a command window and type:
 
     sudo gem1.9.1 install fxruby i18n --no-ri --no-rdoc
+
+(or just run 'flipped/install_libraries.sh')
 
 ==== 3 Get the source code for Flipped
 
