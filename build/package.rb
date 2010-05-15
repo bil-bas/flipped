@@ -35,6 +35,10 @@ namespace :build do
     FOLDERS.each do |dir|	
       cp_r "#{dir}", RELEASE_DIR	
     end
+
+    mkdir_p File.join(RELEASE_DIR, 'config')
+    cp_r File.join('config', 'locales'), File.join(RELEASE_DIR, 'config')
+
 	
     FILES.each do |file|	
       cp "#{file}", RELEASE_DIR	
