@@ -20,7 +20,10 @@ namespace :build do
   [	
     'COPYING.txt',	
     'Rakefile',	
-    'README.rdoc',	
+    'README.rdoc',
+    'install_libraries.bat',
+    'install_libraries.sh',
+    'install_ruby.sh',	
   ]	
   
   desc 'Package files'	
