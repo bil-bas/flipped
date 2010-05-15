@@ -6,6 +6,13 @@ include FileUtils
 
 RELEASE_VERSION = '0.2.0RC1'
 
+OCRA = case RUBY_VERSION
+  when /^1\.9\./
+    'ocra' # On the PATH, so no need for full path.
+  when /^1\.8\./
+    'ruby C:\Ruby\lib\ruby\gems\1.8\gems\ocra-1.1.3\bin\ocra'
+end
+
 RDOC_DIR = File.join('doc', 'rdoc')
 BINARY_DIR = 'bin'
 
@@ -41,7 +48,8 @@ namespace :compile do
   
   prerequisites = FileList["lib/#{APP}.rb*", "lib/#{APP}/**/*.rb"]
   file APP_EXE => prerequisites do |t|
-    system "ocra #{prerequisites.join(' ')}"
+    puts "Creating exe using #{OCRA}"
+    system "#{OCRA} #{prerequisites.join(' ')}"
     mkdir_p BINARY_DIR
     move "lib/#{APP}.exe", APP_EXE
     puts 'Done.'

@@ -176,7 +176,7 @@ END_TEXT
 
     def t(key, options = nil)
       str = I18n.t key, options
-      raise Exception.new("Missing variable in '#{key}': '#{str}'") if str =~ /{{/
+      raise Exception.new("Missing variable in '#{key}': '#{str}'") if str =~ /\{\{/
       str
     end
 

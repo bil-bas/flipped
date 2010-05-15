@@ -10,10 +10,10 @@ module Flipped
       attributes.each_pair do |key, data|
         name, default_value = data
         value = settings.has_key?(key) ? settings[key] : default_value
-        if name[0] == '@'
+        if name[0..0] == '@'
           if name =~ /^(.*)\[(.*)\]$/ # @frog[:cheese]
             name, hash_key = $1, $2
-            if hash_key[0] == ':'
+            if hash_key[0..0] == ':'
               hash_key = hash_key[1..-1].to_sym
             end
             instance_variable_get(name)[hash_key] = value
@@ -32,10 +32,10 @@ module Flipped
       settings = {}
       attributes.each_pair do |key, data|
         name, default_value = data
-        settings[key] = if name[0] == '@'
+        settings[key] = if name[0..0] == '@'
           if name =~ /^(.*)\[(.*)\]$/ # @frog[:cheese]
             name, hash_key = $1, $2
-            if hash_key[0] == ':'
+            if hash_key[0..0] == ':'
               hash_key = hash_key[1..-1].to_sym
             end
 
