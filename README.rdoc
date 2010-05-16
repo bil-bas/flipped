@@ -72,7 +72,7 @@ If you manage to run on a Mac and can explain the steps required, or have proble
 
 ==== 2. Install required libraries
 
-After installing Ruby, you must install a few required libraries (specifically FXRuby and i18n).
+After installing Ruby, you must install a few required libraries (specifically FXRuby and r18n).
 This will take a minute or two to automatically download and install the libraries.
 
 ===== Windows

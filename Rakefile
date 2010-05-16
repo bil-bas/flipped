@@ -90,7 +90,7 @@ namespace :install do
 		system 'gem update --system'
 		puts
 		
-		system 'gem install fxruby i18n --no-ri --no-rdoc'		
+		system 'gem install fxruby r18n-desktop --no-ri --no-rdoc'		
 		puts
 		
 		puts 'Library installation complete.'
