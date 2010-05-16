@@ -6,7 +6,7 @@ include FileUtils
 
 RELEASE_VERSION = '0.2.0RC1'
 
-OCRA = 'ocra'
+OCRA = 'ruby build/ocrasa.rb'
 
 RDOC_DIR = File.join('doc', 'rdoc')
 BINARY_DIR = 'bin'
@@ -44,7 +44,7 @@ namespace :compile do
   prerequisites = FileList["lib/#{APP}.rb*", "lib/#{APP}/**/*.rb"]
   file APP_EXE => prerequisites do |t|
     puts "Creating exe using #{OCRA}"
-    system "#{OCRA} #{prerequisites.join(' ')}"
+    system "#{OCRA} #{prerequisites.join(' ')} --console"
     mkdir_p BINARY_DIR
     move "lib/#{APP}.exe", APP_EXE
     puts 'Done.'
