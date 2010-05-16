@@ -40,9 +40,7 @@ not been tested.
 3. Click on 'flipped/bin/flipped.exe'.
 
 The executable takes a few seconds longer to load than the source code, but does not have any dependencies on having the
-correct Ruby interpreter or libraries installed. There is also a bug in that the application crashes after it has exited
-(but other that throwing up an error window, it works completely correctly). For these reasons, it is strongly recommended
-that you try to run from the sources if you can manage it.
+a Ruby interpreter or libraries installed.
 
 === Using source-code (Any system, including Windows)
 
@@ -50,25 +48,26 @@ This should work on any system, but requires a bit of setup.
 
 ==== 1. Install Ruby
 
-The application was created and tested using Ruby 1.9.1. It is only guaranteed to work with that or a later version of
-Ruby.
+The application was created and tested using Ruby 1.8.7. It is only guaranteed to work with that version of
+Ruby, but should also operate correctly with Ruby 1.8.6.
 
 ===== Windows
 
-I recommend installing the 1.9.1 installer, found here: http://rubyinstaller.org/download.html (you require
-"Ruby 1.9.1-p378 (RC2)" or later)
+Install using the 1.8.7 Windows installer (http://rubyinstaller.org/download.html) (you require
+"Ruby 1.8.7-p249 (RC2)")
 
 ===== Linux
 
-Install Ruby and the FOX gui toolkit (specifically for Ubuntu/Debian), by running 'flipped/install_ruby.sh'.
+Install Ruby 1.8.7 and the FOX gui toolkit (specifically for Ubuntu/Debian), by running 'flipped/install_ruby.sh').
 
 ===== Mac
 
-The application hasn't been tested on a Mac, but should work. Please follow the instructions for
-{installing Ruby on OS X}[http://www.ruby-lang.org/en/downloads/]. You may also need to install the FOX toolkit before
-you can install the {FOX Toolkit}[http://www.fox-toolkit.org/] to allow FXRuby to be installed in the next stage.
-If you manage to run on a Mac and can explain the steps required, or have problems, then please contact the author
-(see email address above).
+Install Ruby 1.8.7 using the OS X 10.5 (Leopard) installer (http://rubyosx.rubyforge.org/). If you are using OS X 10.3
+(Tiger) or 10.4 (Panther) you _should_ be fine using the Ruby 1.8.6 installers.
+
+Apparently, OS X now comes ready with Ruby 1.8.7 (or 1.8.6). You can check if it is already installed by typing:
+
+  ruby --version
 
 ==== 2. Install required libraries
 
@@ -110,7 +109,7 @@ that you have performed step #1 and #2, above.
 Just clicking on the application probably won't work unless you've manually set up some aliases and paths. However,
 this should work regardless:
 
-  ruby1.9.1 ./flipped/lib/flipped.rbw
+  ruby1.8 ./flipped/lib/flipped.rbw
 
 == Classes
 
