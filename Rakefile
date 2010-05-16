@@ -82,4 +82,22 @@ namespace :build do
   task :release => :compress
 end
 
+namespace :install do
+	task :libraries_windows do
+	    puts 'Installing/updating required libraries. This could take a minute or two...'
+		puts
+		
+		system 'gem update --system'
+		puts
+		
+		system 'gem install fxruby i18n --no-ri --no-rdoc'		
+		puts
+		
+		puts 'Library installation complete.'
+		puts
+		
+		system 'pause'
+	end
+end
+
 require 'build/package'
