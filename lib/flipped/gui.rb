@@ -423,7 +423,7 @@ module Flipped
     end
 
     def on_slide_show_timer(sender, selector, event)
-      if playing?
+      if playing? and not @book.empty?
         select_frame((@current_frame_index + 1).modulo(@book.size))
         play((@current_frame_index < @book.size - 1) || slide_show_loops?)
       else
