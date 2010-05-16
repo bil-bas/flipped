@@ -1,4 +1,5 @@
 #!/usr/bin/ruby1.9.1 -w
+# encoding: utf-8
 
 begin
   # Root of executing script files (where .rbw is _actually_ running from).
