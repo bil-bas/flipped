@@ -64,6 +64,8 @@ module Flipped
       :slide_show_interval => ['slide_show_interval', 5],
       :slide_show_loops => ['slide_show_loops', false],
 
+      :mouse_wheel_inverted => ['@mouse_wheel_inverted', false],
+
       :navigation_buttons_shown => ['@navigation_buttons_shown', true],
       :information_bar_shown => ['@information_bar_shown', true],
       :status_bar_shown => ['@status_bar_shown', true],
@@ -124,7 +126,6 @@ END_TEXT
       @status_bar = FXStatusBar.new(self, :opts => LAYOUT_FILL_X|LAYOUT_SIDE_BOTTOM)
       
       create_menu_bar
-      add_hot_keys
 
       @main_frame = FXVerticalFrame.new(self, LAYOUT_FILL_X|LAYOUT_FILL_Y)
 
@@ -143,9 +144,9 @@ END_TEXT
       @image_viewer.connect(SEL_LEFTBUTTONRELEASE, method(:on_cmd_next))
 
       # Show info about the book and current frame.
-      @info_bar = FXLabel.new(@main_frame, 'No flip-book loaded', nil, LAYOUT_FILL_X,
-         :padLeft => 4, :padRight => 4, :padTop => 4, :padBottom => 4)
-
+      @info_bar = FXHorizontalFrame.new(@main_frame, :opts => LAYOUT_FILL_X, :padLeft => 4, :padRight => 4, :padTop => 4, :padBottom => 4)
+      @frame_label = FXLabel.new(@info_bar, '', nil, :opts => LAYOUT_CENTER_X)
+      @size_label = FXLabel.new(@info_bar, '', :opts => LAYOUT_RIGHT|LAYOUT_FIX_WIDTH|JUSTIFY_RIGHT, :width => 100)
       add_button_bar(@main_frame)
 
       # Initialise various things.
@@ -154,6 +155,8 @@ END_TEXT
       @thumbs_to_add = [] # List of thumbs that need updating in a chore.
 
       select_frame(-1)
+
+      add_hot_keys
     end
 
   protected
@@ -509,11 +512,16 @@ END_TEXT
       
       @current_frame_index = index
 
-      @info_bar.text = if @book.empty?
-        "Empty flip-book"
+      if @book.empty?
+        title = WINDOW_TITLE
+        @size_label.text = ''
+        @frame_label.text = 'Empty flip-book'
       else
-        "Frame #{index + 1} of #{@book.size}"
+        title = "#{WINDOW_TITLE} (#{index + 1} of #{@book.size})"
+        @size_label.text = "#{@image_viewer.image_width}x#{@image_viewer.image_height}"
+        @frame_label.text = "Frame #{index + 1} of #{@book.size}"
       end
+
 
       [@start_button, @start_menu, @previous_button, @previous_menu].each do |widget|
         if index > 0   
@@ -751,10 +759,20 @@ END_TEXT
       return 1
     end
 
+    def on_mouse_wheel(sender, selector, event)
+      if event.code > 0 or (event.code < 0 and @mouse_wheel_inverted)
+        on_cmd_previous(sender, selector, event)
+      else
+        on_cmd_next(sender, selector, event)
+      end
+    end
+
     def add_hot_keys
       # Not a hotkey, but ensure that all attempts to quit are caught so
       # we can save settings.
       connect(SEL_CLOSE, method(:on_cmd_quit))
+
+      @image_viewer.connect(SEL_MOUSEWHEEL, method(:on_mouse_wheel))
       
       accelTable.addAccel(fxparseAccel("Alt+F4"), self, FXSEL(SEL_CLOSE, 0))
     end

@@ -6,12 +6,7 @@ include FileUtils
 
 RELEASE_VERSION = '0.2.0RC1'
 
-OCRA = case RUBY_VERSION
-  when /^1\.9\./
-    'ocra' # On the PATH, so no need for full path.
-  when /^1\.8\./
-    'ruby C:\Ruby\lib\ruby\gems\1.8\gems\ocra-1.1.3\bin\ocra'
-end
+OCRA = 'ocra'
 
 RDOC_DIR = File.join('doc', 'rdoc')
 BINARY_DIR = 'bin'

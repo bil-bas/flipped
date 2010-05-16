@@ -3,12 +3,16 @@ require 'fox16'
 module Flipped
   # A window that holds an image that re-sizes to the size of the canvas.
   class ImageCanvas < Fox::FXCanvas
+  protected
     def initialize(*args)
       @image_data = nil
       @back_buffer = nil
 
       super(*args)
     end
+
+  public
+    attr_reader :image_width, :image_height
 
     # Set the image data.
     def data=(data)
@@ -19,6 +23,7 @@ module Flipped
       data
     end
 
+  protected
     # Create a correctly sized image, to blit onto the window when required.
     def create_back_buffer
       if @image_data.nil?
@@ -26,6 +31,8 @@ module Flipped
       else
         @back_buffer = FXPNGImage.new(app, @image_data, :opts => IMAGE_KEEP|IMAGE_SHMI|IMAGE_SHMP)
         @back_buffer.create
+
+        @image_width, @image_height = @back_buffer.width, @back_buffer.height
 
         # Crop down to square.
         @back_buffer.crop((@back_buffer.width - @back_buffer.height) / 2, 0, @back_buffer.height, @back_buffer.height)
@@ -38,6 +45,7 @@ module Flipped
       nil
     end
 
+  public
     def create
       super
 
