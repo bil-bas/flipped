@@ -513,15 +513,14 @@ END_TEXT
       @current_frame_index = index
 
       if @book.empty?
-        title = WINDOW_TITLE
-        @size_label.text = ''
         @frame_label.text = 'Empty flip-book'
+        setTitle WINDOW_TITLE
+        @size_label.text = ''
       else
-        title = "#{WINDOW_TITLE} (#{index + 1} of #{@book.size})"
-        @size_label.text = "#{@image_viewer.image_width}x#{@image_viewer.image_height}"
         @frame_label.text = "Frame #{index + 1} of #{@book.size}"
+        setTitle "#{APPLICATION} - #{@frame_label.text}"
+        @size_label.text = "#{@image_viewer.image_width}x#{@image_viewer.image_height}"
       end
-
 
       [@start_button, @start_menu, @previous_button, @previous_menu].each do |widget|
         if index > 0   
@@ -658,7 +657,7 @@ END_TEXT
       rescue => ex
         log_error(ex)
         dialog = FXMessageBox.new(self, "Open error!",
-                 "Failed to load flipbook from #{open_dir}, probably because it is not a flip-book directory.", nil,
+                 "Failed to load flip-book from #{open_dir}, probably because it is not a flip-book directory.", nil,
                  MBOX_OK|DECOR_TITLE|DECOR_BORDER)
         dialog.execute
       end

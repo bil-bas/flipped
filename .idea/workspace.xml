@@ -2,8 +2,6 @@
 <project version="4">
   <component name="ChangeListManager" verified="true">
     <list default="true" readonly="true" id="09daf466-3604-48c6-8e7c-329650ff1ae4" name="Default" comment="Removed screenshot from rdoc to make it compatible with github.">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/image_canvas.rb" afterPath="$PROJECT_DIR$/lib/flipped/image_canvas.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/gui.rb" afterPath="$PROJECT_DIR$/lib/flipped/gui.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Rakefile" afterPath="$PROJECT_DIR$/Rakefile" />
@@ -40,7 +38,7 @@
       <file leaf-file-name="gui.rb" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="148" column="99" selection-start="5256" selection-end="5256" vertical-scroll-proportion="0.5268595">
+            <state line="522" column="9" selection-start="17702" selection-end="17702" vertical-scroll-proportion="0.83677685">
               <folding />
             </state>
           </provider>
@@ -706,7 +704,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="148" column="99" selection-start="5256" selection-end="5256" vertical-scroll-proportion="0.5268595">
+        <state line="522" column="9" selection-start="17702" selection-end="17702" vertical-scroll-proportion="0.83677685">
           <folding />
         </state>
       </provider>
