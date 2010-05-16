@@ -165,9 +165,10 @@ Project: spooner/flipped (http://wiki.github.com/Spooner/flipped/)
 
 Author: Spooner (Bil Bas) bil.bagpuss@gmail.com
 
-Libraries: FXRuby and r18n.
 
-Windows executable generated with Ocra.
+Libraries: FXRuby (http://www.fxruby.org/) and r18n (http://r18n.rubyforge.org/).
+
+Windows executable generated with Ocra (http://ocra.rubyforge.org/).
 "
 
 

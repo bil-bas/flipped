@@ -71,7 +71,8 @@ Apparently, OS X now comes ready with Ruby 1.8.7 (or 1.8.6). You can check if it
 
 ==== 2. Install required libraries
 
-After installing Ruby, you must install a few required libraries (specifically FXRuby and r18n).
+After installing Ruby, you must install a few required libraries (specifically FXRuby (http://www.fxruby.org/) and
+r18n (http://r18n.rubyforge.org/)).
 This will take a minute or two to automatically download and install the libraries.
 
 ===== Windows
@@ -147,6 +148,7 @@ Full text of the license is provided in COPYING.txt
 * Thanks to {github}[http://github.com] for hosting my project.
 
 * {FXRuby}[http://fxruby.org] library by Lyle Johnson, based on the FOX Toolkit by Jeroen van der Zijp.
+* {r18n}[http://r18n.rubyforge.org/] provides internationalisation support.
 * {Ocra}[http://ocra.rubyforge.org/], used to create the standalone Windows executable.
 * Default templates directory, taken from {SleepIsDeath}[(http://sleepisdeath.net] v14c, by Jason Rohrer.
 * {RubyMine}[http://www.jetbrains.com/ruby/] Ruby IDE was used to develop the application. Enormous thanks to JetBrains
