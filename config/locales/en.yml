@@ -5,15 +5,56 @@ en:
   open:
     menu: "&Open flip-book..."
     help: Open a new flip-book, replacing any already being viewed ({{key}})
+    dialog:
+      title: Open flip-book directory
+    error:
+      title: Open error
+      text: "Failed to load flip-book from
+
+'{{dir}}',
+
+probably because it is not a flip-book directory"
 
   append:
     menu: "&Append flip-book..."
     help: Append flip-book to currently loaded flip-book ({{key}})
+    dialog:
+      title: Append flip-book directory
+    error:
+      title: Append error
+      text: "Failed to load flip-book from
+
+'{{dir}}',
+
+probably because it is not a flip-book directory"
 
   save_as:
     menu: "&Save flip-book as..."
     help: Save current flip-book ({{key}})
+    dialog:
+      title: Save flip-book directory
 
+    error:
+      exists:
+        title: Save error
+        text: "Failed to save flip-book to
+
+'{{dir}}',
+
+because it is a file and already exists."
+
+      templates:
+        title: Save error
+        text: "Failed to save flip-book to
+
+'{{dir}}',
+
+but failed because the template files found in
+
+'{{template_dir}}'
+
+were not valid. Use the menu Options->Settings to set a valid path to a flip-book templates directory."
+      
   quit:
     menu: "&Quit"
     help: Exit the application ({{key}})
@@ -110,6 +151,32 @@ en:
   # Help menu
   help: "&Help"
 
+
   about:
     menu: "&About Flipped..."
     help: Information about the application.
+    dialog:
+      title: About Flipped
+      text: "Flipped is a flip-book tool for the game, Sleep Is Death.
+
+Allows the user to view and edit flip-books.
+
+
+Project: spooner/flipped (http://wiki.github.com/Spooner/flipped/)
+
+Author: Spooner (Bil Bas) bil.bagpuss@gmail.com
+
+Libraries: FXRuby and i18n.
+
+Windows executable generated with Ocra.
+"
+
+
+  # General strings.
+  book:
+    loaded: Frame {{index}} of {{total}}
+    empty: Empty flip-book
+
+  title:
+    loaded: Flipped - Frame {{index}} of {{total}}
+    empty: Flipped - The SiD flip-book tool

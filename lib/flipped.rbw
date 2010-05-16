@@ -19,7 +19,7 @@ begin
   require 'gui'
   include Flipped
 
-  application = FXApp.new(Gui::APPLICATION)
+  application = FXApp.new('Flipped', 'Spooner')
 
   application.disableThreads # Just makes things run a tiny bit faster, since we aren't using Ruby threads.
 

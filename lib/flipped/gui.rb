@@ -29,9 +29,6 @@ module Flipped
 
   class Gui < FXMainWindow
     include SettingsManager
-    
-    APPLICATION = "Flipped"
-    WINDOW_TITLE = "#{APPLICATION} - The SiD flip-book tool"
 
     SETTINGS_FILE = File.join(INSTALLATION_ROOT, 'config', 'settings.yml')
     KEYS_FILE = File.join(INSTALLATION_ROOT, 'config', 'keys.yml')
@@ -103,19 +100,8 @@ module Flipped
     THUMB_BACKGROUND_COLOR = Fox::FXColor::White
     THUMB_SELECTED_COLOR = Fox::FXRGB(50, 50, 50)
 
-    HELP_TEXT = <<END_TEXT
-#{APPLICATION} is a flip-book tool for SleepIsDeath (http://sleepisdeath.net).
-
-Author: Spooner (Bil Bas)
-
-Allows the user to view and edit flip-books.
-
-Uses the FXRuby GUI library #{Fox::FXApp.copyright}
-#{"Windows executable generated with Ocra" if ENV['OCRA_EXECUTABLE']}
-END_TEXT
-
     def initialize(app)
-      super(app, WINDOW_TITLE, :opts => DECOR_ALL)
+      super(app, '', :opts => DECOR_ALL)
 
       I18n.load_path << Dir[File.join(INSTALLATION_ROOT, 'config', 'locales', '*.yml')]
 
@@ -263,7 +249,7 @@ END_TEXT
     end
 
     def on_cmd_about(sender, selector, event)
-      dialog = FXMessageBox.new(self, "About #{APPLICATION}", HELP_TEXT, nil, MBOX_OK|DECOR_TITLE|DECOR_BORDER)
+      dialog = FXMessageBox.new(self, t('about.dialog.title'), t('about.dialog.text'), nil, MBOX_OK|DECOR_TITLE|DECOR_BORDER)
       dialog.execute
 
       return 1
@@ -513,12 +499,12 @@ END_TEXT
       @current_frame_index = index
 
       if @book.empty?
-        @frame_label.text = 'Empty flip-book'
-        setTitle WINDOW_TITLE
+        @frame_label.text = t('book.empty')
+        setTitle t('title.empty')
         @size_label.text = ''
       else
-        @frame_label.text = "Frame #{index + 1} of #{@book.size}"
-        setTitle "#{APPLICATION} - #{@frame_label.text}"
+        @frame_label.text = t('book.loaded', :index => index + 1, :total => @book.size)
+        setTitle t('title.loaded', :index => index + 1, :total => @book.size)
         @size_label.text = "#{@image_viewer.image_width}x#{@image_viewer.image_height}"
       end
 
@@ -644,7 +630,7 @@ END_TEXT
 
     # Open a new flip-book
     def on_cmd_open(sender, selector, event)
-      open_dir = FXFileDialog.getOpenDirectory(self, "Open flip-book directory", @current_flip_book_directory)
+      open_dir = FXFileDialog.getOpenDirectory(self, t('open.dialog.title'), @current_flip_book_directory)
       return if open_dir.empty?
       
       begin
@@ -656,9 +642,8 @@ END_TEXT
         @current_flip_book_directory = open_dir
       rescue => ex
         log_error(ex)
-        dialog = FXMessageBox.new(self, "Open error!",
-                 "Failed to load flip-book from #{open_dir}, probably because it is not a flip-book directory.", nil,
-                 MBOX_OK|DECOR_TITLE|DECOR_BORDER)
+        dialog = FXMessageBox.new(self, t('open.error.title'), t('open.error.text', :dir => open_dir),
+                 :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
         dialog.execute
       end
 
@@ -673,7 +658,7 @@ END_TEXT
 
     # Open a new flip-book
     def on_cmd_append(sender, selector, event)
-      open_dir = FXFileDialog.getOpenDirectory(self, "Append flip-book directory", @current_flip_book_directory)
+      open_dir = FXFileDialog.getOpenDirectory(self, t('append.dialog.title'), @current_flip_book_directory)
       return if open_dir.empty?
 
       begin
@@ -686,9 +671,8 @@ END_TEXT
         @current_flip_book_directory = open_dir
       rescue => ex
         log_error(ex)
-        dialog = FXMessageBox.new(self, "Open error!",
-                 "Failed to load flip-book from #{open_dir}, probably because it is not a flip-book directory", nil,
-                 MBOX_OK|DECOR_TITLE|DECOR_BORDER)
+        dialog = FXMessageBox.new(self, t('append.error.title'), t('append.error.text', :dir => open_dir),
+                 :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
         dialog.execute
       end
 
@@ -697,23 +681,23 @@ END_TEXT
 
     # Save this flip-book
     def on_cmd_save_as(sender, selector, event)
-      save_dir = FXFileDialog.getSaveFilename(self, "Save flip-book directory", @current_flip_book_directory)
+      save_dir = FXFileDialog.getSaveFilename(self, t('save_as.dialog.title'), @current_flip_book_directory)
       return if save_dir.empty?
 
       if File.exists? save_dir
-        dialog = FXMessageBox.new(self, "Save error!",
-                 "File/folder #{save_dir} already exists, so flip-book cannot be saved.", nil,
-                 MBOX_OK|DECOR_TITLE|DECOR_BORDER)
+        dialog = FXMessageBox.new(self, t('save_as.error.exists.title'),
+                 t('save_as.error.exists.text', :dir => save_dir),
+                 :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
         dialog.execute
       else
         @current_flip_book_directory = save_dir
         begin
-          @book.write(@current_flip_book_directory, @template_directory)
+          @book.write(save_dir, @template_directory)
         rescue => ex
           log_error(ex)
-          dialog = FXMessageBox.new(self, "Save error!",
-                 "Failed to save flipbook to #{@current_flip_book_directory},\nbut failed because the template files found in #{@template_directory} were not valid.\nUse the menu Options->Settings to set a valid path to a flip-book templates directory.", nil,
-                 MBOX_OK|DECOR_TITLE|DECOR_BORDER)
+          dialog = FXMessageBox.new(self, t('save_as.error.templates.title'),
+                 t('save_as.error.templates.text', :dir => save_dir, :template_dir => @template_directory),
+                 :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
           dialog.execute
         end
       end
