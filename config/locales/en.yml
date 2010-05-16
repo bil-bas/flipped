@@ -1,163 +1,162 @@
-en:
-  # File menu
-  file: "&File"
+# File menu
+file: "&File"
 
-  open:
-    menu: "&Open flip-book..."
-    help: Open a new flip-book, replacing any already being viewed ({{key}})
-    dialog:
-      title: Open flip-book directory
-    error:
-      title: Open error
-      text: "Failed to load flip-book from
+open:
+  menu: "&Open flip-book..."
+  help: Open a new flip-book, replacing any already being viewed (%1)
+  dialog:
+    title: Open flip-book directory
+  error:
+    title: Open error
+    text: "Failed to load flip-book from
 
-'{{dir}}',
-
-probably because it is not a flip-book directory"
-
-  append:
-    menu: "&Append flip-book..."
-    help: Append flip-book to currently loaded flip-book ({{key}})
-    dialog:
-      title: Append flip-book directory
-    error:
-      title: Append error
-      text: "Failed to load flip-book from
-
-'{{dir}}',
+'%1',
 
 probably because it is not a flip-book directory"
 
-  save_as:
-    menu: "&Save flip-book as..."
-    help: Save current flip-book ({{key}})
-    dialog:
-      title: Save flip-book directory
+append:
+  menu: "&Append flip-book..."
+  help: Append flip-book to currently loaded flip-book (%1)
+  dialog:
+    title: Append flip-book directory
+  error:
+    title: Append error
+    text: "Failed to load flip-book from
 
-    error:
-      exists:
-        title: Save error
-        text: "Failed to save flip-book to
+'%1',
 
-'{{dir}}',
+probably because it is not a flip-book directory"
+
+save_as:
+  menu: "&Save flip-book as..."
+  help: Save current flip-book (%1)
+  dialog:
+    title: Save flip-book directory
+
+  error:
+    exists:
+      title: Save error
+      text: "Failed to save flip-book to
+
+'%1',
 
 because it is a file and already exists."
 
-      templates:
-        title: Save error
-        text: "Failed to save flip-book to
+    templates:
+      title: Save error
+      text: "Failed to save flip-book to
 
-'{{dir}}',
+'%1',
 
 but failed because the template files found in
 
-'{{template_dir}}'
+'%2'
 
 were not valid. Use the menu Options->Settings to set a valid path to a flip-book templates directory."
-      
-  quit:
-    menu: "&Quit"
-    help: Exit the application ({{key}})
 
-  # Navigation buttons/menu
-  navigate: "&Navigate"
-  
-  end:
-    menu: "&End"
-    tip: Skip to end
-    help: Skip forward to the end of the flip-book ({{key}}).
+quit:
+  menu: "&Quit"
+  help: Exit the application (%1)
 
-  next:
-    menu: "&Next"
-    tip: Next frame
-    help: Advance to the next frame ({{key}}).
+# Navigation buttons/menu
+navigate: "&Navigate"
 
-  pause:
-    menu: "&Pause"
-    tip: Pause slide-show mode
-    help: Stop playing in slide-show mode ({{key}}).
+end:
+  menu: "&End"
+  tip: Skip to end
+  help: Skip forward to the end of the flip-book (%1).
 
-  play:
-    menu: "&Play"
-    tip: Play slide-show mode
-    help: Start playing in slide-show mode ({{key}}).
+next:
+  menu: "&Next"
+  tip: Next frame
+  help: Advance to the next frame (%1).
 
-  previous:
-    menu: "&Previous"
-    tip: Previous frame
-    help: Return to the previous frame ({{key}}).
+pause:
+  menu: "&Pause"
+  tip: Pause slide-show mode
+  help: Stop playing in slide-show mode (%1).
 
-  start:
-    menu: "&Start"
-    tip: Skip to start
-    help: Skip back to the start of the flip-book ({{key}}).
+play:
+  menu: "&Play"
+  tip: Play slide-show mode
+  help: Start playing in slide-show mode (%1).
 
-  # Edit menu
-  edit: "&Edit"
-  delete:
-    menu: "&Delete frame"
-    help: Delete currently selected frame ({{key}}).
+previous:
+  menu: "&Previous"
+  tip: Previous frame
+  help: Return to the previous frame (%1).
 
-  delete_before:
-    menu: "Delete frame and all frames &before it"
-    help: Delete frames up to and including the current frame ({{key}}).
+start:
+  menu: "&Start"
+  tip: Skip to start
+  help: Skip back to the start of the flip-book (%1).
 
-  delete_after:
-    menu: "Delete frame and all frames &after it"
-    help: Delete current frame and all frames after it ({{key}}).
+# Edit menu
+edit: "&Edit"
+delete_single:
+  menu: "&Delete frame"
+  help: Delete currently selected frame (%1).
 
-  delete_identical:
-    menu: "Delete &identical frames"
-    help: Delete all frames showing exactly the same image as frame ({{key}}).
+delete_before:
+  menu: "Delete frame and all frames &before it"
+  help: Delete frames up to and including the current frame (%1).
 
-  # Show/hide menu
-  show: "&Show"
-  
-  toggle_nav_buttons_bar:
-    menu: "&Buttons"
-    help: Hide/show navigation buttons ({{key}}).
+delete_after:
+  menu: "Delete frame and all frames &after it"
+  help: Delete current frame and all frames after it (%1).
 
-  toggle_info:
-    menu: "&Information"
-    help: Hide/show information about the book/frame ({{key}}).
+delete_identical:
+  menu: "Delete &identical frames"
+  help: Delete all frames showing exactly the same image as frame (%1).
 
-  toggle_status_bar:
-    menu: "&Status bar"
-    help: Hide/show status bar ({{key}}).
+# Show/hide menu
+show: "&Show"
 
-  toggle_thumbs:
-    menu: "&Thumbnails"
-    help: Hide/show thumbnail strip ({{key}}).
+toggle_nav_buttons_bar:
+  menu: "&Buttons"
+  help: Hide/show navigation buttons (%1).
 
-  # Options menu
-  options: "&Options"
+toggle_info:
+  menu: "&Information"
+  help: Hide/show information about the book/frame (%1).
 
-  loops:
-    menu: "Slide-show &loops?"
-    label: Loops?
-    tip: Loop around in slide-show mode
-    help: Repeat the slide-show when it gets to the end? ({{key}})
+toggle_status_bar:
+  menu: "&Status bar"
+  help: Hide/show status bar (%1).
 
-  interval:
-    menu: "Slide-show &interval"
-    label: Interval
-    tip: Delay between showing frames (secs)
-    help: Delay between showing successive frames when playing a slide-show.
+toggle_thumbs:
+  menu: "&Thumbnails"
+  help: Hide/show thumbnail strip (%1).
 
-  settings:
-    menu: "&Settings..."
-    help: Edit aplication settings.
+# Options menu
+options: "&Options"
 
-  # Help menu
-  help: "&Help"
+loops:
+  menu: "Slide-show &loops?"
+  label: Loops?
+  tip: Loop around in slide-show mode
+  help: Repeat the slide-show when it gets to the end? (%1)
+
+interval:
+  menu: "Slide-show &interval"
+  label: Interval
+  tip: Delay between showing frames (secs)
+  help: Delay between showing successive frames when playing a slide-show.
+
+settings:
+  menu: "&Settings..."
+  help: Edit aplication settings.
+
+# Help menu
+help: "&Help"
 
 
-  about:
-    menu: "&About Flipped..."
-    help: Information about the application.
-    dialog:
-      title: About Flipped
-      text: "Flipped is a flip-book tool for the game, Sleep Is Death.
+about:
+  menu: "&About Flipped..."
+  help: Information about the application.
+  dialog:
+    title: About Flipped
+    text: "Flipped is a flip-book tool for the game, Sleep Is Death.
 
 Allows the user to view and edit flip-books.
 
@@ -172,11 +171,11 @@ Windows executable generated with Ocra.
 "
 
 
-  # General strings.
-  book:
-    loaded: Frame {{index}} of {{total}}
-    empty: Empty flip-book
+# General strings.
+book:
+  loaded: Frame %1 of %2
+  empty: Empty flip-book
 
-  title:
-    loaded: Flipped - Frame {{index}} of {{total}}
-    empty: Flipped - The SiD flip-book tool
+title:
+  loaded: Flipped - Frame %1 of %2
+  empty: Flipped - The SiD flip-book tool

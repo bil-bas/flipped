@@ -3,15 +3,15 @@ begin
   # This way works fine on Windows.
   require 'fox16'
   require 'fox16/colors'
-  require 'i18n'
+  require 'r18n-desktop'
 rescue Exception => ex
   # Try it this way, for Ubuntu, which doesn't set RUBYOPT properly (and perhaps other Linuxi?).
   require 'rubygems'
   gem 'fxruby'
   require 'fox16'
   require 'fox16/colors'
-  gem 'i18n'
-  require 'i18n'
+  gem 'r18n-desktop'
+  require 'r18n-desktop'
 end
 
 # Standard libraries.
@@ -29,6 +29,9 @@ module Flipped
 
   class Gui < FXMainWindow
     include SettingsManager
+
+    R18n.set(R18n::I18n.new('en', File.join(INSTALLATION_ROOT, 'config', 'locales')))
+    include R18n::Helpers
 
     SETTINGS_FILE = File.join(INSTALLATION_ROOT, 'config', 'settings.yml')
     KEYS_FILE = File.join(INSTALLATION_ROOT, 'config', 'keys.yml')
@@ -88,7 +91,7 @@ module Flipped
 
       :toggle_looping => ['@key[:loops]', 'Ctrl-L'],
 
-      :delete => ['@key[:delete]', 'Ctrl-X'],
+      :delete_single => ['@key[:delete_single]', 'Ctrl-X'],
       :delete_before => ['@key[:delete_before]', ''],
       :delete_after => ['@key[:delete_after]', ''],
       :delete_identical => ['@key[:delete_identical]', 'Ctrl-Shift-X'],
@@ -102,8 +105,6 @@ module Flipped
 
     def initialize(app)
       super(app, '', :opts => DECOR_ALL)
-
-      I18n.load_path << Dir[File.join(INSTALLATION_ROOT, 'config', 'locales', '*.yml')]
 
       @key = {}
       read_config(KEYS_ATTRIBUTES, KEYS_FILE)
@@ -163,18 +164,12 @@ module Flipped
       @slide_show_loops_target.value = value
     end
 
-    def t(key, options = nil)
-      str = I18n.t key, options
-      raise Exception.new("Missing variable in '#{key}': '#{str}'") if str =~ /\{\{/
-      str
-    end
-
     def create_menu_bar
       menu_bar = FXMenuBar.new(self, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|FRAME_RAISED)
 
       # File menu
       file_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, t('file'), nil, file_menu)
+      FXMenuTitle.new(menu_bar, t.file, nil, file_menu)
 
       create_menu(file_menu, :open)
       @append_menu = create_menu(file_menu, :append)
@@ -185,7 +180,7 @@ module Flipped
 
       # Navigation menu.
       nav_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, t('navigate'), nil, nav_menu)
+      FXMenuTitle.new(menu_bar, t.navigate, nil, nav_menu)
 
       @start_menu = create_menu(nav_menu, :start)
       @previous_menu = create_menu(nav_menu, :previous)
@@ -195,16 +190,16 @@ module Flipped
 
       # edit menu
       edit_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, t('edit'), nil, edit_menu)
+      FXMenuTitle.new(menu_bar, t.edit, nil, edit_menu)
 
-      @delete_menu = create_menu(edit_menu, :delete)
+      @delete_menu = create_menu(edit_menu, :delete_single)
       @delete_before_menu = create_menu(edit_menu, :delete_before)
       @delete_after_menu = create_menu(edit_menu, :delete_after)
       @delete_identical_menu = create_menu(edit_menu, :delete_identical)
 
       # Show menu.
       show_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, t('show'), nil, show_menu)
+      FXMenuTitle.new(menu_bar, t.show, nil, show_menu)
       @toggle_navigation_menu = create_menu(show_menu, :toggle_nav_buttons_bar, FXMenuCheck)
       @toggle_info_menu = create_menu(show_menu, :toggle_info, FXMenuCheck)
       @toggle_status_menu = create_menu(show_menu, :toggle_status_bar, FXMenuCheck)
@@ -212,13 +207,13 @@ module Flipped
 
       # Options menu.
       options_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, t('options'), nil, options_menu)
+      FXMenuTitle.new(menu_bar, t.options, nil, options_menu)
       
       @slide_show_loops_target = FXDataTarget.new
       @slide_show_loops_target.connect(SEL_COMMAND) do |sender, selector, event|
         select_frame(@current_frame_index) # Update buttons.
       end
-      FXMenuCheck.new(options_menu, "#{t('loops.menu')}\t#{@key[:loops]}\t#{t('loops.help', :key => @key[:loops])}.",
+      FXMenuCheck.new(options_menu, "#{t.loops.menu}\t#{@key[:loops]}\t#{t.loops.help(@key[:loops])}.",
                        :target => @slide_show_loops_target, :selector => FXDataTarget::ID_VALUE)
 
       @slide_show_interval_target = FXDataTarget.new
@@ -235,7 +230,7 @@ module Flipped
       (MIN_INTERVAL..MAX_INTERVAL).each do |i|
         FXMenuRadio.new(interval_menu, "#{i}", :target => @slide_show_interval_target, :selector => FXDataTarget::ID_OPTION + i)
       end
-      FXMenuCascade.new(options_menu, "#{t('interval.menu')}\t\t#{t('interval.help')}", :popupMenu => interval_menu)
+      FXMenuCascade.new(options_menu, "#{t.interval.menu}\t\t#{t.interval.help}", :popupMenu => interval_menu)
       
       FXMenuSeparator.new(options_menu)
       
@@ -243,13 +238,13 @@ module Flipped
 
       # Help menu
       help_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, t('help'), nil, help_menu, LAYOUT_RIGHT)
+      FXMenuTitle.new(menu_bar, t.help, nil, help_menu, LAYOUT_RIGHT)
 
       create_menu(help_menu, :about)
     end
 
     def on_cmd_about(sender, selector, event)
-      dialog = FXMessageBox.new(self, t('about.dialog.title'), t('about.dialog.text'), nil, MBOX_OK|DECOR_TITLE|DECOR_BORDER)
+      dialog = FXMessageBox.new(self, t.about.dialog.title, t.about.dialog.text, nil, MBOX_OK|DECOR_TITLE|DECOR_BORDER)
       dialog.execute
 
       return 1
@@ -266,7 +261,7 @@ module Flipped
     end
 
     def create_menu(owner, name, type = FXMenuCommand, options = {})
-      text = [t("#{name}.menu"), @key[name], t("#{name}.help", :key => @key[name])].join("\t")
+      text = [t[name].menu, @key[name], t[name].help(@key[name])].join("\t")
       menu = type.new(owner, text, options)
       menu.connect(SEL_COMMAND, method(:"on_cmd_#{name}"))
       menu
@@ -323,11 +318,11 @@ module Flipped
 
       options_frame = FXVerticalFrame.new(@button_bar)
 
-      FXCheckButton.new(options_frame, "#{t('loops.label')}\t#{t('loops.tip')}\t#{t('loops.help', :key => @key[:loops])}",
+      FXCheckButton.new(options_frame, "#{t.loops.label}\t#{t.loops.tip}\t#{t.loops.help(@key[:loops])}",
         :target => @slide_show_loops_target, :selector => FXDataTarget::ID_VALUE)
 
       interval_frame = FXHorizontalFrame.new(options_frame)
-      FXLabel.new(interval_frame, "#{t('interval.label')}\t#{t('interval.tip')}\t#{t('interval.help', :key => @key[:interval])}")
+      FXLabel.new(interval_frame, "#{t.interval.label}\t#{t.interval.tip}\t#{t.interval.help(@key[:interval])}")
       FXComboBox.new(interval_frame, 3, :target => @slide_show_interval_target, :selector => FXDataTarget::ID_VALUE) do |combo|
         (MIN_INTERVAL..MAX_INTERVAL).each {|i| combo.appendItem(i.to_s, i) }
         combo.editable = false
@@ -338,7 +333,7 @@ module Flipped
     end
 
     def create_button(menu, name)
-      button = FXButton.new(menu, "\t#{t("#{name}.tip")}\t#{t("#{name}.help", :key => @key[name])}", load_icon(name), NAV_BUTTON_OPTIONS)
+      button = FXButton.new(menu, "\t#{t[name].tip}\t#{t[name].help(@key[name])}", load_icon(name), NAV_BUTTON_OPTIONS)
       button.connect(SEL_COMMAND, method(:"on_cmd_#{name}"))
 
       button
@@ -452,12 +447,12 @@ module Flipped
 
       name = (value ? :pause : :play)
       
-      @play_menu.text = t("#{name}.menu")
-      @play_menu.helpText = t("#{name}.help", :key => @key[:play])
+      @play_menu.text = t[name].menu
+      @play_menu.helpText = t[name].help(:key => @key[:play])
 
       @play_button.icon = load_icon(name)
-      @play_button.tipText = t("#{name}.tip")
-      @play_button.helpText = t("#{name}.help", :key => @key[:play])
+      @play_button.tipText = t[name].tip
+      @play_button.helpText = t[name].help(@key[:play])
 
       nil
     end
@@ -499,12 +494,12 @@ module Flipped
       @current_frame_index = index
 
       if @book.empty?
-        @frame_label.text = t('book.empty')
-        setTitle t('title.empty')
+        @frame_label.text = t.book.empty
+        setTitle t.title.empty
         @size_label.text = ''
       else
-        @frame_label.text = t('book.loaded', :index => index + 1, :total => @book.size)
-        setTitle t('title.loaded', :index => index + 1, :total => @book.size)
+        @frame_label.text = t.book.loaded(index + 1, @book.size)
+        setTitle t.title.loaded(index + 1, @book.size)
         @size_label.text = "#{@image_viewer.image_width}x#{@image_viewer.image_height}"
       end
 
@@ -566,7 +561,7 @@ module Flipped
       return 1
     end
 
-    def on_cmd_delete(sender, selector, event)
+    def on_cmd_delete_single(sender, selector, event)
       delete_frames(@current_frame_index)
       return 1
     end
@@ -594,7 +589,7 @@ module Flipped
 
     def image_context_menu(index, x, y)
       FXMenuPane.new(self) do |menu_pane|
-        create_menu(menu_pane, :delete)
+        create_menu(menu_pane, :delete_single)
         create_menu(menu_pane, :delete_before)
         create_menu(menu_pane, :delete_after)
         create_menu(menu_pane, :delete_identical)
@@ -630,7 +625,7 @@ module Flipped
 
     # Open a new flip-book
     def on_cmd_open(sender, selector, event)
-      open_dir = FXFileDialog.getOpenDirectory(self, t('open.dialog.title'), @current_flip_book_directory)
+      open_dir = FXFileDialog.getOpenDirectory(self, t.open.dialog.title, @current_flip_book_directory)
       return if open_dir.empty?
       
       begin
@@ -642,7 +637,7 @@ module Flipped
         @current_flip_book_directory = open_dir
       rescue => ex
         log_error(ex)
-        dialog = FXMessageBox.new(self, t('open.error.title'), t('open.error.text', :dir => open_dir),
+        dialog = FXMessageBox.new(self, t.open.error.title, t.open.error.text(open_dir),
                  :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
         dialog.execute
       end
@@ -658,7 +653,7 @@ module Flipped
 
     # Open a new flip-book
     def on_cmd_append(sender, selector, event)
-      open_dir = FXFileDialog.getOpenDirectory(self, t('append.dialog.title'), @current_flip_book_directory)
+      open_dir = FXFileDialog.getOpenDirectory(self, t.append.dialog.title, @current_flip_book_directory)
       return if open_dir.empty?
 
       begin
@@ -671,7 +666,7 @@ module Flipped
         @current_flip_book_directory = open_dir
       rescue => ex
         log_error(ex)
-        dialog = FXMessageBox.new(self, t('append.error.title'), t('append.error.text', :dir => open_dir),
+        dialog = FXMessageBox.new(self, t.append.error.title, t.append.error.text(open_dir),
                  :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
         dialog.execute
       end
@@ -681,12 +676,12 @@ module Flipped
 
     # Save this flip-book
     def on_cmd_save_as(sender, selector, event)
-      save_dir = FXFileDialog.getSaveFilename(self, t('save_as.dialog.title'), @current_flip_book_directory)
+      save_dir = FXFileDialog.getSaveFilename(self, t.save_as.dialog.title, @current_flip_book_directory)
       return if save_dir.empty?
 
       if File.exists? save_dir
-        dialog = FXMessageBox.new(self, t('save_as.error.exists.title'),
-                 t('save_as.error.exists.text', :dir => save_dir),
+        dialog = FXMessageBox.new(self, t.save_as.error.exists.title,
+                 t.save_as.error.exists.text(save_dir),
                  :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
         dialog.execute
       else
@@ -695,8 +690,8 @@ module Flipped
           @book.write(save_dir, @template_directory)
         rescue => ex
           log_error(ex)
-          dialog = FXMessageBox.new(self, t('save_as.error.templates.title'),
-                 t('save_as.error.templates.text', :dir => save_dir, :template_dir => @template_directory),
+          dialog = FXMessageBox.new(self, t.save_as.error.templates.title,
+                 t.save_as.error.templates.text(save_dir, @template_directory),
                  :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
           dialog.execute
         end
