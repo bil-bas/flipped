@@ -135,7 +135,6 @@ module Flipped
       end
 
       images_dir = File.join(out_dir, 'images')
-      mkdir_p(images_dir)
 
       frame_numbers = (1..@frames.size).to_a.map {|i| sprintf("%05d", i) }
 
@@ -146,6 +145,7 @@ module Flipped
       preload_html = File.open(File.join(template_dir, PRELOAD_NEXT_HTML)) {|f| f.read }
 
       # Write out the images and html pages.
+      mkdir_p(images_dir)
       @frames.each_with_index do |image_data, i|
         File.open(File.join(images_dir, "#{frame_numbers[i]}.png"), "wb") do |file|
           file.write(image_data)
