@@ -90,12 +90,12 @@ namespace :install do
 		puts
 
         case RUBY_PLATFORM
-          when /cygwin|mingw|win32/
+          when /cygwin|mingw|win32/ # Windoze
             gem = 'gem'
-          when /osx/
+          when /darwin/  # Mac
             gem = 'sudo gem'
           else
-            gem = 'sudo gem1.8'
+            gem = 'sudo gem1.8' # Linux. Probably.
         end
 
 		system "#{gem} install #{REQUIRED_GEMS.join(' ')} --no-ri --no-rdoc"
