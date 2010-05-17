@@ -11,6 +11,7 @@ describe Book do
   before :each do
     @book1_dir = File.join('..', 'test_data', 'flipBooks', '00001')
     @book2_dir = File.join('..', 'test_data', 'flipBooks', '00002')
+    @book3_dir = File.join('..', 'test_data', 'flipBooks', '00003')
     @output_dir = File.join('..', 'test_data', 'output', 'joined')
     @template_dir = File.join('..', 'templates')
 
@@ -20,10 +21,12 @@ describe Book do
     FileUtils.mkdir_p @output_dir
 
     @book1 = Book.new(@book1_dir)
-    @book2 = Book.new(@book2_dir)  
+    @book2 = Book.new(@book2_dir)
+    @book3 = Book.new(@book3_dir)
 
     @book1_size = 8
     @book2_size = 3
+    @book3_size = 1
   end
 
   describe "initialize() empty" do
@@ -114,6 +117,18 @@ describe Book do
     before :each do
       rm_rf(@output_dir) if File.exists? @output_dir
       @book1.write(@output_dir, @template_dir)
+    end
+
+    it "should create a directory identical to the original" do
+      [@book1_dir, @book2_dir, @book3_dir].each do |dir|
+        out_dir = dir.sub('flipBooks', 'output')
+        rm_r out_dir if File.exists? out_dir
+        book = Book.new(dir)
+        book.write(out_dir, @template_dir)
+        Dir["#{dir}/**/*.*"].each do |filename|
+          File.read(filename).should == File.read(filename.sub('flipBooks', 'output'))
+        end
+      end
     end
 
     it "should raise ArgumentError if output directory already exists" do
