@@ -34,7 +34,6 @@ module Flipped
 
         frame_list_text =~ FRAME_LIST_PATTERN
         frame_names =  $1.split(/",\s+"/)
-        frame_numbers = frame_names.map { |s| s.to_i }
 
         # Load in images in order they were in the framelist file.
         @frames = frame_names.inject([]) do |list, name|
@@ -163,7 +162,7 @@ module Flipped
         html.gsub!('#Y', frame_numbers[(i + 1).modulo(@frames.size)]) # next file number
         
         File.open(File.join(images_dir, "#{frame_numbers[i]}.html"), "w") do |file|
-          file.print html.gsub("\n\n", "\n") # Jason spams newlines for some reason :)
+          file.print html.gsub(/[\r\n]\n/, "\n") # Jason spams newlines for some reason :)
         end
       end
       
