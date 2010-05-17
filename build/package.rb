@@ -21,9 +21,8 @@ namespace :build do
     'COPYING.txt',	
     'Rakefile',	
     'README.rdoc',
-    'install_libraries.bat',
-    'install_libraries.sh',
-    'install_ruby.sh',	
+    'install_libraries.rb',
+    'install_ruby_ubuntu.sh',
   ]	
   
   desc 'Package files'	
@@ -33,6 +32,8 @@ namespace :build do
     require 'find'
 	
     rmtree RELEASE_DIR
+    rmtree "test_data/output"
+    Dir["config/*.yml"].each { |f| rm f }
 	
     makedirs RELEASE_DIR	
     FOLDERS.each do |dir|	
@@ -41,7 +42,6 @@ namespace :build do
 
     mkdir_p File.join(RELEASE_DIR, 'config')
     cp_r File.join('config', 'locales'), File.join(RELEASE_DIR, 'config')
-
 	
     FILES.each do |file|	
       cp "#{file}", RELEASE_DIR	
