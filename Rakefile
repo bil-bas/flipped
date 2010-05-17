@@ -3,7 +3,7 @@ require 'rake/clean'
 require 'fileutils'
 include FileUtils
 
-RELEASE_VERSION = '0.2.0RC2'
+RELEASE_VERSION = '0.2.0'
 
 OCRA = 'ruby build/ocrasa.rb'
 
