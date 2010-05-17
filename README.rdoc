@@ -28,8 +28,8 @@ simple editing of, flip-book folders.
 
 == Installation
 
-Installation has been tested on Windows 7 x64 and Kubuntu 10.04 x64. It should also be possible on OS X, but this has
-not been tested.
+Installation has been tested on Windows 7 x64, Kubuntu 10.04 x64 and Mac OS X Leopard. It should be possible to run it
+on any Windows, Linux or OS X machine.
 
 === Using binary (Windows only)
 
@@ -39,8 +39,7 @@ not been tested.
 
 3. Click on 'flipped/bin/flipped.exe'.
 
-The executable takes a few seconds longer to load than the source code, but does not have any dependencies on having the
-a Ruby interpreter or libraries installed.
+The executable does not have any dependencies on having the a Ruby interpreter or required libraries installed.
 
 === Using source-code (Any system, including Windows)
 
@@ -54,16 +53,16 @@ Ruby, but should also operate correctly with Ruby 1.8.6.
 ===== Windows
 
 Install using the 1.8.7 Windows installer (http://rubyinstaller.org/download.html) (you require
-"Ruby 1.8.7-p249 (RC2)")
+"Ruby 1.8.7-p249 (RC2)").
 
 ===== Linux
 
-Install Ruby 1.8.7 and the FOX gui toolkit (specifically for Ubuntu/Debian), by running 'flipped/install_ruby.sh').
+Install Ruby 1.8.7 and the FOX gui toolkit, by running 'flipped/install_ruby_ubuntu.sh').
 
-===== Mac
+===== Mac (OS X)
 
 Install Ruby 1.8.7 using the OS X 10.5 (Leopard) installer (http://rubyosx.rubyforge.org/). If you are using OS X 10.3
-(Tiger) or 10.4 (Panther) you _should_ be fine using the Ruby 1.8.6 installers.
+(Tiger) or 10.4 (Panther) you will be fine using the Ruby 1.8.6 installers.
 
 Apparently, OS X now comes ready with Ruby 1.8.7 (or 1.8.6). You can check if it is already installed by typing:
 
@@ -72,17 +71,11 @@ Apparently, OS X now comes ready with Ruby 1.8.7 (or 1.8.6). You can check if it
 ==== 2. Install required libraries
 
 After installing Ruby, you must install a few required libraries (specifically FXRuby (http://www.fxruby.org/) and
-r18n (http://r18n.rubyforge.org/)).
-This will take a minute or two to automatically download and install the libraries.
+r18n (http://r18n.rubyforge.org/)). Execute 'flipped/install_libraries.rb' to accomplish this. This will take a minute
+or so to automatically download and install the libraries.
 
-===== Windows
-
-Click on 'flipped/install_libraries.bat'.
-
-===== Linux
-
-This will require compilation of the FXRuby gem (so you'll need gcc installed and it will take a while)).
-Execute 'flipped/install_libraries.sh' (specific to Ubuntu/Debian).
+On Linux this could take a while longer, since the script will have to compile FXRuby for you (you will need a build
+environment set up for this, including applications like gcc, but this is assumed as already being installed).
 
 ==== 3 Get the source code for Flipped
 
@@ -90,9 +83,9 @@ Choose one of:
 
 a. Get the latest stable release from {github}[http://github.com/Spooner/flipped/downloads] (recommended).
 
-b. Using git (if you don't know what git is, just get the latest snapshot, below):
+b. Clone the project repository using git:
 
-       git://github.com/Spooner/flipped.git
+    git clone git://github.com/Spooner/flipped.git
 
 c. Download latest git snapshot {zip/tar package}[http://github.com/Spooner/flipped/archives/master].
 
@@ -100,7 +93,7 @@ It is probably easiest to put Flipped in a directory inside SleepIsDeath, but it
  
 ==== 4. Run application
 
-===== Windows
+===== Windows & Mac (OS X)
 
 Click on 'flipped/lib/flipped.rbw' to start the application. If it doesn't start up properly, double check
 that you have performed step #1 and #2, above.

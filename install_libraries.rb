@@ -1,0 +1,1 @@
+system 'rake install:libraries'

@@ -15,6 +15,8 @@ SOURCE_DIR = 'lib'
 APP = 'flipped'
 APP_EXE = File.join(BINARY_DIR, "#{APP}.exe")
 
+REQUIRED_GEMS = %w[fxruby r18n-desktop]
+
 RELEASE_DIR = File.join("release", "#{APP}_v#{RELEASE_VERSION.gsub(/\./, '_')}")
 RELEASE_PACKAGE_7Z = "#{RELEASE_DIR}.7z"
 RELEASE_PACKAGE_ZIP = "#{RELEASE_DIR}.zip"
@@ -83,14 +85,20 @@ namespace :build do
 end
 
 namespace :install do
-	task :libraries_windows do
+	task :libraries do
 	    puts 'Installing/updating required libraries. This could take a minute or two...'
 		puts
-		
-		system 'gem update --system'
-		puts
-		
-		system 'gem install fxruby r18n-desktop --no-ri --no-rdoc'		
+
+        case RUBY_PLATFORM
+          when /cygwin|mingw|win32/
+            gem = 'gem'
+          when /osx/
+            gem = 'sudo gem'
+          else
+            gem = 'sudo gem1.8'
+        end
+
+		system "#{gem} install #{REQUIRED_GEMS.join(' ')} --no-ri --no-rdoc"
 		puts
 		
 		puts 'Library installation complete.'
