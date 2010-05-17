@@ -1,10 +1,9 @@
 require 'rake/rdoctask'
-require 'spec/rake/spectask'
 require 'rake/clean'
 require 'fileutils'
 include FileUtils
 
-RELEASE_VERSION = '0.2.0RC1'
+RELEASE_VERSION = '0.2.0RC2'
 
 OCRA = 'ruby build/ocrasa.rb'
 
@@ -33,8 +32,13 @@ namespace :rdoc do
   end
 end
 
-Spec::Rake::SpecTask.new do |t|
-  t.spec_files = FileList['spec/**/*_spec.rb']
+begin
+  # Optional if you have rspec installed.
+  require 'spec/rake/spectask'
+  Spec::Rake::SpecTask.new do |t|
+    t.spec_files = FileList['spec/**/*_spec.rb']
+  end
+rescue Exception => ex
 end
 
 namespace :compile do
