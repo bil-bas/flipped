@@ -1,4 +1,4 @@
-#!/usr/bin/ruby1.9.1 -w
+#!/usr/bin/ruby1.8 -w
 # encoding: utf-8
 
 begin
@@ -21,8 +21,6 @@ begin
   include Flipped
 
   application = FXApp.new('Flipped', 'Spooner')
-
-  application.disableThreads # Just makes things run a tiny bit faster, since we aren't using Ruby threads.
 
   window = Gui.new(application)
 
