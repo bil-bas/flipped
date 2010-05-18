@@ -5,7 +5,7 @@ module Flipped
 
   # A flip-book for SleepIsDeath.
   #
-  # Enables reading/editing/writing flipbooks.
+  # Enables reading/editing/writing flip-books.
   class Book
     FRAME_LIST_FILE = 'frameList.php'
 
@@ -21,29 +21,52 @@ module Flipped
     HTML_TEMPLATE_FILES = [NEXT_BUTTON_HTML, PREVIOUS_BUTTON_HTML, FRAME_TEMPLATE_HTML, PRELOAD_NEXT_HTML]
     ALL_TEMPLATE_FILES = HTML_TEMPLATE_FILES + [FRAME_LIST_FILE]
 
+    IMAGES_DIR = 'images'
+
     # Create a new book, optionally from an existing flipbook directory.
     #
     # === Parameters
-    # directory:: Flipbook directory to read from [String]
+    # directory:: Flip-book directory to read from [String]
     def initialize(directory = nil)
       if directory
-        # Read in framelists in php format and extract the numbers.
-        frame_list_text = File.open(File.join(directory, FRAME_LIST_FILE)) do |file|
-          file.read
-        end
-
-        frame_list_text =~ FRAME_LIST_PATTERN
-        frame_names =  $1.split(/",\s+"/)
-
-        # Load in images in order they were in the framelist file.
-        @frames = frame_names.inject([]) do |list, name|
-          data = File.open(File.join(directory, 'images', "#{name}.png"), "rb") do |file|
-            file.read
-          end
-          list.push data
-        end
+        read(directory)
       else
         @frames = []
+      end
+    end
+
+    # Read all frames from a directory, overwriting any frames we already have.
+    #
+    # === Parameters
+    # +directory+:: Flip-book directory to load from [String].
+    #
+    # Returns: Number of frames actually loaded [Integer]
+    def read(directory)
+      # Load in images in order they were in the frame-list file.
+      @frames = frame_names(directory).inject([]) do |list, name|
+        list.push read_frame(directory, name)
+      end
+
+      size
+    end
+
+    # Update frames from a directory, loading only those frames that are not already loaded.
+    # Note: this does not check if the frames already loaded are correct!
+    #
+    # === Parameters
+    # +directory+:: Flip-book directory to load from [String].
+    #
+    # Returns: Number of frames actually loaded [Integer]
+    def update(directory)
+      names = frame_names(directory)
+      if names.size > size
+        num = names.size - size
+        (size...names.size).each do |i|
+          @frames.push read_frame(directory, names[i])
+        end
+        num
+      else
+        0
       end
     end
 
@@ -133,7 +156,7 @@ module Flipped
         raise ArgumentError.new("Directory already exists: #{out_dir}")
       end
 
-      images_dir = File.join(out_dir, 'images')
+      images_dir = File.join(out_dir, IMAGES_DIR)
 
       frame_numbers = (1..@frames.size).to_a.map {|i| sprintf("%05d", i) }
 
@@ -198,6 +221,37 @@ module Flipped
       end
 
       true
+    end
+    
+  protected
+    # Read all frames from a directory, overwriting any frames we already have.
+    #
+    # === Parameters
+    # +directory+:: Flip-book directory to load from [String].
+    # +name+:: Name of frame to load [String].
+    #
+    # Returns: Frame data [String]
+    def read_frame(directory, name)
+      File.open(File.join(directory, IMAGES_DIR, "#{name}.png"), "rb") do |file|
+        file.read
+      end
+    end
+
+    # Get frame-names list from a flip-book directory
+    #
+    # === Parameters
+    # +directory+:: Flip-book directory to load from.
+    #
+    # Returns: Names of frames [Array of String]
+    def frame_names(directory)
+      # Read in frame-lists in php format and extract the numbers.
+      frame_list_text = File.open(File.join(directory, FRAME_LIST_FILE)) do |file|
+        file.read
+      end
+
+      frame_list_text =~ FRAME_LIST_PATTERN
+
+      $1.split(/"\s*,\s+"/)
     end
   end
 end

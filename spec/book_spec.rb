@@ -20,6 +20,7 @@ describe Book do
     FileUtils.rm_r @output_dir if File.exists? @output_dir
     FileUtils.mkdir_p @output_dir
 
+    @empty_book = Book.new
     @book1 = Book.new(@book1_dir)
     @book2 = Book.new(@book2_dir)
     @book3 = Book.new(@book3_dir)
@@ -30,10 +31,6 @@ describe Book do
   end
 
   describe "initialize() empty" do
-    before :each do
-       @empty_book = Book.new
-    end
-
     it "should be empty" do
       @empty_book.size.should == 0
       @empty_book.frames.size.should == 0
@@ -41,13 +38,58 @@ describe Book do
     end
   end
 
-  describe "initialize(directory) from flipbook" do
-    it "should return the number of frames read in from the flipbook" do
+  describe "initialize(directory) from flip-book" do
+    it "should return the number of frames read in from the flip-book" do
       @book1.size.should == @book1_size
     end
 
     it "should be empty" do
       @book1.empty?.should be_false
+    end
+  end
+
+  describe "read_frame()" do
+    it "should read in the appropriate frame" do
+      @empty_book.send(:read_frame, @book1_dir, "00001").should == @book1[0]
+    end
+  end
+
+  describe "read()" do
+    it "should read in the book" do
+      @empty_book.read(@book1_dir)
+      @empty_book.frames.should ==  @book1.frames
+    end
+    
+    it "should replace the original book" do
+      @book1.read(@book2_dir)
+      @book1.frames.should ==  @book2.frames
+    end
+  end
+
+  describe "update()" do
+    it "should load all frames if the book is initially empty" do
+      @empty_book.update(@book1_dir).should == @book1_size
+      @empty_book.frames.should ==  @book1.frames
+    end
+
+    it "should append the frames that are higher than its existing ones." do
+      original_frames = @book2.frames.dup
+      
+      @book2.update(@book1_dir).should == @book1_size - @book2_size
+
+      (0...@book2_size).each do |i|
+        @book2[i].should == original_frames[i]
+      end
+    
+      (@book2_size...@book1_size).each do |i|
+        @book2[i].should == @book1[i]
+      end
+    end
+  end
+
+  describe "frame_names()" do
+    it "should read in the correct list of frame names" do
+      @book1.send(:frame_names, @book2_dir).should == ["00001", "00002", "00003"]
     end
   end
 
