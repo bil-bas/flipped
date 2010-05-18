@@ -98,18 +98,10 @@ module Flipped
       @read_thread = Thread.new do
         @reading = true
         while @reading
-          new_book = Book.new(@flip_book_dir)
-
-          update = false
-          @book.synchronize do
-            if new_book.size > @book.size
-              (@book.size...new_book.size).each do |i|
-                @book.insert(@book.size, new_book[i])
-              end
-              update = true
-            end
+          num_new_frames = @book.synchronize do
+            @book.update(@flip_book_dir)
           end
-          update_spectators if update
+          update_spectators if num_new_frames > 0
 
           sleep CHECK_INTERVAL
         end
