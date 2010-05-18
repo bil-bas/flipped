@@ -1,4 +1,5 @@
 require 'rake/rdoctask'
+require 'spec/rake/spectask'
 require 'rake/clean'
 require 'fileutils'
 include FileUtils
@@ -13,8 +14,6 @@ BINARY_DIR = 'bin'
 SOURCE_DIR = 'lib'
 APP = 'flipped'
 APP_EXE = File.join(BINARY_DIR, "#{APP}.exe")
-
-REQUIRED_GEMS = %w[fxruby r18n-desktop]
 
 RELEASE_DIR = File.join("release", "#{APP}_v#{RELEASE_VERSION.gsub(/\./, '_')}")
 RELEASE_PACKAGE_7Z = "#{RELEASE_DIR}.7z"
@@ -32,13 +31,10 @@ namespace :rdoc do
   end
 end
 
-begin
-  # Optional if you have rspec installed.
-  require 'spec/rake/spectask'
-  Spec::Rake::SpecTask.new do |t|
-    t.spec_files = FileList['spec/**/*_spec.rb']
-  end
-rescue Exception => ex
+# Optional if you have rspec installed.
+
+Spec::Rake::SpecTask.new do |t|
+  t.spec_files = FileList['spec/**/*_spec.rb']
 end
 
 namespace :compile do
@@ -88,28 +84,9 @@ namespace :build do
   task :release => :compress
 end
 
-namespace :install do
-	task :libraries do
-	    puts 'Installing/updating required libraries. This could take a minute or two...'
-		puts
-
-        case RUBY_PLATFORM
-          when /cygwin|mingw|win32/ # Windoze
-            gem = 'gem'
-          when /darwin/  # Mac
-            gem = 'sudo gem'
-          else
-            gem = 'sudo gem1.8' # Linux. Probably.
-        end
-
-		system "#{gem} install #{REQUIRED_GEMS.join(' ')} --no-ri --no-rdoc"
-		puts
-		
-		puts 'Library installation complete.'
-		puts
-		
-		system 'pause'
-	end
+desc "Install libraries required by Flipped"
+task :install_libraries do
+  load 'install_libraries.rb'
 end
 
 require 'build/package'

@@ -1,4 +1,4 @@
-#!/usr/bin/ruby1.8 -w
+#!/usr/bin/ruby -w
 # encoding: utf-8
 
 begin
