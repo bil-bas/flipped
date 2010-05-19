@@ -1,17 +1,14 @@
-require 'fox16'
-
 require 'book'
+require 'dialog'
 
 module Flipped
-  include Fox
-
-  class OptionsDialog < FXDialogBox
+  class OptionsDialog < Dialog
     def template_directory
       @template_directory_field.text
     end
 
     def initialize(owner, options = {})
-      super(owner, "Settings", :opts => DECOR_TITLE|DECOR_BORDER)
+      super(owner, "Settings")
 
       # 3 columns wide.
       grid = FXMatrix.new(self, :n => 3, :opts => MATRIX_BY_COLUMNS|LAYOUT_FILL_X)
@@ -38,24 +35,6 @@ module Flipped
           end
         end
       end
-
-      # Bottom buttons
-      buttons = FXHorizontalFrame.new(self,
-        :opts => LAYOUT_SIDE_BOTTOM|FRAME_NONE|LAYOUT_FILL_X|PACK_UNIFORM_WIDTH,
-        :padLeft => 40, :padRight => 40, :padTop => 20, :padBottom => 20)
-
-      # Accept
-      accept = FXButton.new(buttons, "&Accept",
-                            :opts => FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y,
-                            :target => self,:selector => ID_ACCEPT)
-
-      # Cancel
-      FXButton.new(buttons, "&Cancel",
-                   :opts => FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y,
-                   :target => self, :selector => ID_CANCEL)
-
-      accept.setDefault
-      accept.setFocus
     end
   end
 end

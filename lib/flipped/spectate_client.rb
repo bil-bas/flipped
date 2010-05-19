@@ -10,15 +10,13 @@ require 'spectate_server'
 module Flipped
   class SpectateClient
     DEFAULT_PORT = SpectateServer::DEFAULT_PORT
-    DEFAULT_NAME = 'Player'
     
     attr_reader :log, :socket
 
-    def initialize(address, options = {})
-      log_to = options[:log_to] || STDOUT
-      @name = options[:name] || DEFAULT_NAME
-      port = options[:port] || DEFAULT_PORT
+    def initialize(address, port, name, options = {})
+      @address, @port, @name = address, port, name
 
+      log_to = options[:log_to] || STDOUT
       @log = Logger.new(log_to)
       @log.progname = self.class.name
 
@@ -29,7 +27,7 @@ module Flipped
       
       Thread.abort_on_exception = true
 
-      connect(address, port)
+      connect
     end
 
     def closed?
@@ -80,16 +78,16 @@ module Flipped
     # ------------------------
     #
     #
-    def connect(address, port)
+    def connect()
       # Connect to a server
 
-      @socket = TCPSocket.open(address, port)
+      @socket = TCPSocket.open(@address, @port)
       @socket.puts @name
       @socket.flush
 
       server_name = @socket.gets.strip
 
-      log.info { "#{self.class}: Connected to #{server_name} (#{address}:#{port})." }
+      log.info { "#{self.class}: Connected to #{server_name} (#{@address}:#{@port})." }
 
       Thread.new { read }
       

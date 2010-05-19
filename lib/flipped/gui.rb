@@ -23,6 +23,7 @@ require 'logger'
 require 'book'
 require 'options_dialog'
 require 'monitor_dialog'
+require 'spectate_dialog'
 require 'settings_manager'
 require 'image_canvas'
 require 'spectate_server'
@@ -76,9 +77,10 @@ module Flipped
       :thumbnails_shown => ['@thumbnails_shown', true],
 
       :broadcast_when_monitoring => ['@broadcast_when_monitoring', false],
-      :broadcast_port => ['@broadcast_port', SpectateServer::DEFAULT_PORT],
+      :spectate_port => ['@spectate_port', SpectateServer::DEFAULT_PORT],
+      :spectate_address => ['@spectate_address', ''],
 
-      :player_name => ['@player_name', 'Player']
+      :player_name => ['@player_name', 'Player'],
     }
 
     KEYS_ATTRIBUTES = {
@@ -699,7 +701,7 @@ module Flipped
 
     # Open a new flip-book and monitor it for changes.
     def on_cmd_monitor(sender, selector, event)
-      dialog = MonitorDialog.new(self, t.monitor.dialog.title, :port => @broadcast_port, :player_name => @player_name,
+      dialog = MonitorDialog.new(self, t.monitor.dialog.title, :port => @spectate_port, :player_name => @player_name,
         :flip_book_directory => @current_flip_book_directory, :broadcast => @broadcast_when_monitoring)
 
       return unless dialog.execute == 1
@@ -717,7 +719,7 @@ module Flipped
         end
         @broadcast_when_monitoring = broadcast
         @current_flip_book_directory = directory
-        @broadcast_port = port if broadcast # Only remember the port number of broadcasting.
+        @spectate_port = port if broadcast # Only remember the port number of broadcasting.
         @player_name = player_name if broadcast
 
         disable_monitors
@@ -766,7 +768,7 @@ module Flipped
     def broadcasting=(enable)
       if enable
         log.info { "Started broadcasting"}
-        @spectate_server = SpectateServer.new(@broadcast_port, @player_name)
+        @spectate_server = SpectateServer.new(@spectate_port, @player_name)
       else
         log.info { "Ended broadcasting"}
         @spectate_server.close
@@ -791,18 +793,29 @@ module Flipped
 
     # Open a new flip-book and monitor it for changes.
     def on_cmd_spectate(sender, selector, event)
+      dialog = SpectateDialog.new(self, t.spectate.dialog.title, :address => @spectate_address, :port => @spectate_port,
+        :player_name => @player_name, :flip_book_directory => @current_flip_book_directory)
+
+      return unless dialog.execute == 1
+
+      directory = dialog.flip_book_directory
+      address = dialog.address
+      port = dialog.port
+      player_name = dialog.player_name
+      
       begin
-        # TODO: Get address and port from a dialog.
-        address = "127.0.0.1"
-        port = SpectateServer::DEFAULT_PORT
         app.beginWaitCursor do
           # Replace with new book, viewing last frame.
-          spectate_client = SpectateClient.new(address, :port => port)
+          spectate_client = SpectateClient.new(address, port, player_name)
           @book = Book.new
           @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
           show_frames(-1)
           disable_monitors
           @spectate_client = spectate_client
+          @spectate_address = address
+          @spectate_port = port
+          @player_name = player_name
+          @current_flip_book_directory = directory
           self.spectating = true
         end
       rescue => ex
