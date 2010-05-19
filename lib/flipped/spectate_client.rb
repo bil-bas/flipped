@@ -2,7 +2,6 @@ require 'thread'
 require 'socket'
 require 'logger'
 
-require 'book'
 require 'spectate_server'
 
 # =============================================================================
@@ -12,34 +11,28 @@ module Flipped
   class SpectateClient
     DEFAULT_NAME = 'Player'
     
-    attr_reader :log
+    attr_reader :log, :socket
 
-    def initialize(flip_book_dir, template_dir, address, options = {})
-      @log = Logger.new(STDOUT)
-      @log.progname = self.class.name
-
+    def initialize(address, options = {})
+      log_to = options[:log_to] || STDOUT
       @name = options[:name] || DEFAULT_NAME
       port = options[:port] || SpectateServer::DEFAULT_PORT
+
+      @log = Logger.new(log_to)
+      @log.progname = self.class.name
+
+      @length = nil
+      @buffer = ''
 
       srand
       
       Thread.abort_on_exception = true
 
-      connect(flip_book_dir, template_dir, address, port)
-    end
-
-    def reading?
-      @reading
+      connect(address, port)
     end
 
     def closed?
       @socket.closed?
-    end
-
-    def size
-      @book.synchronize do
-        @book.size
-      end
     end
 
     # ------------------------
@@ -48,17 +41,48 @@ module Flipped
 
     def close
       @socket.close unless @socket.closed?
-      @reading = false
-      @read_thread.join
+    end
+
+    def frames_buffer
+      frames = nil
+      @frames.synchronize do
+        frames = @frames.dup
+        @frames.clear
+      end
+      frames
     end
 
   protected
+    def read()
+      @frames = []
+      @frames.extend(Mutex_m)
+
+      begin
+        until socket.closed?
+          length = @socket.read(4)
+          break unless length
+          length = length.unpack('L')[0]
+
+          frame = @socket.read(length)
+          break unless frame
+          @frames.synchronize do
+            @frames.push frame
+          end
+        end
+      rescue IOError
+        close
+      end
+
+      nil
+    end
+
     # ------------------------
     #
     #
-    def connect(flip_book_dir, template_dir, address, port)
+    def connect(address, port)
       # Connect to a server
-      @socket = TCPSocket.new(address, port)
+
+      @socket = TCPSocket.open(address, port)
       @socket.puts @name
       @socket.flush
 
@@ -66,36 +90,8 @@ module Flipped
 
       log.info { "#{self.class}: Connected to #{server_name} (#{address}:#{port})." }
 
-      @book = Book.new
-      @book.extend(Mutex_m)
-
-      @reading = true
-      @read_thread = Thread.new do
-        begin
-          while reading? && (length = @socket.read(4))
-            length = length.unpack('L')[0]
-
-            buffer = ''
-            while reading? && buffer.length < length
-              buffer += @socket.read(length - buffer.size)
-              log.debug { buffer.length }
-            end
-
-            if buffer.length == length
-              @book.synchronize do
-                @book.insert(@book.size, buffer)
-                dir = "#{flip_book_dir}_#{@book.size} frames"
-                @book.write(dir, template_dir)
-                log.info { "#{@name} wrote book to #{dir}" }
-              end
-
-            end
-          end
-        rescue Exception => ex
-          log.info { "#{@name} disconnected #{ex}"}
-        end
-      end
-
+      Thread.new { read }
+      
       nil
     end
   end

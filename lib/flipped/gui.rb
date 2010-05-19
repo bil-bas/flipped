@@ -17,12 +17,15 @@ end
 # Standard libraries.
 require 'yaml'
 require 'fileutils'
+require 'logger'
 
 # Rest of the app.
 require 'book'
 require 'options_dialog'
 require 'settings_manager'
 require 'image_canvas'
+require 'spectate_server'
+require 'spectate_client'
 
 module Flipped
   include Fox
@@ -75,6 +78,9 @@ module Flipped
     KEYS_ATTRIBUTES = {
       :open => ['@key[:open]', 'Ctrl-O'],
       :append => ['@key[:append]', 'Ctrl-A'],
+      :monitor => ['@key[:monitor]', 'Ctrl-M'],
+      :broadcast => ['@key[:broadcast]', 'Ctrl-B'],
+      :spectate => ['@key[:spectate]', 'Ctrl-R'],
       :save_as => ['@key[:save_as]', 'Ctrl-S'],
       :quit => ['@key[:quit]', 'Ctrl-Q'],
 
@@ -98,12 +104,17 @@ module Flipped
     }
 
     FRAMES_RENDERED_PER_CHORE = 5
+    SPECTATE_INTERVAL = 0.5 # Half a second between checking for receiving new frames.
+    MONITOR_INTERVAL = 0.5 # Half a second between checking for new frames in folder.
 
     IMAGE_BACKGROUND_COLOR = Fox::FXColor::Black
     THUMB_BACKGROUND_COLOR = Fox::FXColor::White
     THUMB_SELECTED_COLOR = Fox::FXRGB(50, 50, 50)
 
     def initialize(app)
+      @log = Logger.new(STDOUT)
+      @log.progname = self.class.name
+
       super(app, '', :opts => DECOR_ALL)
 
       @key = {}
@@ -147,6 +158,9 @@ module Flipped
     end
 
   protected
+
+    attr_reader :log
+    
     attr_accessor :slide_show_interval
     def slide_show_interval #:nodoc
       @slide_show_interval_target.value
@@ -173,6 +187,10 @@ module Flipped
 
       create_menu(file_menu, :open)
       @append_menu = create_menu(file_menu, :append)
+      FXMenuSeparator.new(file_menu)
+      @monitor_folder_menu = create_menu(file_menu, :monitor)
+      @broadcast_folder_menu = create_menu(file_menu, :broadcast)
+      @spectate_remote_menu = create_menu(file_menu, :spectate)
       FXMenuSeparator.new(file_menu)
       @save_menu = create_menu(file_menu, :save_as)
       FXMenuSeparator.new(file_menu)
@@ -529,10 +547,14 @@ module Flipped
       end
 
       [@append_menu, @save_menu, @delete_menu, @delete_after_menu, @delete_before_menu, @delete_identical_menu].each do |m|
-        if @book.empty? then m.disable else m.enable end
+        if can_delete? then m.disable else m.enable end
       end
       
       nil
+    end
+
+    def can_delete?
+      not (@book.empty? or monitoring? or spectating?)
     end
 
     # Event when clicking on a thumbnail - select.
@@ -545,16 +567,18 @@ module Flipped
 
     # Event when clicking on a thumbnail - context menu.
     def on_thumb_right_click(sender, selector, event)
-      index = @thumbs_row.indexOfChild(sender.parent)
-      select_frame(index)
-      image_context_menu(index, event.root_x, event.root_y)
+      if can_delete?
+        index = @thumbs_row.indexOfChild(sender.parent)
+        select_frame(index)
+        image_context_menu(index, event.root_x, event.root_y)
+      end
       
       return 1
     end
 
     # Event when right-clicking on the main image - context menu.
     def on_image_right_click(sender, selector, event)
-      unless @book.empty?
+      if can_delete?
         image_context_menu(@current_frame_index, event.root_x, event.root_y)
       end
 
@@ -635,8 +659,9 @@ module Flipped
           show_frames(0)
         end
         @current_flip_book_directory = open_dir
+        disable_monitors
       rescue => ex
-        log_error(ex)
+        log_exception(ex)
         dialog = FXMessageBox.new(self, t.open.error.title, t.open.error.text(open_dir),
                  :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
         dialog.execute
@@ -645,8 +670,8 @@ module Flipped
       return 1
     end
 
-    def log_error(exception)
-      puts "#{exception.class}: #{exception}\n#{exception.backtrace.join("\n")}"
+    def log_exception(exception)
+      log.error { "#{exception.class}: #{exception}\n#{exception.backtrace.join("\n")}" }
 
       nil
     end
@@ -664,11 +689,155 @@ module Flipped
           show_frames(new_frame)
         end
         @current_flip_book_directory = open_dir
+        disable_monitors
       rescue => ex
-        log_error(ex)
+        log_exception(ex)
         dialog = FXMessageBox.new(self, t.append.error.title, t.append.error.text(open_dir),
                  :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
         dialog.execute
+      end
+
+      return 1
+    end
+
+    # Open a new flip-book and monitor it for changes.
+    def on_cmd_monitor(sender, selector, event)
+      monitor(false)
+    end
+
+    # Open a new flip-book and monitor it for changes, broadcasting the frames.
+    def on_cmd_broadcast(sender, selector, event)
+      monitor(true)
+    end
+
+    def monitor(broadcast = false)
+      translation = broadcast ? t.broadcast : t.monitor
+
+      directory = FXFileDialog.getOpenDirectory(self, translation.dialog.title, @current_flip_book_directory)
+      return if directory.empty?
+
+      begin
+        app.beginWaitCursor do
+          # Replace with new book, viewing last frame.
+          @book = Book.new(directory)
+          @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
+          show_frames(@book.size - 1)
+        end
+        @current_flip_book_directory = directory
+        disable_monitors
+        self.monitoring = true
+        self.broadcasting = true if broadcast
+      rescue => ex
+        log_exception(ex)
+        dialog = FXMessageBox.new(self, translation.error.title, translation.error.text(directory),
+                 :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
+        dialog.execute
+      end
+
+      return 1
+    end
+
+    def disable_monitors
+      spectating = false if spectating?
+      monitoring = false if monitoring?
+      broadcasting = false if broadcasting?
+    end
+
+    def monitoring?
+      defined?(@monitor_timeout) ? (not @monitor_timeout.nil?) : false
+    end
+
+    def broadcasting?
+      defined?(@spectate_server) ? (not @spectate_server.nil?) : false
+    end
+    
+    def monitoring=(enable)
+      if enable
+        log.info { "Started monitoring"}
+        @monitor_timeout = app.addTimeout(MONITOR_INTERVAL * 1000, method(:on_monitor_timeout), :repeat => true)
+      else
+        log.info { "Ended monitoring"}
+        app.removeTimeout(@monitor_timeout)
+        @monitor_timeout = nil
+      end
+    end
+
+    def broadcasting=(enable)
+      if enable
+        log.info { "Started broadcasting"}
+        @spectate_server = SpectateServer.new
+      else
+        log.info { "Ended broadcasting"}
+        @spectate_server.close
+        @spectate_server = nil
+      end
+    end
+
+    def on_monitor_timeout(sender, selector, event)
+      num_new_frames = @book.update(@current_flip_book_directory)
+
+      if num_new_frames > 0
+        @spectate_server.update_spectators(@book)
+        show_frames(@book.size - 1)
+      end
+
+      if broadcasting?
+        @spectate_server.update_spectators(@book) if @spectate_server.need_update?
+      end
+
+      return 1
+    end
+
+    # Open a new flip-book and monitor it for changes.
+    def on_cmd_spectate(sender, selector, event)
+      begin
+        # TODO: Get address and port from a dialog.
+        address = "127.0.0.1"
+        port = SpectateServer::DEFAULT_PORT
+        app.beginWaitCursor do
+          # Replace with new book, viewing last frame.
+          spectate_client = SpectateClient.new(address, :port => port)
+          @book = Book.new
+          @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
+          show_frames(-1)
+          disable_monitors
+          @spectate_client = spectate_client
+          self.spectating = true
+        end
+      rescue => ex
+        log_exception(ex)
+        dialog = FXMessageBox.new(self, t.spectate.error.title, t.spectate.error.text("#{address}:#{port}"),
+                 :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
+        dialog.execute
+        return 0
+      end
+
+      return 1
+    end
+
+    def spectating?
+      defined?(@spectate_client) ? (not @spectate_client.nil?) : false
+    end
+
+    def spectating=(enable)
+      if enable
+        log.info { "Started spectating"}
+        @spectate_timeout = app.addTimeout(SPECTATE_INTERVAL * 1000, method(:on_spectate_timeout), :repeat => true)
+      else
+        log.info { "Ended spectating"}
+        app.removeTimeout(@spectate_timeout)
+        @spectate_timeout = nil
+        @spectate_client.close
+        @spectate_client = nil
+      end
+    end
+
+    def on_spectate_timeout(sender, selector, event)
+      new_frames = @spectate_client.frames_buffer
+
+      unless new_frames.empty?
+        @book.insert(@book.size, *new_frames)
+        show_frames(@book.size - 1)
       end
 
       return 1
@@ -689,7 +858,7 @@ module Flipped
         begin
           @book.write(save_dir, @template_directory)
         rescue => ex
-          log_error(ex)
+          log_exception(ex)
           dialog = FXMessageBox.new(self, t.save_as.error.templates.title,
                  t.save_as.error.templates.text(save_dir, @template_directory),
                  :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)

@@ -2,15 +2,13 @@ require 'thread'
 require 'socket'
 require 'mutex_m'
 require 'logger'
-
-require 'book'
+require 'stringio'
 
 # =============================================================================
 #
 #
 module Flipped
   class SpectateServer   
-    CHECK_INTERVAL = 0.5 # 0.5s between checking for file-write.
 
     DEFAULT_PORT = 7777
     DEFAULT_NAME = 'Controller'
@@ -18,22 +16,20 @@ module Flipped
 
     attr_reader :log
 
-    def initialize(flip_book_dir, options = {})
-      @log = Logger.new(STDOUT)
-      @log.progname = self.class.name
-      
+    def initialize(options = {})
+      log_to = options[:log_to] || STDOUT
       @name = options[:name] || DEFAULT_NAME
-      @auto_save = options[:auto_save] || true
       @port = options[:port] || DEFAULT_PORT
+
+      @log = Logger.new(log_to)
+      @log.progname = self.class.name
 
       srand
 
-      @flip_book_dir = flip_book_dir
       @spectators = []
       @spectators.extend(Mutex_m)
       @server = nil
       @listen_thread = nil
-      @read_thread = nil
       @book = nil
 
       Thread.abort_on_exception = true
@@ -59,14 +55,38 @@ module Flipped
       @listen_thread.join
     end
 
+    # Bring all spectators up to the current frame.
+    def update_spectators(book)
+      log.info("Updating spectators")
+      @joined_need_update = false
+      @spectators.synchronize do
+        @spectators.dup.each do |spectator|
+          # Update with all previous messages.
+
+          ((spectator.position + 1)...book.size).each do |i| 
+            log.info("Updating spectator ##{spectator.id}: #{spectator.name} (Frame ##{i + 1})")
+            send_frame(spectator, book[i])
+          end
+        end
+      end
+    end
+
+    def need_update?
+      defined?(@joined_need_update) ?  @joined_need_update : false
+    end
+
   protected
     class Spectator
-      attr_reader :name, :socket
+      attr_reader :name, :socket, :id
       attr_accessor :position
+
+      @@next_spectator_id = 1
 
       def initialize(name, socket)
         @name, @socket = name, socket
         @position = -1
+        @id = @@next_spectator_id
+        @@next_spectator_id += 1
       end
     end
     
@@ -93,63 +113,37 @@ module Flipped
         end
       end
 
-      @book = Book.new
-      @book.extend(Mutex_m)
-      @read_thread = Thread.new do
-        @reading = true
-        while @reading
-          num_new_frames = @book.synchronize do
-            @book.update(@flip_book_dir)
-          end
-          update_spectators if num_new_frames > 0
-
-          sleep CHECK_INTERVAL
-        end
-      end
-
       nil
     end
 
     # Add a new spectator associated with a particular socket.
     def add_spectator(socket)
       Thread.new(socket) do |socket|
-        spectator_name = socket.gets.strip
-        spectator = Spectator.new(spectator_name, socket)
+        begin
+          spectator_name = socket.gets.strip
+          spectator = Spectator.new(spectator_name, socket)
 
-        spectator.socket.puts @name
-        spectator.socket.flush
-        @spectators.synchronize do
-          log.info { "#{spectator_name} connected from #{socket.addr[3]} on port #{socket.addr[1]}." }
-          @spectators.push spectator
-        end
-        update_spectators
-      end
-    end
-
-    # Bring all spectators up to the current frame.
-    def update_spectators
-      @spectators.synchronize do
-        @spectators.dup.each do |spectator|
-          # Update with all previous messages.
-          @book.synchronize do
-            ((spectator.position + 1)...@book.size).each do |i|
-              send_frame(spectator, i)
-            end
+          spectator.socket.puts @name
+          spectator.socket.flush
+          @spectators.synchronize do
+            log.info { "#{spectator_name} connected from #{socket.addr[3]} on port #{socket.addr[1]}." }
+            @spectators.push spectator
+            @joined_need_update = true
           end
+        rescue => ex
+          p ex
         end
       end
     end
 
     # Send a particular book frame to a particular spectator.
-    def send_frame(spectator, index)
+    def send_frame(spectator, frame)
         socket = spectator.socket
         return if socket.closed?
 
-        data = @book[index]
-
         begin
-          socket.write([data.size].pack('L'))
-          socket.write(data)
+          socket.write([frame.size].pack('L'))
+          socket.write(frame)
           socket.flush
           spectator.position += 1
         rescue Exception => ex

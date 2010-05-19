@@ -27,6 +27,41 @@ append:
 
 probably because it is not a flip-book directory"
 
+monitor:
+  menu: "&Monitor flip-book..."
+  help: Load flip-book and monitor it while playing SiD (%1)
+  dialog:
+    title: Monitor flip-book directory
+  error:
+    title: Monitor error
+    text: "Failed to load flip-book from
+
+'%1',
+
+probably because it is not a flip-book directory"
+
+broadcast:
+  menu: "&Broadcast flip-book..."
+  help: Load flip-book, monitor it and broadcast it to spectators while playing SiD (%1)
+  dialog:
+    title: Broadcast flip-book directory
+  error:
+    title: Broadcast error
+    text: "Failed to load flip-book from
+
+'%1',
+
+probably because it is not a flip-book directory"
+
+spectate:
+  menu: "Spectate &remote flip-book..."
+  help: Spectate player's flip-book over network during a game (%1)
+  dialog:
+    title: Spectate remote flip-book
+  error:
+    title: Spectate remote flip-book error
+    text: "Failed to connect to %1"
+
 save_as:
   menu: "&Save flip-book as..."
   help: Save current flip-book (%1)
