@@ -704,7 +704,6 @@ module Flipped
       return unless dialog.execute == 1
 
       directory = dialog.flip_book_directory
-      p   directory
       broadcast = dialog.broadcast?
       port = dialog.port
 
