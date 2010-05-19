@@ -54,8 +54,9 @@ module Flipped
 
       @broadcast_target = FXDataTarget.new(options[:broadcast])
       @broadcast_target.connect(SEL_COMMAND, method(:update_port))
-      FXCheckButton.new(grid, "Broadcast over network?", :width => 10, :opts => JUSTIFY_NORMAL|ICON_AFTER_TEXT,
+      broadcast = FXCheckButton.new(grid, "Broadcast over network?", :width => 10, :opts => JUSTIFY_NORMAL|ICON_AFTER_TEXT,
                         :target => @broadcast_target, :selector => FXDataTarget::ID_VALUE)
+      broadcast.checkState = @broadcast_target.value
 
       port_frame = FXHorizontalFrame.new(grid, :opts => LAYOUT_FILL_X)
       FXLabel.new(port_frame, "Broadcast port")
