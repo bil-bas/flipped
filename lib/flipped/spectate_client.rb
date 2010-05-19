@@ -1,14 +1,20 @@
 require 'thread'
 require 'socket'
 require 'logger'
+require 'base64'
+
+require 'json'
 
 require 'spectate_server'
+require 'packet'
 
 # =============================================================================
 #
 #
 module Flipped
   class SpectateClient
+    include Packet
+    
     DEFAULT_PORT = SpectateServer::DEFAULT_PORT
     
     attr_reader :log, :socket
@@ -62,10 +68,29 @@ module Flipped
           break unless length
           length = length.unpack('L')[0]
 
-          frame = @socket.read(length)
-          break unless frame
-          @frames.synchronize do
-            @frames.push frame
+          packet = @socket.read(length)
+          break unless packet
+          packet = JSON.parse(packet)
+
+          case packet[Tag::TYPE]
+            when Type::FRAME
+              frame_data = Base64.decode64(packet[Tag::DATA])
+              log.info { "Received frame (#{frame_data.size} bytes)" }
+              @frames.synchronize do
+                @frames.push frame_data
+              end
+
+            when Type::SERVER_INIT
+              @server_name = packet[Tag::NAME]
+              log.info { "Server at #{@address}:#{@port} identified as #{@server_name}." }
+
+              packet = { Tag::TYPE => Type::CLIENT_INIT, Tag::NAME => @name }.to_json
+              @socket.write([packet.length].pack('L'))
+              @socket.write(packet)
+              @socket.flush
+
+            else
+              log.error { "Unrecognised packet type: #{packet[Tag::TYPE]}" }
           end
         end
       rescue IOError
@@ -82,12 +107,8 @@ module Flipped
       # Connect to a server
 
       @socket = TCPSocket.open(@address, @port)
-      @socket.puts @name
-      @socket.flush
 
-      server_name = @socket.gets.strip
-
-      log.info { "#{self.class}: Connected to #{server_name} (#{@address}:#{@port})." }
+      log.info { "Connected to #{@address}:#{@port}." }
 
       Thread.new { read }
       

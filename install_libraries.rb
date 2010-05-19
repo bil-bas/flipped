@@ -1,6 +1,6 @@
 #!/usr/bin/ruby -w
 
-REQUIRED_GEMS = %w[fxruby r18n-desktop]
+REQUIRED_GEMS = %w[fxruby r18n-desktop json]
 
 puts 'Installing/updating required libraries. This could take a minute or two...'
 puts

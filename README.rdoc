@@ -59,6 +59,10 @@ Install using the 1.8.7 Windows installer (http://rubyinstaller.org/download.htm
 
 Install Ruby 1.8.7 and the FOX gui toolkit, by running 'flipped/install_ruby_ubuntu.sh').
 
+Some Linux distributions come with Ruby 1.8.7 (or 1.8.6). You can check if it is already installed by typing:
+
+  ruby --version
+
 ===== Mac (OS X)
 
 Install Ruby 1.8.7 using the OS X 10.5 (Leopard) installer (http://rubyosx.rubyforge.org/). If you are using OS X 10.3
@@ -70,11 +74,11 @@ Apparently, OS X now comes ready with Ruby 1.8.7 (or 1.8.6). You can check if it
 
 ==== 2. Install required libraries
 
-After installing Ruby, you must install a few required libraries (specifically FXRuby (http://www.fxruby.org/) and
-r18n (http://r18n.rubyforge.org/)). Execute 'flipped/install_libraries.rb' to accomplish this. This will take a minute
+After installing Ruby, you must install a few required libraries (specifically FXRuby, r18n and JSON).
+Execute 'flipped/install_libraries.rb' to accomplish this. This will take a minute
 or so to automatically download and install the libraries.
 
-On Linux this could take a while longer, since the script will have to compile FXRuby for you (you will need a build
+On Linux this could take a while longer, since the script will have to compile FXRuby & JSON for you (you will need a build
 environment set up for this, including applications like gcc, but this is assumed as already being installed).
 
 ==== 3 Get the source code for Flipped
@@ -142,6 +146,7 @@ Full text of the license is provided in COPYING.txt
 
 * {FXRuby}[http://fxruby.org] library by Lyle Johnson, based on the FOX Toolkit by Jeroen van der Zijp.
 * {r18n}[http://r18n.rubyforge.org/] provides internationalisation support.
+* {JSON}[http://flori.github.com/json/] provides serialisation in communications.
 * {Ocra}[http://ocra.rubyforge.org/], used to create the standalone Windows executable.
 * Default templates directory, taken from {SleepIsDeath}[(http://sleepisdeath.net] v14c, by Jason Rohrer.
 * {RubyMine}[http://www.jetbrains.com/ruby/] Ruby IDE was used to develop the application. Enormous thanks to JetBrains

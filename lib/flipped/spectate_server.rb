@@ -2,13 +2,20 @@ require 'thread'
 require 'socket'
 require 'mutex_m'
 require 'logger'
+require 'base64'
+
+require 'json'
+
+require 'packet'
+require 'spectator'
 
 # =============================================================================
 #
 #
 module Flipped
-  class SpectateServer   
-
+  class SpectateServer
+    include Packet
+    
     DEFAULT_PORT = 7777
     DEFAULT_AUTO_SAVE = true
 
@@ -62,8 +69,8 @@ module Flipped
           # Update with all previous messages.
 
           ((spectator.position + 1)...book.size).each do |i| 
-            log.info("Updating spectator ##{spectator.id}: #{spectator.name} (Frame ##{i + 1})")
-            send_frame(spectator, book[i])
+            log.info("Updating spectator ##{spectator.id}: #{spectator.name} (Frame ##{i + 1}, #{book[i].size} bytes)")
+            spectator.send(Tag::TYPE => Type::FRAME, Tag::DATA => Base64.encode64(book[i]))
           end
         end
       end
@@ -74,20 +81,6 @@ module Flipped
     end
 
   protected
-    class Spectator
-      attr_reader :name, :socket, :id
-      attr_accessor :position
-
-      @@next_spectator_id = 1
-
-      def initialize(name, socket)
-        @name, @socket = name, socket
-        @position = -1
-        @id = @@next_spectator_id
-        @@next_spectator_id += 1
-      end
-    end
-    
     # ------------------------
     #
     #
@@ -118,13 +111,13 @@ module Flipped
     def add_spectator(socket)
       Thread.new(socket) do |socket|
         begin
-          spectator_name = socket.gets.strip
-          spectator = Spectator.new(spectator_name, socket)
 
-          spectator.socket.puts @name
-          spectator.socket.flush
+          spectator = Spectator.new(self, socket)
+
+          spectator.send(Tag::TYPE => Type::SERVER_INIT, Tag::NAME => @name)
+
           @spectators.synchronize do
-            log.info { "#{spectator_name} connected from #{socket.addr[3]} on port #{socket.addr[1]}." }
+            log.info { "Spectator connected from #{socket.addr[3]}:#{socket.addr[1]}." }
             @spectators.push spectator
             @joined_need_update = true
           end
@@ -132,23 +125,6 @@ module Flipped
           p ex
         end
       end
-    end
-
-    # Send a particular book frame to a particular spectator.
-    def send_frame(spectator, frame)
-        socket = spectator.socket
-        return if socket.closed?
-
-        begin
-          socket.write([frame.size].pack('L'))
-          socket.write(frame)
-          socket.flush
-          spectator.position += 1
-        rescue Exception => ex
-          log.error { "#{spectator.name} died (#{ex.message})." }
-          socket.close unless socket.closed?
-          @spectators.delete(spectator)
-        end
     end
   end          
 end
