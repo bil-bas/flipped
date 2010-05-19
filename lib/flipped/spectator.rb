@@ -46,7 +46,8 @@ require 'packet'
               # Ignore.
           end
         rescue Exception
-          # Ignore.
+          log.error { "#{@name} died unexpectedly while reading (#{ex})" }
+          @socket.close unless @socket.closed?
         end
       end
     end
@@ -54,14 +55,19 @@ require 'packet'
     # Send a particular packet.
     def send(packet)      
       return if @socket.closed?
-      
+
       encoded = packet.to_json
       compressed = Zlib::Deflate.deflate(encoded)
       log.info { "Sending #{packet.class} (#{encoded.size} => #{compressed.size} bytes)" }
       log.debug { encoded }
-      @socket.write([compressed.size].pack('L'))
-      @socket.write(compressed)
-      @socket.flush
+      begin
+        @socket.write([compressed.size].pack('L'))
+        @socket.write(compressed)
+        @socket.flush
+      rescue => ex
+        log.error { "#{@name} died unexpectedly while writing (#{ex})" }
+        @socket.close unless @socket.closed?
+      end
 
       # If a frame is being sent, then increment our own position.
       case packet
