@@ -1,10 +1,11 @@
 require 'logger'
+require 'zlib'
 
 require 'packet'
 
  module Flipped
    class Spectator
-    include Packet
+    INITIAL_POSITION = -1
 
     attr_reader :socket, :id
     attr_accessor :position, :name
@@ -22,7 +23,7 @@ require 'packet'
       @owner, @socket = owner, socket
 
       @name = nil
-      @position = -1
+      @position = INITIAL_POSITION
       @id = @@next_spectator_id
       @@next_spectator_id += 1
 
@@ -34,11 +35,13 @@ require 'packet'
           packet = @socket.read(length)
           packet = JSON.parse(packet)
 
-          case packet[Tag::TYPE]
-            when Type::CLIENT_INIT
-              @name = packet[Tag::NAME]
+          case packet
+            when Login
+              @name = packet.name
+              # TODO: Check password.
               log.info { "#{@socket.addr[3]}:#{@socket.addr[1]} identified as #{@name}." }
-
+              send(Accept.new)
+              
             else
               # Ignore.
           end
@@ -49,16 +52,25 @@ require 'packet'
     end
 
     # Send a particular packet.
-    def send(packet)
+    def send(packet)      
       return if @socket.closed?
-
+      
       encoded = packet.to_json
-      @socket.write([encoded.size].pack('L'))
-      @socket.write(encoded)
+      compressed = Zlib::Deflate.deflate(encoded)
+      log.info { "Sending #{packet.class} (#{encoded.size} => #{compressed.size} bytes)" }
+      log.debug { encoded }
+      @socket.write([compressed.size].pack('L'))
+      @socket.write(compressed)
       @socket.flush
 
       # If a frame is being sent, then increment our own position.
-      @position += 1 if packet[Tag::TYPE] == Type::FRAME
+      case packet
+        when Packet::Frame
+          @position += 1
+
+        when Packet::Clear
+          @position = INITIAL_POSITION
+      end
 
       encoded.size
     end

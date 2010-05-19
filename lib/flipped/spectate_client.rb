@@ -1,7 +1,7 @@
 require 'thread'
 require 'socket'
 require 'logger'
-require 'base64'
+require 'zlib'
 
 require 'json'
 
@@ -13,8 +13,6 @@ require 'packet'
 #
 module Flipped
   class SpectateClient
-    include Packet
-    
     DEFAULT_PORT = SpectateServer::DEFAULT_PORT
     
     attr_reader :log, :socket
@@ -70,27 +68,30 @@ module Flipped
 
           packet = @socket.read(length)
           break unless packet
-          packet = JSON.parse(packet)
+          packet = JSON.parse(Zlib::Inflate.inflate(packet))
 
-          case packet[Tag::TYPE]
-            when Type::FRAME
-              frame_data = Base64.decode64(packet[Tag::DATA])
+          case packet
+            when Frame
+              frame_data = packet.frame
               log.info { "Received frame (#{frame_data.size} bytes)" }
               @frames.synchronize do
                 @frames.push frame_data
               end
 
-            when Type::SERVER_INIT
-              @server_name = packet[Tag::NAME]
+            when Challenge
+              @server_name = packet.name
               log.info { "Server at #{@address}:#{@port} identified as #{@server_name}." }
 
-              packet = { Tag::TYPE => Type::CLIENT_INIT, Tag::NAME => @name }.to_json
+              packet = Login.new(:name => @name).to_json
               @socket.write([packet.length].pack('L'))
               @socket.write(packet)
               @socket.flush
 
+            when Accept
+              log.info { "Login accepted" }
+
             else
-              log.error { "Unrecognised packet type: #{packet[Tag::TYPE]}" }
+              log.error { "Unrecognised packet type: #{packet.class}" }
           end
         end
       rescue IOError

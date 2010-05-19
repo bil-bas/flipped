@@ -2,9 +2,6 @@ require 'thread'
 require 'socket'
 require 'mutex_m'
 require 'logger'
-require 'base64'
-
-require 'json'
 
 require 'packet'
 require 'spectator'
@@ -14,8 +11,6 @@ require 'spectator'
 #
 module Flipped
   class SpectateServer
-    include Packet
-    
     DEFAULT_PORT = 7777
     DEFAULT_AUTO_SAVE = true
 
@@ -70,7 +65,7 @@ module Flipped
 
           ((spectator.position + 1)...book.size).each do |i| 
             log.info("Updating spectator ##{spectator.id}: #{spectator.name} (Frame ##{i + 1}, #{book[i].size} bytes)")
-            spectator.send(Tag::TYPE => Type::FRAME, Tag::DATA => Base64.encode64(book[i]))
+            spectator.send(Frame.new(:frame => book[i]))
           end
         end
       end
@@ -110,11 +105,10 @@ module Flipped
     # Add a new spectator associated with a particular socket.
     def add_spectator(socket)
       Thread.new(socket) do |socket|
-        begin
-
+        begin         
           spectator = Spectator.new(self, socket)
 
-          spectator.send(Tag::TYPE => Type::SERVER_INIT, Tag::NAME => @name)
+          spectator.send(Challenge.new(:name => @name))
 
           @spectators.synchronize do
             log.info { "Spectator connected from #{socket.addr[3]}:#{socket.addr[1]}." }
