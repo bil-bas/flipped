@@ -22,6 +22,7 @@ require 'logger'
 # Rest of the app.
 require 'book'
 require 'options_dialog'
+require 'monitor_dialog'
 require 'settings_manager'
 require 'image_canvas'
 require 'spectate_server'
@@ -73,13 +74,16 @@ module Flipped
       :information_bar_shown => ['@information_bar_shown', true],
       :status_bar_shown => ['@status_bar_shown', true],
       :thumbnails_shown => ['@thumbnails_shown', true],
+
+      :broadcast_when_monitoring => ['@broadcast_when_monitoring', false],
+      :broadcast_port => ['@broadcast_port', SpectateServer::DEFAULT_PORT],
+
     }
 
     KEYS_ATTRIBUTES = {
       :open => ['@key[:open]', 'Ctrl-O'],
       :append => ['@key[:append]', 'Ctrl-A'],
       :monitor => ['@key[:monitor]', 'Ctrl-M'],
-      :broadcast => ['@key[:broadcast]', 'Ctrl-B'],
       :spectate => ['@key[:spectate]', 'Ctrl-R'],
       :save_as => ['@key[:save_as]', 'Ctrl-S'],
       :quit => ['@key[:quit]', 'Ctrl-Q'],
@@ -189,7 +193,6 @@ module Flipped
       @append_menu = create_menu(file_menu, :append)
       FXMenuSeparator.new(file_menu)
       @monitor_folder_menu = create_menu(file_menu, :monitor)
-      @broadcast_folder_menu = create_menu(file_menu, :broadcast)
       @spectate_remote_menu = create_menu(file_menu, :spectate)
       FXMenuSeparator.new(file_menu)
       @save_menu = create_menu(file_menu, :save_as)
@@ -262,8 +265,7 @@ module Flipped
     end
 
     def on_cmd_about(sender, selector, event)
-      dialog = FXMessageBox.new(self, t.about.dialog.title, t.about.dialog.text, nil, MBOX_OK|DECOR_TITLE|DECOR_BORDER)
-      dialog.execute
+      FXMessageBox.information(self, MBOX_OK, t.about.dialog.title, t.about.dialog.text)
 
       return 1
     end
@@ -337,7 +339,7 @@ module Flipped
       options_frame = FXVerticalFrame.new(@button_bar)
 
       FXCheckButton.new(options_frame, "#{t.loops.label}\t#{t.loops.tip}\t#{t.loops.help(@key[:loops])}",
-        :target => @slide_show_loops_target, :selector => FXDataTarget::ID_VALUE)
+        :target => @slide_show_loops_target, :selector => FXDataTarget::ID_VALUE, :opts => JUSTIFY_NORMAL|ICON_AFTER_TEXT)
 
       interval_frame = FXHorizontalFrame.new(options_frame)
       FXLabel.new(interval_frame, "#{t.interval.label}\t#{t.interval.tip}\t#{t.interval.help(@key[:interval])}")
@@ -661,19 +663,11 @@ module Flipped
         @current_flip_book_directory = open_dir
         disable_monitors
       rescue => ex
-        log_exception(ex)
-        dialog = FXMessageBox.new(self, t.open.error.title, t.open.error.text(open_dir),
-                 :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
-        dialog.execute
+        log.error { ex }
+        error_dialog(t.open.error.title, t.open.error.text(open_dir))
       end
 
       return 1
-    end
-
-    def log_exception(exception)
-      log.error { "#{exception.class}: #{exception}\n#{exception.backtrace.join("\n")}" }
-
-      nil
     end
 
     # Open a new flip-book
@@ -691,30 +685,28 @@ module Flipped
         @current_flip_book_directory = open_dir
         disable_monitors
       rescue => ex
-        log_exception(ex)
-        dialog = FXMessageBox.new(self, t.append.error.title, t.append.error.text(open_dir),
-                 :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
-        dialog.execute
+        log.error { ex }
+        error_dialog(t.append.error.title, t.append.error.text(open_dir))
       end
 
       return 1
     end
 
+    def error_dialog(caption, message)
+      FXMessageBox.error(self, MBOX_OK, caption, message)
+    end
+
     # Open a new flip-book and monitor it for changes.
     def on_cmd_monitor(sender, selector, event)
-      monitor(false)
-    end
+      dialog = MonitorDialog.new(self, t.monitor.dialog.title, :port => @broadcast_port,
+        :flip_book_directory => @current_flip_book_directory, :broadcast => @broadcast_when_monitoring)
 
-    # Open a new flip-book and monitor it for changes, broadcasting the frames.
-    def on_cmd_broadcast(sender, selector, event)
-      monitor(true)
-    end
+      return unless dialog.execute == 1
 
-    def monitor(broadcast = false)
-      translation = broadcast ? t.broadcast : t.monitor
-
-      directory = FXFileDialog.getOpenDirectory(self, translation.dialog.title, @current_flip_book_directory)
-      return if directory.empty?
+      directory = dialog.flip_book_directory
+      p   directory
+      broadcast = dialog.broadcast?
+      port = dialog.port
 
       begin
         app.beginWaitCursor do
@@ -723,15 +715,20 @@ module Flipped
           @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
           show_frames(@book.size - 1)
         end
+        @broadcast_when_monitoring = broadcast
         @current_flip_book_directory = directory
+        @broadcast_port = port if broadcast # Only remember the port number of broadcasting.
         disable_monitors
         self.monitoring = true
-        self.broadcasting = true if broadcast
-      rescue => ex
-        log_exception(ex)
-        dialog = FXMessageBox.new(self, translation.error.title, translation.error.text(directory),
-                 :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
-        dialog.execute
+        self.broadcasting = true if @broadcast_when_monitoring
+      rescue IOError, Errno::ENOENT => ex
+        log.error { ex }
+        case ex
+          when IOError
+            error_dialog(t.monitor.error.load_failed.title, t.monitor.error.load_failed.text(directory))
+          when Errno::ENOENT
+            error_dialog(t.monitor.error.server_failed.title, t.monitor.error.server_failed.text(port.to_s))
+        end
       end
 
       return 1
@@ -805,11 +802,8 @@ module Flipped
           self.spectating = true
         end
       rescue => ex
-        log_exception(ex)
-        dialog = FXMessageBox.new(self, t.spectate.error.title, t.spectate.error.text("#{address}:#{port}"),
-                 :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
-        dialog.execute
-        return 0
+        log.error { ex }
+        error_dialog(t.spectate.error.title, t.spectate.error.text("#{address}:#{port}"))
       end
 
       return 1
@@ -849,20 +843,15 @@ module Flipped
       return if save_dir.empty?
 
       if File.exists? save_dir
-        dialog = FXMessageBox.new(self, t.save_as.error.exists.title,
-                 t.save_as.error.exists.text(save_dir),
-                 :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
-        dialog.execute
+        error_dialog(t.save_as.error.exists.title,t.save_as.error.exists.text(save_dir))
       else
         @current_flip_book_directory = save_dir
         begin
           @book.write(save_dir, @template_directory)
         rescue => ex
-          log_exception(ex)
-          dialog = FXMessageBox.new(self, t.save_as.error.templates.title,
-                 t.save_as.error.templates.text(save_dir, @template_directory),
-                 :opts => MBOX_OK|DECOR_TITLE|DECOR_BORDER)
-          dialog.execute
+          log.error { ex }
+          error_dialog(t.save_as.error.templates.title,
+                 t.save_as.error.templates.text(save_dir, @template_directory))
         end
       end
 

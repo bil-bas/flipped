@@ -42,9 +42,13 @@ module Flipped
     #
     # Returns: Number of frames actually loaded [Integer]
     def read(directory)
-      # Load in images in order they were in the frame-list file.
-      @frames = frame_names(directory).inject([]) do |list, name|
-        list.push read_frame(directory, name)
+      begin
+        # Load in images in order they were in the frame-list file.
+        @frames = frame_names(directory).inject([]) do |list, name|
+          list.push read_frame(directory, name)
+        end
+      rescue => ex
+        raise IOError.new("Failed to read frames from flip-book at '#{directory}'")
       end
 
       size
@@ -209,7 +213,7 @@ module Flipped
     end
 
     # Is the specified template directory valid. That is, does it include all the files
-    # absolutely required to generate a flipbook?
+    # absolutely required to generate a flip-book?
     #
     # === Parameters
     # directory:: Directory to check [String]
@@ -221,6 +225,17 @@ module Flipped
       end
 
       true
+    end
+
+    # Is the specified flip-book directory valid. That is, does it include all the files
+    # absolutely required to load a flip-book?
+    #
+    # === Parameters
+    # directory:: Directory to check [String]
+    #
+    # Returns: true if the directory is valid, otherwise false.
+    def self.valid_flip_book_directory?(directory)
+      File.exists?(File.join(directory, FRAME_LIST_FILE)) and File.directory?(File.join(directory, IMAGES_DIR))
     end
     
   protected

@@ -155,6 +155,16 @@ describe Book do
     end
   end
 
+  describe "self.valid_flip_book_directory?()" do
+    it "should return true for a valid flip-book directory" do
+      Book.valid_flip_book_directory?(@book1_dir).should be_true
+    end
+
+    it "should return false for an invalid flip-book directory" do
+      Book.valid_flip_book_directory?(Dir.pwd).should be_false
+    end    
+  end
+
   describe "write()" do
     before :each do
       rm_rf(@output_dir) if File.exists? @output_dir

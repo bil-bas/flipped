@@ -9,6 +9,7 @@ require 'spectate_server'
 #
 module Flipped
   class SpectateClient
+    DEFAULT_PORT = SpectateServer::DEFAULT_PORT
     DEFAULT_NAME = 'Player'
     
     attr_reader :log, :socket
@@ -16,7 +17,7 @@ module Flipped
     def initialize(address, options = {})
       log_to = options[:log_to] || STDOUT
       @name = options[:name] || DEFAULT_NAME
-      port = options[:port] || SpectateServer::DEFAULT_PORT
+      port = options[:port] || DEFAULT_PORT
 
       @log = Logger.new(log_to)
       @log.progname = self.class.name

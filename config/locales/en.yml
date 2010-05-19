@@ -29,25 +29,17 @@ probably because it is not a flip-book directory"
 
 monitor:
   menu: "&Monitor flip-book..."
-  help: Load flip-book and monitor it while playing SiD (%1)
+  help: Load flip-book and monitor it while playing SiD, optionally also broadcasting it over the network (%1)
   dialog:
     title: Monitor flip-book directory
   error:
-    title: Monitor error
-    text: "Failed to load flip-book from
-
-'%1',
-
-probably because it is not a flip-book directory"
-
-broadcast:
-  menu: "&Broadcast flip-book..."
-  help: Load flip-book, monitor it and broadcast it to spectators while playing SiD (%1)
-  dialog:
-    title: Broadcast flip-book directory
-  error:
-    title: Broadcast error
-    text: "Failed to load flip-book from
+    server_failed:
+      title: Broadcast error
+      text: Unable to start up a flip-book broadcast server on port %1.
+       
+    load_failed:
+      title: Monitor error
+      text: "Failed to load flip-book from
 
 '%1',
 
