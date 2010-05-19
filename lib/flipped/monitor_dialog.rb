@@ -21,6 +21,11 @@ module Flipped
       @port_target.value.to_i
     end
 
+    attr_reader :player_name
+    def player_name # :nodoc:
+      @player_name_target.value
+    end
+
     def initialize(owner, title, options = {})
       super(owner, title, :opts => DECOR_TITLE|DECOR_BORDER)
 
@@ -53,20 +58,29 @@ module Flipped
       end
 
       @broadcast_target = FXDataTarget.new(options[:broadcast])
-      @broadcast_target.connect(SEL_COMMAND, method(:update_port))
+      @broadcast_target.connect(SEL_COMMAND, method(:update_broadcast_group))
       broadcast = FXCheckButton.new(grid, "Broadcast over network?", :width => 10, :opts => JUSTIFY_NORMAL|ICON_AFTER_TEXT,
                         :target => @broadcast_target, :selector => FXDataTarget::ID_VALUE)
       broadcast.checkState = @broadcast_target.value
 
-      port_frame = FXHorizontalFrame.new(grid, :opts => LAYOUT_FILL_X)
-      FXLabel.new(port_frame, "Broadcast port")
+      @broadcast_box = FXGroupBox.new(grid, 'Broadcast options', :opts => FRAME_SUNKEN|LAYOUT_FILL_X)
+      @broadcast_grid = FXMatrix.new(@broadcast_box, :n => 2, :opts => MATRIX_BY_COLUMNS|LAYOUT_FILL_X)
+      @port_label = FXLabel.new(@broadcast_grid, "Broadcast port")
       @port_target = FXDataTarget.new(options[:port].to_s)
-      @port_field = FXTextField.new(port_frame, 6, :opts => TEXTFIELD_NORMAL|LAYOUT_RIGHT|JUSTIFY_RIGHT|TEXTFIELD_INTEGER,
-                      :target => @port_target, :selector => FXDataTarget::ID_VALUE) do |port|
-        port.text = @port_target.value
+      @port_field = FXTextField.new(@broadcast_grid, 6, :opts => TEXTFIELD_NORMAL|LAYOUT_RIGHT|JUSTIFY_RIGHT|TEXTFIELD_INTEGER,
+                      :target => @port_target, :selector => FXDataTarget::ID_VALUE) do |widget|
+        widget.text = @port_target.value
       end
 
-      update_port
+      name_frame = FXHorizontalFrame.new(@broadcast_box, :opts => LAYOUT_FILL_X)
+      @player_name_label = FXLabel.new(@broadcast_grid, "Player name")
+      @player_name_target = FXDataTarget.new(options[:player_name])
+      @player_name_field = FXTextField.new(@broadcast_grid, 20, :opts => TEXTFIELD_NORMAL|LAYOUT_RIGHT,
+                      :target => @player_name_target, :selector => FXDataTarget::ID_VALUE) do |widget|
+        widget.text = @player_name_target.value
+      end
+
+      update_broadcast_group
 
       # Bottom buttons
       buttons = FXHorizontalFrame.new(self,
@@ -88,11 +102,9 @@ module Flipped
     end
 
   protected
-    def update_port(*args)
-      if @broadcast_target.value
-        @port_field.enable
-      else
-        @port_field.disable
+    def update_broadcast_group(*args)
+      [@broadcast_box, @port_label, @port_field, @player_name_label, @player_name_field].each do |widget|
+        widget.enabled = @broadcast_target.value
       end
     end
   end

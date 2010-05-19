@@ -78,6 +78,7 @@ module Flipped
       :broadcast_when_monitoring => ['@broadcast_when_monitoring', false],
       :broadcast_port => ['@broadcast_port', SpectateServer::DEFAULT_PORT],
 
+      :player_name => ['@player_name', 'Player']
     }
 
     KEYS_ATTRIBUTES = {
@@ -698,7 +699,7 @@ module Flipped
 
     # Open a new flip-book and monitor it for changes.
     def on_cmd_monitor(sender, selector, event)
-      dialog = MonitorDialog.new(self, t.monitor.dialog.title, :port => @broadcast_port,
+      dialog = MonitorDialog.new(self, t.monitor.dialog.title, :port => @broadcast_port, :player_name => @player_name,
         :flip_book_directory => @current_flip_book_directory, :broadcast => @broadcast_when_monitoring)
 
       return unless dialog.execute == 1
@@ -706,7 +707,7 @@ module Flipped
       directory = dialog.flip_book_directory
       broadcast = dialog.broadcast?
       port = dialog.port
-
+      player_name = dialog.player_name
       begin
         app.beginWaitCursor do
           # Replace with new book, viewing last frame.
@@ -717,17 +718,21 @@ module Flipped
         @broadcast_when_monitoring = broadcast
         @current_flip_book_directory = directory
         @broadcast_port = port if broadcast # Only remember the port number of broadcasting.
+        @player_name = player_name if broadcast
+
         disable_monitors
         self.monitoring = true
-        self.broadcasting = true if @broadcast_when_monitoring
-      rescue IOError, Errno::ENOENT => ex
+
+      rescue Exception => ex
         log.error { ex }
-        case ex
-          when IOError
-            error_dialog(t.monitor.error.load_failed.title, t.monitor.error.load_failed.text(directory))
-          when Errno::ENOENT
-            error_dialog(t.monitor.error.server_failed.title, t.monitor.error.server_failed.text(port.to_s))
-        end
+        error_dialog(t.monitor.error.load_failed.title, t.monitor.error.load_failed.text(directory))
+      end
+
+      begin
+        self.broadcasting = true if @broadcast_when_monitoring
+      rescue Exception => ex
+        log.error { ex }
+        error_dialog(t.monitor.error.server_failed.title, t.monitor.error.server_failed.text(port.to_s))
       end
 
       return 1
@@ -761,7 +766,7 @@ module Flipped
     def broadcasting=(enable)
       if enable
         log.info { "Started broadcasting"}
-        @spectate_server = SpectateServer.new
+        @spectate_server = SpectateServer.new(@broadcast_port, @player_name)
       else
         log.info { "Ended broadcasting"}
         @spectate_server.close
