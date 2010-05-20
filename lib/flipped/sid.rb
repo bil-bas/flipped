@@ -1,51 +1,100 @@
 module Flipped
   class SiD
     SETTINGS_EXTENSION = '.ini'
-    attr_accessor :executable
 
-    def root
-      File.dirname(@executable)
-    end
+    EXECUTABLE = (RUBY_PLATFORM =~ /cygwin|win32|mingw/) ? 'SleepIsDeath.exe' : 'SleepIsDeath'
 
-    def []=(key, value)
-      raise Exception.new("No settings for #{key}") unless @settings.has_key? key
-      @settings[key] = value
-    end
+    SETTINGS = {
+      :auto_host => :boolean,
+      :auto_join => :boolean,
+      :default_server_address => :string,
+      :flip_book => :boolean,
+      :fullscreen => :boolean,
+      :hard_to_quit_mode => :boolean,
+      :port => :integer,
+      :screen_height => :integer,
+      :screen_width => :integer,
+      :time_limit => :integer,
+    }
 
-    def [](key)
-      raise Exception.new("No settings for #{key}") unless @settings.has_key? key
-      @settings[key]
+    SETTINGS.each_pair do |setting, type|
+      class_eval(<<EOS, __FILE__, __LINE__)
+        def #{setting}#{type == :boolean ? '?' : ''}
+          @settings[:#{setting}]
+        end
+
+        def #{setting}=(value)
+          @settings[:#{setting}] = value
+        end
+EOS
     end
     
-    def initialize(executable)
-      @executable = executable
+    def executable
+      File.join(@root, EXECUTABLE)
+    end
+    
+    def initialize(root_directory)
+      @root = root_directory
+      @thread = nil
       read_settings
     end
 
     def read_settings
       @settings = Hash.new
-      Dir(File.join(settings_folder, "*.ini")).each do |filename|
-        @settings[File.basename(filename).sub(SETTINGS_EXTENSION, '')] = File.read(filename)
+      SETTINGS.each_pair do |setting, type|
+        value = File.read(File.join(settings_folder, "#{symbol_to_string setting}.ini")).strip
+        @settings[setting] = case type
+          when :integer
+            value.to_i
+          when :boolean
+            value == "0" ? false : true
+          else
+            value
+        end
       end
+
+      nil
     end
 
     def write_settings
-      @settings.each_pair do |key, value|
-        File.open(File.join(settings_folder, "#{key}#{SETTINGS_EXTENSION}")) do |file|
-          file.print(value)
+      SETTINGS.each_pair do |setting, type|
+        File.open(File.join(settings_folder, "#{symbol_to_string setting}#{SETTINGS_EXTENSION}")) do |file|
+          value = @settings[setting]
+          @settings[setting] = case type
+            when :boolean
+              value ? "1" : "0"
+            else
+              value.to_s
+          end
+          file.puts(value)
         end
       end
+
+      nil
     end
 
     def run
       write_settings
-      system @executable
+      
+      @thread = Thread.new do
+        system executable
+      end
 
+      nil
+    end
+
+    def kill
+      @thread.kill if @thread
     end
 
   protected
     def settings_folder
-      File.join(root, 'settings')
+      File.join(@root, 'settings')
+    end
+
+    # Convert a symbolic to string name.
+    def symbol_to_string(str)
+      str.to_s.gsub(/(_[a-z])/) { |c| c[1..1].upcase }
     end
   end
 end
