@@ -1,5 +1,7 @@
 require 'fox16'
 
+require 'button'
+
 require 'book'
 
 module Flipped
@@ -10,23 +12,31 @@ module Flipped
     def initialize(owner, title)
       super(owner, title, :opts => DECOR_TITLE|DECOR_BORDER)
 
+      # 4 columns wide.
+      @grid = FXMatrix.new(self, :n => 4, :opts => MATRIX_BY_COLUMNS|LAYOUT_FILL_X, :hSpacing => 8, :vSpacing => 8)
+      
       # Bottom buttons
       buttons = FXHorizontalFrame.new(self,
         :opts => LAYOUT_SIDE_BOTTOM|FRAME_NONE|LAYOUT_FILL_X|PACK_UNIFORM_WIDTH,
         :padLeft => 40, :padRight => 40, :padTop => 20, :padBottom => 20)
 
       # Accept
-      accept = FXButton.new(buttons, "&Accept",
-                            :opts => FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y,
+      accept = Button.new(buttons, "&Accept",
+                            :opts => LAYOUT_RIGHT|LAYOUT_CENTER_Y,
                             :target => self,:selector => ID_ACCEPT)
 
       # Cancel
-      FXButton.new(buttons, "&Cancel",
-                   :opts => FRAME_RAISED|FRAME_THICK|LAYOUT_RIGHT|LAYOUT_CENTER_Y,
+      Button.new(buttons, "&Cancel",
+                   :opts => LAYOUT_RIGHT|LAYOUT_CENTER_Y,
                    :target => self, :selector => ID_CANCEL)
 
       accept.setDefault
       accept.setFocus
+    end
+
+    # Skip a grid cell.
+    def skip_grid
+      FXLabel.new(@grid, '')
     end
   end
 end
