@@ -14,11 +14,13 @@ module Flipped
 
       # 4 columns wide.
       @grid = FXMatrix.new(self, :n => 4, :opts => MATRIX_BY_COLUMNS|LAYOUT_FILL_X, :hSpacing => 8, :vSpacing => 8)
-      
+
+      FXHorizontalSeparator.new(self, :padTop => 10)
+
       # Bottom buttons
       buttons = FXHorizontalFrame.new(self,
         :opts => LAYOUT_SIDE_BOTTOM|FRAME_NONE|LAYOUT_FILL_X|PACK_UNIFORM_WIDTH,
-        :padLeft => 40, :padRight => 40, :padTop => 20, :padBottom => 20)
+        :padLeft => 40, :padRight => 40, :padTop => 10, :padBottom => 10)
 
       # Accept
       accept = Button.new(buttons, "&Accept",
