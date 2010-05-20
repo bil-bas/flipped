@@ -281,10 +281,11 @@ module Flipped
     end
 
     def on_cmd_settings(sender, selector, event)
-      dialog = OptionsDialog.new(self, :template_directory => @template_directory)
+      dialog = OptionsDialog.new(self, :template_directory => @template_directory, :notification_sound => @notification_sound)
 
       if dialog.execute == 1
         @template_directory = dialog.template_directory
+        @notification_sound = dialog.notification_sound
       end
 
       return 1
