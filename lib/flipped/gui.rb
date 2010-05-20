@@ -82,6 +82,9 @@ module Flipped
       :spectate_address => ['@spectate_address', ''],
 
       :player_name => ['@player_name', 'Player'],
+
+      :notification_sound => ['@notification_sound', File.join(INSTALLATION_ROOT, 'media', 'sounds', 'shortbeeptone.wav')],
+      :notification_enabled => ['@notification_enabled', true],
     }
 
     KEYS_ATTRIBUTES = {
@@ -161,8 +164,6 @@ module Flipped
       @thumbs_to_add = [] # List of thumbs that need updating in a chore.
 
       # TODO: should be configured.
-      @notify_sound = File.join(INSTALLATION_ROOT, 'media', 'sounds', 'shortbeeptone.wav')
-      @notification_enabled = true
       @controller = true
       
       select_frame(-1)
@@ -791,7 +792,7 @@ module Flipped
 
         # Player gets notified on their own turn
         if notification_enabled? and player_turn?
-          Sound.play(@notify_sound)
+          Sound.play(@notification_sound)
         end
       end
 
@@ -863,7 +864,7 @@ module Flipped
 
         # Spectators get all notifications. Controller only gets it on start of their turn.
         if notification_enabled? and (controller_turn? or (not controller?))
-          Sound.play(@notify_sound)
+          Sound.play(@notification_sound)
         end
       end
 
