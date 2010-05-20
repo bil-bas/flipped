@@ -66,7 +66,10 @@ module Flipped
       if names.size > size
         num = names.size - size
         (size...names.size).each do |i|
-          @frames.push read_frame(directory, names[i])
+          frame = read_frame(directory, names[i])
+          # Ensure that empty frames (not properly saved) are ignored.
+          return (i - size) if frame.nil? or frame.empty?
+          @frames.push frame
         end
         num
       else
