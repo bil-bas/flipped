@@ -24,9 +24,6 @@ module Flipped
       @log = Logger.new(log_to)
       @log.progname = self.class.name
 
-      @length = nil
-      @buffer = ''
-
       srand
       
       Thread.abort_on_exception = true
@@ -48,17 +45,17 @@ module Flipped
 
     def frames_buffer
       frames = nil
-      @frames.synchronize do
-        frames = @frames.dup
-        @frames.clear
+      @frames_buffer.synchronize do
+        frames = @frames_buffer.dup
+        @frames_buffer.clear
       end
       frames
     end
-
+    
   protected
     def read()
-      @frames = []
-      @frames.extend(Mutex_m)
+      @frames_buffer = []
+      @frames_buffer.extend(Mutex_m)
 
       begin
         until socket.closed?
@@ -74,8 +71,8 @@ module Flipped
             when Frame
               frame_data = packet.frame
               log.info { "Received frame (#{frame_data.size} bytes)" }
-              @frames.synchronize do
-                @frames.push frame_data
+              @frames_buffer.synchronize do
+                @frames_buffer.push frame_data
               end
 
             when Challenge
