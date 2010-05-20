@@ -28,6 +28,7 @@ require 'settings_manager'
 require 'image_canvas'
 require 'spectate_server'
 require 'spectate_client'
+require 'sound'
 
 module Flipped
   include Fox
@@ -159,6 +160,11 @@ module Flipped
       @slide_show_timer = nil # Not initially playing.
       @thumbs_to_add = [] # List of thumbs that need updating in a chore.
 
+      # TODO: should be configured.
+      @notify_sound = File.join(INSTALLATION_ROOT, 'media', 'sounds', 'shortbeeptone.wav')
+      @notification_enabled = true
+      @controller = true
+      
       select_frame(-1)
 
       add_hot_keys
@@ -782,6 +788,11 @@ module Flipped
       if num_new_frames > 0
         @spectate_server.update_spectators(@book)
         show_frames(@book.size - 1)
+
+        # Player gets notified on their own turn
+        if notification_enabled? and player_turn?
+          Sound.play(@notify_sound)
+        end
       end
 
       if broadcasting?
@@ -849,9 +860,30 @@ module Flipped
       unless new_frames.empty?
         @book.insert(@book.size, *new_frames)
         show_frames(@book.size - 1)
+
+        # Spectators get all notifications. Controller only gets it on start of their turn.
+        if notification_enabled? and (controller_turn? or (not controller?))
+          Sound.play(@notify_sound)
+        end
       end
 
       return 1
+    end
+
+    def controller?
+      @controller
+    end
+
+    def controller_turn?
+      @book.size.modulo(2) == 0
+    end
+
+    def player_turn?
+      @book.size.modulo(2) == 1
+    end
+
+    def notification_enabled?
+      @notification_enabled
     end
 
     # Save this flip-book
