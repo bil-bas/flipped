@@ -1,0 +1,18 @@
+= Flipped changelog
+
+== v0.3.0
+
+* Added ability for player monitor and broadcast stories during play.
+* Added ability for controller to watch the story broadcast by player.
+* Added ability for any spectator to watch the story broadcast by player.
+* Added notification sound when watching a story (on start of own turn for player/controller, on every turn for spectator).
+
+== v0.2.0 [2010-05-17]
+
+* Made compatible with Linux and OS X
+* Made the GUI a lot more intuitive.
+* Fixed a number of GUI issues.
+
+== v0.1.0 [2010-05-11]
+
+First public release.
