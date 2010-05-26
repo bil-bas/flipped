@@ -1,5 +1,4 @@
 require 'logger'
-require 'zlib'
 
 require 'message'
 
@@ -29,15 +28,10 @@ require 'message'
 
       Thread.new do
         begin
-          length = @socket.read(4)
-          length = length.unpack('L')[0]
-
-          packet = @socket.read(length)
-          packet = JSON.parse(packet)
-
-          case packet
+          message = Message.read(@socket)
+          case message
             when Message::Login
-              @name = packet.name
+              @name = message.name
               # TODO: Check password.
               log.info { "#{@socket.addr[3]}:#{@socket.addr[1]} identified as #{@name}." }
               send(Message::Accept.new)
@@ -53,24 +47,17 @@ require 'message'
     end
 
     # Send a particular packet.
-    def send(packet)      
+    def send(message)
       return if @socket.closed?
-
-      encoded = packet.to_json
-      compressed = Zlib::Deflate.deflate(encoded)
-      log.info { "Sending #{packet.class} (#{encoded.size} => #{compressed.size} bytes)" }
-      log.debug { encoded }
       begin
-        @socket.write([compressed.size].pack('L'))
-        @socket.write(compressed)
-        @socket.flush
+        size = message.write(@socket)
       rescue => ex
         log.error { "#{@name} died unexpectedly while writing (#{ex})" }
         @socket.close unless @socket.closed?
       end
 
       # If a frame is being sent, then increment our own position.
-      case packet
+      case message
         when Message::Frame
           @position += 1
 
@@ -78,7 +65,7 @@ require 'message'
           @position = INITIAL_POSITION
       end
 
-      encoded.size
+      size
     end
   end
 end

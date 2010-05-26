@@ -1,9 +1,6 @@
 require 'thread'
 require 'socket'
 require 'logger'
-require 'zlib'
-
-require 'json'
 
 require 'spectate_server'
 require 'message'
@@ -59,36 +56,26 @@ module Flipped
 
       begin
         until socket.closed?
-          length = @socket.read(4)
-          break unless length
-          length = length.unpack('L')[0]
-
-          packet = @socket.read(length)
-          break unless packet
-          packet = JSON.parse(Zlib::Inflate.inflate(packet))
-
-          case packet
+          message = Message.read(socket)
+          case message
             when Message::Frame
-              frame_data = packet.frame
+              frame_data = message.frame
               log.info { "Received frame (#{frame_data.size} bytes)" }
               @frames_buffer.synchronize do
                 @frames_buffer.push frame_data
               end
 
             when Message::Challenge
-              @server_name = packet.name
+              @server_name = message.name
               log.info { "Server at #{@address}:#{@port} identified as #{@server_name}." }
 
-              packet = Message::Login.new(:name => @name).to_json
-              @socket.write([packet.length].pack('L'))
-              @socket.write(packet)
-              @socket.flush
+              Message::Login.new(:name => @name).write(socket)
 
             when Message::Accept
               log.info { "Login accepted" }
 
             else
-              log.error { "Unrecognised packet type: #{packet.class}" }
+              log.error { "Unrecognised message type: #{message.class}" }
           end
         end
       rescue IOError
