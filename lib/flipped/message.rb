@@ -80,7 +80,7 @@ module Flipped
       (other.class == self.class) and (other.instance_eval { @values } == @values)
     end
 
-    # Sent by server in response to Join.
+    # Sent by server in response to making a connection.
     class Challenge < Message
       include Log
       
@@ -88,7 +88,7 @@ module Flipped
       value :require_password, false
     end
 
-    # Sent by client to server on initial connection.
+    # Sent by client to server in response to Challenge.
     class Login < Message
       include Log
 
@@ -99,8 +99,6 @@ module Flipped
     # Sent by server in response to Login.
     class Accept < Message
       include Log
-
-      value :game, 'Game'
     end
 
     # Sent by server in response to Login.
@@ -123,9 +121,11 @@ module Flipped
       end
     end
 
-    # Sent by server to tell the client to clear current book.
-    class Clear < Message
+    # Sent by server to tell the client to clear current book ready for a new story.
+    class Story < Message
       include Log
+
+      value :name, 'Story'
     end
   end
 end

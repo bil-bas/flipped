@@ -72,6 +72,6 @@ describe Message::Frame do
   end  
 end
 
-describe Message::Clear do
+describe Message::Story do
   it_should_behave_like "Message"
 end

@@ -57,7 +57,8 @@ module Flipped
         when Message::Frame
           @position += 1
 
-        when Message::Clear
+        when Message::Story
+          # TODO: Clear the local book.
           @position = INITIAL_POSITION
       end
 
