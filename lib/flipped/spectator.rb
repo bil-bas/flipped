@@ -1,7 +1,7 @@
 require 'logger'
 require 'zlib'
 
-require 'packet'
+require 'message'
 
  module Flipped
    class Spectator
@@ -36,16 +36,16 @@ require 'packet'
           packet = JSON.parse(packet)
 
           case packet
-            when Login
+            when Message::Login
               @name = packet.name
               # TODO: Check password.
               log.info { "#{@socket.addr[3]}:#{@socket.addr[1]} identified as #{@name}." }
-              send(Accept.new)
+              send(Message::Accept.new)
               
             else
               # Ignore.
           end
-        rescue Exception
+        rescue Exception => ex
           log.error { "#{@name} died unexpectedly while reading (#{ex})" }
           @socket.close unless @socket.closed?
         end
@@ -71,10 +71,10 @@ require 'packet'
 
       # If a frame is being sent, then increment our own position.
       case packet
-        when Packet::Frame
+        when Message::Frame
           @position += 1
 
-        when Packet::Clear
+        when Message::Clear
           @position = INITIAL_POSITION
       end
 

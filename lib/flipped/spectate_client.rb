@@ -6,7 +6,7 @@ require 'zlib'
 require 'json'
 
 require 'spectate_server'
-require 'packet'
+require 'message'
 
 # =============================================================================
 #
@@ -68,23 +68,23 @@ module Flipped
           packet = JSON.parse(Zlib::Inflate.inflate(packet))
 
           case packet
-            when Frame
+            when Message::Frame
               frame_data = packet.frame
               log.info { "Received frame (#{frame_data.size} bytes)" }
               @frames_buffer.synchronize do
                 @frames_buffer.push frame_data
               end
 
-            when Challenge
+            when Message::Challenge
               @server_name = packet.name
               log.info { "Server at #{@address}:#{@port} identified as #{@server_name}." }
 
-              packet = Login.new(:name => @name).to_json
+              packet = Message::Login.new(:name => @name).to_json
               @socket.write([packet.length].pack('L'))
               @socket.write(packet)
               @socket.flush
 
-            when Accept
+            when Message::Accept
               log.info { "Login accepted" }
 
             else

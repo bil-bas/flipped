@@ -3,7 +3,7 @@ require 'socket'
 require 'mutex_m'
 require 'logger'
 
-require 'packet'
+require 'message'
 require 'spectator'
 
 # =============================================================================
@@ -65,7 +65,7 @@ module Flipped
 
           ((spectator.position + 1)...book.size).each do |i| 
             log.info("Updating spectator ##{spectator.id}: #{spectator.name} (Frame ##{i + 1}, #{book[i].size} bytes)")
-            spectator.send(Frame.new(:frame => book[i]))
+            spectator.send(Message::Frame.new(:frame => book[i]))
           end
         end
       end
@@ -108,7 +108,7 @@ module Flipped
         begin         
           spectator = Spectator.new(self, socket)
 
-          spectator.send(Challenge.new(:name => @name))
+          spectator.send(Message::Challenge.new(:name => @name))
 
           @spectators.synchronize do
             log.info { "Spectator connected from #{socket.addr[3]}:#{socket.addr[1]}." }
