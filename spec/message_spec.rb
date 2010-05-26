@@ -1,9 +1,9 @@
 require 'helper'
 
-require 'packet'
+require 'message'
 include Flipped
 
-shared_examples_for "Packet" do
+shared_examples_for "Message" do
   before :each do
     @default = described_class.new
   end
@@ -19,8 +19,8 @@ shared_examples_for "Packet" do
   end
 end
 
-describe Challenge do
-  it_should_behave_like "Packet"
+describe Message::Challenge do
+  it_should_behave_like "Message"
 
   describe "require_password?" do
     it "should default to false" do
@@ -29,16 +29,16 @@ describe Challenge do
   end
 end
 
-describe Login do
-  it_should_behave_like "Packet"
+describe Message::Login do
+  it_should_behave_like "Message"
 end
 
-describe Accept do
-  it_should_behave_like "Packet"
+describe Message::Accept do
+  it_should_behave_like "Message"
 end
 
-describe Frame do
-  it_should_behave_like "Packet"
+describe Message::Frame do
+  it_should_behave_like "Message"
 
   it "should serialize into and out of json with data" do
     instance = described_class.new(:frame => 'cheese')
@@ -49,6 +49,6 @@ describe Frame do
   end  
 end
 
-describe Clear do
-  it_should_behave_like "Packet"
+describe Message::Clear do
+  it_should_behave_like "Message"
 end
