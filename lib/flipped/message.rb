@@ -10,7 +10,8 @@ module Flipped
     include Log
     
     JSON_CLASS = 'json_class'
-    LENGTH_FORMAT = 'L'
+    LENGTH_FORMAT = 'L' # 32-bit int
+    LENGTH_FORMAT_SIZE = 4 # 32-bit int
 
     # Class => {name => default, name => default, ...]
     @@value_defaults = Hash.new { |hash, key| hash[key] = {} }
@@ -48,7 +49,7 @@ module Flipped
     #
     # Returns message read [Message]
     def self.read(io)
-      length = io.read(4)
+      length = io.read(LENGTH_FORMAT_SIZE)
       raise IOError.new("Failed to read message length") unless length
       length = length.unpack(LENGTH_FORMAT)[0]
 
