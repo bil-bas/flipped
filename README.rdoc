@@ -109,18 +109,6 @@ this should work regardless:
 
   ruby1.8 ./flipped/lib/flipped.rbw
 
-== Classes
-
-Flipped::Book manages the flipbook data and could be used as a library for making other tools, since it is not
-coupled to the interface in any way.
-
-Flipped::Gui, which creates an interface for the Book class, manages the actual tool, allowing the user to
-both more effectively view flipbooks and enabling simple editing of flipbooks.
-
-Flipped::SettingsManager manages settings and key bindings.
-
-Flipped::OptionsDialog is a dialog specifically for setting options that are not set elsewhere.
-
 == License
 
     This program is free software: you can redistribute it and/or modify
