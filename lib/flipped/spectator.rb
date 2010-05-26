@@ -1,22 +1,16 @@
-require 'logger'
-
+require 'log'
 require 'message'
 
- module Flipped
-   class Spectator
+module Flipped
+  class Spectator
+    include Log
+    
     INITIAL_POSITION = -1
 
     attr_reader :socket, :id
     attr_accessor :position, :name
 
     @@next_spectator_id = 1
-
-    @@log = Logger.new(STDOUT)
-    @@log.progname = name
-
-    def log
-      @@log
-    end
 
     def initialize(owner, socket)
       @owner, @socket = owner, socket
@@ -40,7 +34,8 @@ require 'message'
               # Ignore.
           end
         rescue Exception => ex
-          log.error { "#{@name} died unexpectedly while reading (#{ex})" }
+          log.error { "#{@name} died unexpectedly while reading" }
+          log.error { ex }
           @socket.close unless @socket.closed?
         end
       end
@@ -52,7 +47,8 @@ require 'message'
       begin
         size = message.write(@socket)
       rescue => ex
-        log.error { "#{@name} died unexpectedly while writing (#{ex})" }
+        log.error { "#{@name} died unexpectedly while writing" }
+        log.error { ex }
         @socket.close unless @socket.closed?
       end
 

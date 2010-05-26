@@ -1,20 +1,16 @@
 require 'base64'
 require 'json'
 require 'zlib'
-require 'logger'
+
+require 'log'
 
 module Flipped
   # Abstract class, parent of all packets.
   class Message
+    include Log
+    
     JSON_CLASS = 'json_class'
     LENGTH_FORMAT = 'L'
-
-    @@log = Logger.new(STDOUT)
-    @@log.progname = name
-    
-    def log
-      @@log
-    end
 
     # Class => {name => default, name => default, ...]
     @@value_defaults = Hash.new { |hash, key| hash[key] = {} }
@@ -85,27 +81,36 @@ module Flipped
 
     # Sent by server in response to Join.
     class Challenge < Message
+      include Log
+      
       value :name, 'Server'
       value :require_password, false
     end
 
     # Sent by client to server on initial connection.
     class Login < Message
+      include Log
+
       value :name, 'Client'
       value :password, ''
     end
 
     # Sent by server in response to Login.
     class Accept < Message
+      include Log
+
       value :game, 'Game'
     end
 
     # Sent by server in response to Login.
     class Reject < Message
+      include Log
     end
 
     # Frame data.
     class Frame < Message
+      include Log
+
       value :data, ''
 
       def frame
@@ -119,6 +124,7 @@ module Flipped
 
     # Sent by server to tell the client to clear current book.
     class Clear < Message
+      include Log
     end
   end
 end

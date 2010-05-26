@@ -1,4 +1,4 @@
-require 'logger'
+require 'log'
 
 begin
   require 'win32/sound'
@@ -9,16 +9,11 @@ end
 
 module Flipped
   class Sound
+    include Log
+
     MIN_INTERVAL = 1 # Minimum interval between sounds.
 
-    @@log = Logger.new(STDOUT)
-    @@log.progname = name
-
     @@last_played = Time.now - MIN_INTERVAL # Last time a sound was played.
-
-    def self.log
-      @@log
-    end
 
     APLAY_ENABLED = system "aplay --help 1> /dev/null 2> /dev/null"
     AFPLAY_ENABLED = system "afplay --help 1> /dev/null 2> /dev/null"

@@ -1,8 +1,8 @@
 require 'thread'
 require 'socket'
 require 'mutex_m'
-require 'logger'
 
+require 'log'
 require 'message'
 require 'spectator'
 
@@ -11,18 +11,14 @@ require 'spectator'
 #
 module Flipped
   class SpectateServer
+    include Log
+    
     DEFAULT_PORT = 7777
     DEFAULT_AUTO_SAVE = true
 
-    attr_reader :log
-
     def initialize(port, name, options = {})
-      log_to = options[:log_to] || STDOUT
       @name = name
       @port = port
-
-      @log = Logger.new(log_to)
-      @log.progname = self.class.name
 
       srand
 

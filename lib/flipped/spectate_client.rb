@@ -1,7 +1,7 @@
 require 'thread'
 require 'socket'
-require 'logger'
 
+require 'log'
 require 'spectate_server'
 require 'message'
 
@@ -10,16 +10,13 @@ require 'message'
 #
 module Flipped
   class SpectateClient
-    DEFAULT_PORT = SpectateServer::DEFAULT_PORT
+    include Log
     
-    attr_reader :log, :socket
+    DEFAULT_PORT = SpectateServer::DEFAULT_PORT
+    attr_reader :socket
 
     def initialize(address, port, name, options = {})
       @address, @port, @name = address, port, name
-
-      log_to = options[:log_to] || STDOUT
-      @log = Logger.new(log_to)
-      @log.progname = self.class.name
 
       srand
       

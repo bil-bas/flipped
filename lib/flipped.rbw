@@ -15,6 +15,10 @@ begin
   LOG_DIR = File.join(INSTALLATION_ROOT, 'logs')
   Dir.mkdir LOG_DIR unless File.exists? LOG_DIR
 
+  LOG_FILENAME = File.join(LOG_DIR, 'flipped.log')
+  LOG_FILE = File.open(LOG_FILENAME, 'w')
+  LOG_FILE.sync = true
+
   $LOAD_PATH.unshift File.join(EXECUTION_ROOT, 'lib', 'flipped')
 
   require 'gui'
@@ -35,7 +39,6 @@ rescue Exception => e
   # Log any uncaught exceptions.
   error = "[#{Time.now}]\n#{e.class}: #{e.message}\n#{e.backtrace.join("\n")}"
   puts error 
-  File.open(File.join(LOG_DIR, 'error.log'), 'w') do |f|
-    f.puts error
-  end
+  LOG_FILE.puts error
+  LOG_FILE.close
 end

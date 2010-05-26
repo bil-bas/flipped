@@ -1,3 +1,5 @@
+require 'log'
+
 # Require Gems
 begin
   # This way works fine on Windows.
@@ -17,7 +19,6 @@ end
 # Standard libraries.
 require 'yaml'
 require 'fileutils'
-require 'logger'
 
 # Rest of the app.
 require 'book'
@@ -34,7 +35,8 @@ module Flipped
   include Fox
 
   class Gui < FXMainWindow
-    include SettingsManager
+    include Log
+    include SettingsManager    
 
     R18n.set(R18n::I18n.new('en', File.join(INSTALLATION_ROOT, 'config', 'locales')))
     include R18n::Helpers
@@ -123,10 +125,8 @@ module Flipped
     THUMB_SELECTED_COLOR = Fox::FXRGB(50, 50, 50)
 
     def initialize(app)
-      @log = Logger.new(STDOUT)
-      @log.progname = self.class.name
-
       super(app, '', :opts => DECOR_ALL)
+      log.info { "Initializing GUI" }
 
       @key = {}
       read_config(KEYS_ATTRIBUTES, KEYS_FILE)
@@ -172,9 +172,6 @@ module Flipped
     end
 
   protected
-
-    attr_reader :log
-    
     attr_accessor :slide_show_interval
     def slide_show_interval #:nodoc
       @slide_show_interval_target.value
@@ -926,6 +923,8 @@ module Flipped
     end
 
     def create
+      log.info { "Creating GUI" }
+
       read_config(SETTINGS_ATTRIBUTES, SETTINGS_FILE)
 
       @toggle_thumbs_menu.checkState = @thumbnails_shown
