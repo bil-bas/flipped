@@ -1,8 +1,8 @@
-= Flipped changelog
+= Flipped Changelog
 
-== v0.3.0
+== v0.3.0 [Unreleased]
 
-* Added ability for player monitor and broadcast stories during play.
+* Added ability for player to monitor and broadcast stories during play.
 * Added ability for controller to watch the story broadcast by player.
 * Added ability for any spectator to watch the story broadcast by player.
 * Added notification sound when watching a story (on start of own turn for player/controller, on every turn for spectator).
