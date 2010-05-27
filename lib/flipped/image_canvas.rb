@@ -7,6 +7,7 @@ module Flipped
     def initialize(*args)
       @image_data = nil
       @back_buffer = nil
+      @update_call_back = nil
 
       super(*args)
     end
@@ -21,6 +22,12 @@ module Flipped
       update
 
       data
+    end
+
+    # Register a call-back block that is called with |image_width, image_height, zoom_width|
+    # whenever the image is updated. 
+    def on_update(&block)
+      @update_call_back = block
     end
 
   protected
@@ -40,6 +47,7 @@ module Flipped
         # Re-size to fit in the window.
         size = [height, width].min
         @back_buffer.scale(size, size, 0) # Low quality, pixelised.
+        @update_call_back.call(@image_width, @image_height, size) if @update_call_back
       end
 
       nil

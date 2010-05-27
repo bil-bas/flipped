@@ -155,7 +155,7 @@ module Flipped
       # Show info about the book and current frame.
       @info_bar = FXHorizontalFrame.new(@main_frame, :opts => LAYOUT_FILL_X, :padLeft => 4, :padRight => 4, :padTop => 4, :padBottom => 4)
       @frame_label = FXLabel.new(@info_bar, '', nil, :opts => LAYOUT_CENTER_X)
-      @size_label = FXLabel.new(@info_bar, '', :opts => LAYOUT_RIGHT|LAYOUT_FIX_WIDTH|JUSTIFY_RIGHT, :width => 100)
+      @size_label = FXLabel.new(@info_bar, '', :opts => LAYOUT_RIGHT|LAYOUT_FIX_WIDTH|JUSTIFY_RIGHT, :width => 120)
       add_button_bar(@main_frame)
 
       # Initialise various things.
@@ -515,6 +515,10 @@ module Flipped
         label = packer.childAtIndex(1)
         label.backColor, label.textColor = THUMB_SELECTED_COLOR, THUMB_BACKGROUND_COLOR
 
+        @image_viewer.on_update do |original_width, original_height, shown_width|
+          @size_label.text = "#{original_width}x#{original_height} @ #{shown_width}x#{shown_width}"
+        end
+
         # Show the image in the main area.
         @image_viewer.data = @book[index]
       end
@@ -528,7 +532,6 @@ module Flipped
       else
         @frame_label.text = t.book.loaded(index + 1, @book.size)
         setTitle t.title.loaded(index + 1, @book.size)
-        @size_label.text = "#{@image_viewer.image_width}x#{@image_viewer.image_height}"
       end
 
       [@start_button, @start_menu, @previous_button, @previous_menu].each do |widget|
