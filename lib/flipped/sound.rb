@@ -3,7 +3,7 @@ require 'log'
 begin
   require 'win32/sound'
   WIN32_SOUND_ENABLED = true
-rescue
+rescue LoadError
   WIN32_SOUND_ENABLED = false
 end
 
