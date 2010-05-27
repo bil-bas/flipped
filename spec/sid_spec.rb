@@ -8,7 +8,7 @@ SID_DIR = 'C:\Users\Spooner\Desktop\SiD PLAY v15rc1'
 
 describe SiD do
   before :each do
-    @sid = SiD.new(File.join('..', 'test_data', 'sid'))
+    @sid = SiD.new(File.join(File.dirname(__FILE__), '..', 'test_data', 'sid'))
   end
 
   it "read in the correct values" do
@@ -51,6 +51,16 @@ describe SiD do
     it "should run the game" do
       @sid.instance_variable_set('@root', SID_DIR)
       @sid.run
+    end
+  end
+
+  describe "valid_root?()" do
+    it "should recognise a real installation of SiD" do
+      @sid.valid_root?(SID_DIR).should be_true
+    end
+
+    it "should reject a non-installation of SiD" do
+      @sid.valid_root?(File.dirname(__FILE__)).should be_false      
     end
   end
 end

@@ -4,6 +4,8 @@ module Flipped
 
     EXECUTABLE = (RUBY_PLATFORM =~ /cygwin|win32|mingw/) ? 'SleepIsDeath.exe' : 'SleepIsDeathApp'
 
+    SID_DIRECTORIES = %w[flipBooks graphics imageCache languages resourceCache settings templates]
+
     SETTINGS = {
       :auto_host => :boolean,
       :auto_join => :boolean,
@@ -74,7 +76,7 @@ EOS
 
     def run
       write_settings
-      
+
       @thread = Thread.new do
         Dir.chdir @root # SiD is dumb enough to REQUIRE current directory!
         system executable
@@ -85,6 +87,17 @@ EOS
 
     def kill
       @thread.kill if @thread
+    end
+
+    # Is the directory a valid root directory for the Sleep Is Death game? 
+    def valid_root?(directory)
+      return false unless File.exists?(File.join(directory, EXECUTABLE))
+
+      SID_DIRECTORIES.each do |sub_directory|
+        return false unless File.directory?(File.join(directory, sub_directory))
+      end
+
+      true
     end
 
   protected
