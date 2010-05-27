@@ -76,6 +76,7 @@ EOS
       write_settings
       
       @thread = Thread.new do
+        Dir.chdir @root # SiD is dumb enough to REQUIRE current directory!
         system executable
       end
 

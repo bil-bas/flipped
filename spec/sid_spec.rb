@@ -4,6 +4,7 @@ require 'sid'
 include Flipped
 
 OUTPUT_DIR = File.join('..', 'test_data', 'output')
+SID_DIR = 'C:\Users\Spooner\Desktop\SiD PLAY v15rc1'
 
 describe SiD do
   before :each do
@@ -43,6 +44,13 @@ describe SiD do
       }.each_pair do |filename, value|
          File.read(File.join(OUTPUT_DIR, 'settings', filename)).strip.should == value
       end
+    end
+  end
+
+  describe "run()" do
+    it "should run the game" do
+      @sid.instance_variable_set('@root', SID_DIR)
+      @sid.run
     end
   end
 end
