@@ -535,32 +535,20 @@ module Flipped
       end
 
       [@start_button, @start_menu, @previous_button, @previous_menu].each do |widget|
-        if index > 0   
-          widget.enable
-        else
-          widget.disable
-        end
+        widget.enabled = (index > 0)
       end
 
       # Play is always enabled if we are in looping mode.
-      if (index < @book.size - 1) or (slide_show_loops? and not @book.empty?)
-        @play_button.enable
-        @play_menu.enable
-      else
-        @play_button.disable
-        @play_menu.disable
+      [@play_button, @play_menu].each do |widget|
+        widget.enabled = (index < @book.size - 1) or (slide_show_loops? and not @book.empty?)
       end
 
       [@end_button, @end_menu, @next_button, @next_menu].each do |widget|
-        if index < @book.size - 1
-          widget.enable
-        else
-          widget.disable
-        end
+        widget.enabled = (index < @book.size - 1)
       end
 
       [@append_menu, @save_menu, @delete_menu, @delete_after_menu, @delete_before_menu, @delete_identical_menu].each do |m|
-        if can_delete? then m.disable else m.enable end
+        m.enabled = can_delete?
       end
       
       nil
