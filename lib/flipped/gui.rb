@@ -317,6 +317,7 @@ module Flipped
       # Work out the new width.
       new_width = (width - @image_viewer.width) + (zoom * @image_viewer.image_height)
       new_height = (height - @image_viewer.height) + new_width - 8
+      new_width = [new_width, 400].max if @button_bar.shown?
       resize(new_width, new_height)
 
       nil
