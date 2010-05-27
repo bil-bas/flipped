@@ -2,7 +2,7 @@ module Flipped
   class SiD
     SETTINGS_EXTENSION = '.ini'
 
-    EXECUTABLE = (RUBY_PLATFORM =~ /cygwin|win32|mingw/) ? 'SleepIsDeath.exe' : 'SleepIsDeath'
+    EXECUTABLE = (RUBY_PLATFORM =~ /cygwin|win32|mingw/) ? 'SleepIsDeath.exe' : 'SleepIsDeathApp'
 
     SETTINGS = {
       :auto_host => :boolean,
@@ -58,13 +58,12 @@ EOS
 
     def write_settings
       SETTINGS.each_pair do |setting, type|
-        File.open(File.join(settings_folder, "#{symbol_to_string setting}#{SETTINGS_EXTENSION}")) do |file|
-          value = @settings[setting]
-          @settings[setting] = case type
+        File.open(File.join(settings_folder, "#{symbol_to_string setting}#{SETTINGS_EXTENSION}"), "w") do |file|
+          value = case type
             when :boolean
-              value ? "1" : "0"
+              @settings[setting] ? "1" : "0"
             else
-              value.to_s
+              @settings[setting].to_s
           end
           file.puts(value)
         end
