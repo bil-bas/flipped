@@ -137,6 +137,22 @@ delete_identical:
   help: Delete all frames showing exactly the same image as frame (%1).
 
 # Show/hide menu
+view: "&View"
+
+zoom: "&Zoom"
+
+view_half_size:
+  menu: Half size (1:2)
+  help: View the current frame at half the original size (%1)
+
+view_original_size:
+  menu: Original size (1:1)
+  help: View the current frame at original size (%1)
+
+view_double_size:
+  menu: Double size (2:1)
+  help: View the current frame at double the original size (%1)
+
 show: "&Show"
 
 toggle_nav_buttons_bar:

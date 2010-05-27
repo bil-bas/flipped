@@ -34,6 +34,14 @@ require 'sound'
 module Flipped
   include Fox
 
+  module ZoomOption
+    HALF = 0
+    ORIGINAL = 1
+    DOUBLE = 2
+    
+    DEFAULT = ORIGINAL
+  end
+
   class Gui < FXMainWindow
     include Log
     include SettingsManager    
@@ -107,6 +115,10 @@ module Flipped
       :toggle_status_bar => ['@key[:toggle_status_bar]', 'Ctrl-U'],
       :toggle_thumbs => ['@key[:toggle_thumbs]', 'Ctrl-T'],
       :toggle_info => ['@key[:toggle_info]', 'Ctrl-I'],
+
+      :view_half_size => ['@key[:view_half_size]', 'Ctrl-2'],
+      :view_original_size => ['@key[:view_original_size]', 'Ctrl-3'],
+      :view_double_size => ['@key[:view_double_size]', 'Ctrl-4'],
 
       :toggle_looping => ['@key[:loops]', 'Ctrl-L'],
 
@@ -225,9 +237,37 @@ module Flipped
       @delete_after_menu = create_menu(edit_menu, :delete_after)
       @delete_identical_menu = create_menu(edit_menu, :delete_identical)
 
-      # Show menu.
+      # View menu.
+      view_menu = FXMenuPane.new(self)
+      FXMenuTitle.new(menu_bar, t.view, nil, view_menu)
+
+      zoom_menu = FXMenuPane.new(self)
+      @zoom_menu = FXMenuCascade.new(view_menu, t.zoom, nil, zoom_menu)
+      @zoom_target = FXDataTarget.new(ZoomOption::DEFAULT)
+      @zoom_target.connect(SEL_COMMAND) do |sender, selector, option|
+        zoom_level = case option
+          when ZoomOption::HALF
+            0.5
+          when ZoomOption::ORIGINAL
+            1
+          when ZoomOption::DOUBLE
+            2
+        end
+        resize_frame(zoom_level)
+      end
+      half = create_menu(zoom_menu, :view_half_size, FXMenuRadio)
+      half.target = @zoom_target
+      half.selector = FXDataTarget::ID_OPTION + ZoomOption::HALF
+      original = create_menu(zoom_menu, :view_original_size, FXMenuRadio)
+      original.target = @zoom_target
+      original.selector = FXDataTarget::ID_OPTION + ZoomOption::ORIGINAL
+      double = create_menu(zoom_menu, :view_double_size, FXMenuRadio)
+      double.target = @zoom_target
+      double.selector = FXDataTarget::ID_OPTION + ZoomOption::DOUBLE
+
+      # Show submenu (on view)
       show_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, t.show, nil, show_menu)
+      FXMenuCascade.new(view_menu, t.show, nil, show_menu)
       @toggle_navigation_menu = create_menu(show_menu, :toggle_nav_buttons_bar, FXMenuCheck)
       @toggle_info_menu = create_menu(show_menu, :toggle_info, FXMenuCheck)
       @toggle_status_menu = create_menu(show_menu, :toggle_status_bar, FXMenuCheck)
@@ -271,6 +311,17 @@ module Flipped
       create_menu(help_menu, :about)
     end
 
+    def resize_frame(zoom)
+      return if @book.empty?
+
+      # Work out the new width.
+      new_width = (width - @image_viewer.width) + (zoom * @image_viewer.image_height)
+      new_height = (height - @image_viewer.height) + new_width - 8
+      resize(new_width, new_height)
+
+      nil
+    end
+
     def on_cmd_about(sender, selector, event)
       FXMessageBox.information(self, MBOX_OK, t.about.dialog.title, t.about.dialog.text)
 
@@ -291,7 +342,7 @@ module Flipped
     def create_menu(owner, name, type = FXMenuCommand, options = {})
       text = [t[name].menu, @key[name], t[name].help(@key[name])].join("\t")
       menu = type.new(owner, text, options)
-      menu.connect(SEL_COMMAND, method(:"on_cmd_#{name}"))
+      menu.connect(SEL_COMMAND, method(:"on_cmd_#{name}")) unless type == FXMenuRadio
       menu
     end
 
@@ -395,6 +446,9 @@ module Flipped
       end
 
       select_frame(selected)
+
+      @zoom_target.value = ZoomOption::DEFAULT
+      resize_frame(1)
 
       nil
     end
@@ -516,7 +570,7 @@ module Flipped
         label.backColor, label.textColor = THUMB_SELECTED_COLOR, THUMB_BACKGROUND_COLOR
 
         @image_viewer.on_update do |original_width, original_height, shown_width|
-          @size_label.text = "#{original_width}x#{original_height} @ #{shown_width}x#{shown_width}"
+          @size_label.text = "#{original_width}x#{original_height} @ #{(shown_width * 100.0 / original_height).round}%"
         end
 
         # Show the image in the main area.
@@ -546,6 +600,8 @@ module Flipped
       [@end_button, @end_menu, @next_button, @next_menu].each do |widget|
         widget.enabled = (index < @book.size - 1)
       end
+
+      @zoom_menu.enabled = (not @book.empty?)
 
       [@append_menu, @save_menu, @delete_menu, @delete_after_menu, @delete_before_menu, @delete_identical_menu].each do |m|
         m.enabled = can_delete?
