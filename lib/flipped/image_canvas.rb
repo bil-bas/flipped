@@ -1,8 +1,9 @@
 require 'fox16'
+include Fox
 
 module Flipped
   # A window that holds an image that re-sizes to the size of the canvas.
-  class ImageCanvas < Fox::FXCanvas
+  class ImageCanvas < FXCanvas
   protected
     def initialize(*args)
       @image_data = nil

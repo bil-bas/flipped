@@ -1,7 +1,7 @@
 #!/usr/bin/ruby -w
 # encoding: utf-8
 
-begin
+module Flipped
   # Root of executing script files (where .rbw is _actually_ running from).
   EXECUTION_ROOT = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 
@@ -13,32 +13,45 @@ begin
   end
 
   LOG_DIR = File.join(INSTALLATION_ROOT, 'logs')
-  Dir.mkdir LOG_DIR unless File.exists? LOG_DIR
-
+  Dir.mkdir Flipped::LOG_DIR unless File.exists? Flipped::LOG_DIR
   LOG_FILENAME = File.join(LOG_DIR, 'flipped.log')
   LOG_FILE = File.open(LOG_FILENAME, 'w')
   LOG_FILE.sync = true
+end
 
-  $LOAD_PATH.unshift File.join(EXECUTION_ROOT, 'lib', 'flipped')
+begin
+  # Prevent warnings going to STDERR from killing the rubyw app.
+  ORIGINAL_STDERR = $stderr.dup
+  $stderr.reopen(File.join(Flipped::LOG_DIR, 'stderr.log'))
 
+  require 'logger'
+
+  log = Logger.new(Flipped::LOG_FILE)
+  log.progname = File.basename(__FILE__)
+
+  log.info { "Log created" }
+  
+  $LOAD_PATH.unshift File.join(Flipped::EXECUTION_ROOT, 'lib', 'flipped')
   require 'gui'
-  include Flipped
-
-  application = FXApp.new('Flipped', 'Spooner')
-
-  window = Gui.new(application)
+  
+  application = Fox::FXApp.new('Flipped', 'Spooner')
+  window = Flipped::Gui.new(application)
 
   # Handle interrupts to terminate program gracefully
   application.addSignal("SIGINT", window.method(:on_cmd_quit))
  
   unless defined?(Ocra) # Don't run the app fully if we are compiling the exe.
+    log.info { "Starting FXRuby application" }
     application.create 
     application.run
+    log.info { "FXRuby application ended" }
   end
-rescue Exception => e
-  # Log any uncaught exceptions.
-  error = "[#{Time.now}]\n#{e.class}: #{e.message}\n#{e.backtrace.join("\n")}"
-  puts error 
-  LOG_FILE.puts error
-  LOG_FILE.close
+ 
+rescue Exception => ex
+  log.fatal { ex }
+  
+ensure
+  $stderr.reopen(ORIGINAL_STDERR)
+  log.info { "Closing log" }
+  Flipped::LOG_FILE.close
 end

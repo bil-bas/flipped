@@ -9,9 +9,14 @@ case RUBY_PLATFORM
   when /cygwin|mingw|win32/ # Windoze
     pause = true
     gem = 'gem'
+    
+    # Win32-Sound only needs to be installed on Windows and would obviously fail elsewhere.
+    system "#{gem} install win32-sound --no-ri --no-rdoc"
+
   when /darwin/  # Mac OS X
     pause = false
     gem = 'sudo gem'
+    
   else # Linux or BSD or something crazy.
     # TODO: Distros other than Ubuntu need anything different?
     pause = false

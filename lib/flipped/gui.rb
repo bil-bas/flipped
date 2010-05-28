@@ -1,20 +1,14 @@
 require 'log'
 
 # Require Gems
-begin
-  # This way works fine on Windows.
-  require 'fox16'
-  require 'fox16/colors'
-  require 'r18n-desktop'
-rescue Exception => ex
-  # Try it this way, for Ubuntu, which doesn't set RUBYOPT properly (and perhaps other Linuxi?).
-  require 'rubygems'
-  gem 'fxruby'
-  require 'fox16'
-  require 'fox16/colors'
-  gem 'r18n-desktop'
-  require 'r18n-desktop'
-end
+require 'rubygems'
+gem 'fxruby'
+require 'fox16'
+require 'fox16/colors'
+include Fox
+
+gem 'r18n-desktop'
+require 'r18n-desktop'
 
 # Standard libraries.
 require 'yaml'
@@ -32,8 +26,6 @@ require 'spectate_client'
 require 'sound'
 
 module Flipped
-  include Fox
-
   module ZoomOption
     HALF = 0
     ORIGINAL = 1

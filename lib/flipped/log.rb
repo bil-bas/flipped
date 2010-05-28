@@ -2,8 +2,6 @@ require 'logger'
 
 module Flipped
   module Log
-    LOG_FILE = STDOUT unless defined? LOG_FILE
-    
     def self.included(base)
       # Use class variables to store log objects for every class.
       base.class_eval do

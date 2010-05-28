@@ -1,4 +1,5 @@
 require 'fox16'
+include Fox
 
 module Flipped
   class Button < Fox::FXButton

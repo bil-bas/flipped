@@ -1,14 +1,12 @@
 require 'fox16'
+include Fox
 
 require 'button'
 
 require 'book'
 
 module Flipped
-  include Fox
-
   class Dialog < FXDialogBox
-
     def initialize(owner, title)
       super(owner, title, :opts => DECOR_TITLE|DECOR_BORDER)
 
