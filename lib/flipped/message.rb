@@ -28,9 +28,14 @@ module Flipped
     end
 
     def initialize(values = {})
-      @values = {}
-      @@value_defaults[self.class].each_pair do |sym, default|
-        @values[sym.to_s] = values[sym] unless values[sym] == default or values[sym].nil?
+      @values = Hash.new
+      @@value_defaults[self.class].each_pair do |symbol, default|
+        key = if values.has_key? JSON_CLASS
+          symbol.to_s # Being re-constructed from a stream.
+        else         
+          symbol # Being initially created.
+        end
+        @values[symbol.to_s] = values[key] unless values[key] == default or values[key].nil?
       end
     end
 

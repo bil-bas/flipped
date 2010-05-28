@@ -3,12 +3,12 @@ require "helper"
 require 'sid'
 include Flipped
 
-OUTPUT_DIR = File.join('..', 'test_data', 'output')
+OUTPUT_DIR = File.join(ROOT, 'test_data', 'output')
 SID_DIR = 'C:\Users\Spooner\Desktop\SiD PLAY v15rc1'
 
 describe SiD do
   before :each do
-    @sid = SiD.new(File.join(File.dirname(__FILE__), '..', 'test_data', 'sid'))
+    @sid = SiD.new(File.join(ROOT, 'test_data', 'sid'))
   end
 
   it "read in the correct values" do

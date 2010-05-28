@@ -54,6 +54,17 @@ end
 
 describe Message::Login do
   it_should_behave_like "Message"
+
+  describe "name()" do
+    it "should be preserved" do
+      stream = StringIO.new
+      message = described_class.new(:name => "My name")
+      message.write(stream)
+      stream.rewind
+      message2 = Message.read(stream)
+      message2.name.should == "My name"
+    end
+  end
 end
 
 describe Message::Accept do

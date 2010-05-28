@@ -90,7 +90,8 @@ module Flipped
           while socket = @server.accept
             add_spectator(socket)
           end
-        rescue Exception => ex         
+        rescue Exception => ex
+          log.error { ex }
           @server.close unless @server.closed?
         end
       end
@@ -112,7 +113,7 @@ module Flipped
             @joined_need_update = true
           end
         rescue => ex
-          p ex
+          log.error { ex }
         end
       end
     end
