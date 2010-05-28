@@ -27,7 +27,7 @@ shared_examples_for "Message" do
       @default.write(@stream)
 
       # Should have header
-      @stream.string[0..3].unpack('L')[0].should == @stream.string.length - 4
+      @stream.string[0..3].unpack('N')[0].should == @stream.string.length - 4
     end
   end
 
