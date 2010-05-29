@@ -4,7 +4,7 @@ module Flipped
 
     EXECUTABLE = (RUBY_PLATFORM =~ /cygwin|win32|mingw/) ? 'SleepIsDeath.exe' : 'SleepIsDeathApp'
 
-    SID_DIRECTORIES = %w[flipBooks graphics imageCache languages resourceCache settings templates]
+    SID_DIRECTORIES = %w[graphics languages loadingBay resourceCache settings templates]
 
     SETTINGS = {
       :auto_host => :boolean,

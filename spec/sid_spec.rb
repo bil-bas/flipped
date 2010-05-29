@@ -4,7 +4,7 @@ require 'sid'
 include Flipped
 
 OUTPUT_DIR = File.join(ROOT, 'test_data', 'output')
-SID_DIR = 'C:\Users\Spooner\Desktop\SiD PLAY v15rc1'
+SID_DIR = 'C:\Users\Spooner\Desktop\SiD PLAY 15'
 
 describe SiD do
   before :each do
