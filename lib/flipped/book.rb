@@ -22,6 +22,7 @@ module Flipped
     ALL_TEMPLATE_FILES = HTML_TEMPLATE_FILES + [FRAME_LIST_FILE]
 
     IMAGES_DIR = 'images'
+    FLIP_BOOK_DIRECTORY_FORMAT = "%05d"
 
     # Create a new book, optionally from an existing flipbook directory.
     #
@@ -165,7 +166,7 @@ module Flipped
 
       images_dir = File.join(out_dir, IMAGES_DIR)
 
-      frame_numbers = (1..@frames.size).to_a.map {|i| sprintf("%05d", i) }
+      frame_numbers = (1..@frames.size).to_a.map {|i| sprintf(FLIP_BOOK_DIRECTORY_FORMAT, i) }
 
       # Load templates.
       frame_template_html = File.open(File.join(template_dir, FRAME_TEMPLATE_HTML)) {|f| f.read }
@@ -239,6 +240,25 @@ module Flipped
     # Returns: true if the directory is valid, otherwise false.
     def self.valid_flip_book_directory?(directory)
       File.exists?(File.join(directory, FRAME_LIST_FILE)) and File.directory?(File.join(directory, IMAGES_DIR))
+    end
+
+    # Find the path of the latest flip-book directory created by the game.
+    #
+    # === Parameters
+    # +directory+:: flip-book directory (that is SiD/flipBooks) [String]
+    #
+    # Returns: path to last flip-book or nil if none exist [String or nil)
+    def self.latest_automatic_directory(directory)
+      i = 1
+      last = nil
+      loop do
+        current = File.join(directory, sprintf(FLIP_BOOK_DIRECTORY_FORMAT, i))
+        break unless File.directory?(current)
+        last = current
+        i += 1
+      end
+
+      last
     end
     
   protected

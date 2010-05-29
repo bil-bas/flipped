@@ -7,11 +7,12 @@ TEMPLATE_FILES = %w[footer.php header.php index.html index.php next.png prev.png
 
 describe Book do
   before :each do
-    @book1_dir = File.join('..', 'test_data', 'flipBooks', '00001')
-    @book2_dir = File.join('..', 'test_data', 'flipBooks', '00002')
-    @book3_dir = File.join('..', 'test_data', 'flipBooks', '00003')
-    @output_dir = File.join('..', 'test_data', 'output', 'joined')
-    @template_dir = File.join('..', 'templates')
+    @flip_book_dir = File.join(ROOT, 'test_data', 'flipBooks')
+    @book1_dir = File.join(@flip_book_dir, '00001')
+    @book2_dir = File.join(@flip_book_dir, '00002')
+    @book3_dir = File.join(@flip_book_dir, '00003')
+    @output_dir = File.join(ROOT, 'test_data', 'output', 'joined')
+    @template_dir = File.join(ROOT, 'templates')
 
     @template_dir_windows = "..\\templates"
 
@@ -207,6 +208,16 @@ describe Book do
         base = File.basename(filename)
         File.read(File.join(@output_dir, 'images', base)).should == File.read(filename)
       end
+    end
+  end
+
+  describe "self.latest_automatic_directory()" do
+    it "should find the last flip-book in a flip-book directory" do
+      Book.latest_automatic_directory(@flip_book_dir).should == @book3_dir
+    end
+
+    it "should return nil if there are no numbered flip-books in a directory" do
+      Book.latest_automatic_directory(ROOT).should be_nil
     end
   end
 end
