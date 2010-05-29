@@ -1,5 +1,4 @@
 require 'rake/rdoctask'
-require 'spec/rake/spectask'
 require 'rake/clean'
 require 'fileutils'
 include FileUtils
@@ -32,9 +31,13 @@ namespace :rdoc do
 end
 
 # Optional if you have rspec installed.
-
-Spec::Rake::SpecTask.new do |t|
-  t.spec_files = FileList['spec/**/*_spec.rb']
+begin
+  gem 'rspec'
+  require 'spec/rake/spectask'
+  Spec::Rake::SpecTask.new do |t|
+    t.spec_files = FileList['spec/**/*_spec.rb']
+  end
+rescue LoadError
 end
 
 namespace :compile do
