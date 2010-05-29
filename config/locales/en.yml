@@ -32,6 +32,25 @@ monitor:
   help: Load flip-book and monitor it while playing SiD, optionally also broadcasting it over the network (%1)
   dialog:
     title: Monitor flip-book directory
+    flip_book_directory:
+      label: Flip-book directory
+      browse_button: Browse...
+      dialog:
+        title: Select flip-book directory
+      error:
+        title: Monitor error!
+        message: "Flip-book directory
+
+'%1'
+
+ is invalid. Reverting to previous setting."
+ 
+    broadcast:
+       label: Broadcast over network?
+       group: Broadcast options
+       port: Port
+       name: User name
+      
   error:
     server_failed:
       title: Broadcast error
@@ -50,6 +69,26 @@ spectate:
   help: Spectate player's flip-book over network during a game (%1)
   dialog:
     title: Spectate remote flip-book
+    flip_book_directory:
+      label: Flip-book directory
+      browse_button: Browse...
+      dialog:
+        title: Select flip-book directory
+      error:
+        title: Spectate error!
+        message: "Flip-book directory
+
+'%1'
+
+ is invalid, since it is a file that already exists.
+
+ Reverting to previous setting."
+ 
+    ip_address:
+      label: IP Address
+    spectator_name:
+      label: User name
+    
   error:
     title: Spectate remote flip-book error
     text: "Failed to connect to %1"
@@ -189,6 +228,24 @@ interval:
 settings:
   menu: "&Settings..."
   help: Edit aplication settings.
+  dialog:
+    title: Settings
+    template_directory:
+      label: Template directory
+      browse_button: Browse...
+      dialog:
+        title: Select template directory
+      error:
+        title: Settings error!
+        message: Invalid template directory
+        
+    notification_sound:
+      label: Turn notification sound
+      browse_button: Browse...
+      play_button: Play
+      dialog:
+        title: Select a new notification sound
+        pattern: "Wav files (*.wav)"
 
 # Help menu
 help: "&Help"

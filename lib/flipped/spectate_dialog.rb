@@ -25,11 +25,12 @@ module Flipped
       @player_name_target.value
     end
 
-    def initialize(owner, title, options = {})
-      super(owner, title)
+    def initialize(owner, translation, options = {})
+      t = translation
+      super(owner, t.title)
 
-      # Template directory.
-      FXLabel.new(@grid, "Flip-book directory")
+      # Flip-book directory.
+      FXLabel.new(@grid, t.flip_book_directory.label)
       @flip_book_directory_target = FXDataTarget.new(options[:flip_book_directory])
       @flip_book_directory_field = FXTextField.new(@grid, 40, :target => @flip_book_directory_target, :selector => FXDataTarget::ID_VALUE) do |text_field|
         text_field.editable = false
@@ -37,14 +38,13 @@ module Flipped
         text_field.disable
       end
 
-      Button.new(@grid, "Browse...") do |button|
+      Button.new(@grid, t.flip_book_directory.browse_button) do |button|
         button.connect(SEL_COMMAND) do |sender, selector, event|
-          directory = FXFileDialog.getSaveDirectory(self, "Select flip-book directory", @flip_book_directory_field.text)
+          directory = FXFileDialog.getSaveFilename(self, t.flip_book_directory.dialog.title, @flip_book_directory_field.text)
           unless directory.empty?
-
             if File.exists?(directory)
-              FXMessageBox.error(self, MBOX_OK, "Spectate error!",
-                    "Flip-book directory #{directory} must not exist in order to create it.")
+              FXMessageBox.error(self, MBOX_OK, t.flip_book_directory.error.title,
+                    t.flip_book_directory.error.message(directory))
             else
               @flip_book_directory_target.value = directory
             end
@@ -53,7 +53,7 @@ module Flipped
       end
       skip_grid
 
-      FXLabel.new(@grid, "IP address")
+      FXLabel.new(@grid, t.ip_address.label)
       address_frame = FXHorizontalFrame.new(@grid, :padLeft => 0, :padRight => 0, :padTop => 0, :padBottom => 0)
       @address_target = FXDataTarget.new(options[:address].to_s)
       @address_field = FXTextField.new(address_frame, 15, :opts => TEXTFIELD_NORMAL,
@@ -70,7 +70,7 @@ module Flipped
       skip_grid
 
       skip_grid
-      @player_name_label = FXLabel.new(@grid, "Player name")
+      @player_name_label = FXLabel.new(@grid, t.spectator_name.label)
       @player_name_target = FXDataTarget.new(options[:player_name])
       @player_name_field = FXTextField.new(@grid, 20, :opts => TEXTFIELD_NORMAL|LAYOUT_RIGHT|LAYOUT_FILL_X,
                       :target => @player_name_target, :selector => FXDataTarget::ID_VALUE) do |widget|

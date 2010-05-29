@@ -322,7 +322,7 @@ module Flipped
     end
 
     def on_cmd_settings(sender, selector, event)
-      dialog = OptionsDialog.new(self, :template_directory => @template_directory, :notification_sound => @notification_sound)
+      dialog = OptionsDialog.new(self, t.settings.dialog, :template_directory => @template_directory, :notification_sound => @notification_sound)
 
       if dialog.execute == 1
         @template_directory = dialog.template_directory
@@ -746,7 +746,7 @@ module Flipped
 
     # Open a new flip-book and monitor it for changes.
     def on_cmd_monitor(sender, selector, event)
-      dialog = MonitorDialog.new(self, t.monitor.dialog.title, :port => @spectate_port, :player_name => @player_name,
+      dialog = MonitorDialog.new(self, t.monitor.dialog, :port => @spectate_port, :player_name => @player_name,
         :flip_book_directory => @current_flip_book_directory, :broadcast => @broadcast_when_monitoring)
 
       return unless dialog.execute == 1
@@ -843,7 +843,7 @@ module Flipped
 
     # Open a new flip-book and monitor it for changes.
     def on_cmd_spectate(sender, selector, event)
-      dialog = SpectateDialog.new(self, t.spectate.dialog.title, :address => @spectate_address, :port => @spectate_port,
+      dialog = SpectateDialog.new(self, t.spectate.dialog, :address => @spectate_address, :port => @spectate_port,
         :player_name => @player_name, :flip_book_directory => @current_flip_book_directory)
 
       return unless dialog.execute == 1

@@ -23,11 +23,13 @@ module Flipped
       @player_name_target.value
     end
 
-    def initialize(owner, title, options = {})
-      super(owner, title)
+    def initialize(owner, translations, options = {})
+      t = translations
 
-      # Template directory.
-      FXLabel.new(@grid, "Flip-book directory")
+      super(owner, t.title)
+
+      # Flip-book directory.
+      FXLabel.new(@grid, t.flip_book_directory.label)
       @flip_book_directory_target = FXDataTarget.new(options[:flip_book_directory])
       @flip_book_directory_field = FXTextField.new(@grid, 40, :target => @flip_book_directory_target, :selector => FXDataTarget::ID_VALUE) do |text_field|
         text_field.editable = false
@@ -35,17 +37,15 @@ module Flipped
         text_field.disable
       end
 
-      Button.new(@grid, "Browse...") do |button|
+      Button.new(@grid, t.flip_book_directory.browse_button) do |button|
         button.connect(SEL_COMMAND) do |sender, selector, event|
-          directory = FXFileDialog.getOpenDirectory(self, "Select flip-book directory", @flip_book_directory_field.text)
+          directory = FXFileDialog.getOpenDirectory(self, t.flip_book_directory.dialog.title, @flip_book_directory_field.text)
           unless directory.empty?
-          
             if Book.valid_flip_book_directory?(directory)
               @flip_book_directory_target.value = directory
             else
-              FXMessageBox.error(self, MBOX_OK, "Monitor error!",
-                    "Flip-book directory #{directory} is invalid. Reverting to previous setting.")
-
+              FXMessageBox.error(self, MBOX_OK, t.flip_book_directory.error.title,
+                    t.flip_book_directory.error.message(directory))
             end
           end
         end
@@ -54,13 +54,13 @@ module Flipped
 
       @broadcast_target = FXDataTarget.new(options[:broadcast])
       @broadcast_target.connect(SEL_COMMAND, method(:update_broadcast_group))
-      broadcast = FXCheckButton.new(@grid, "Broadcast over network?", :width => 10, :opts => JUSTIFY_NORMAL|ICON_AFTER_TEXT,
+      broadcast = FXCheckButton.new(@grid, t.broadcast.label, :width => 10, :opts => JUSTIFY_NORMAL|ICON_AFTER_TEXT,
                         :target => @broadcast_target, :selector => FXDataTarget::ID_VALUE)
       broadcast.checkState = @broadcast_target.value
 
-      @broadcast_box = FXGroupBox.new(@grid, 'Broadcast options', :opts => FRAME_SUNKEN|LAYOUT_FILL_X)
+      @broadcast_box = FXGroupBox.new(@grid, t.broadcast.group, :opts => FRAME_SUNKEN|LAYOUT_FILL_X)
       @broadcast_grid = FXMatrix.new(@broadcast_box, :n => 2, :opts => MATRIX_BY_COLUMNS|LAYOUT_FILL_X)
-      @port_label = FXLabel.new(@broadcast_grid, "Broadcast port")
+      @port_label = FXLabel.new(@broadcast_grid, t.broadcast.port)
       @port_target = FXDataTarget.new(options[:port].to_s)
       @port_field = FXTextField.new(@broadcast_grid, 6, :opts => TEXTFIELD_NORMAL|LAYOUT_RIGHT|JUSTIFY_RIGHT|TEXTFIELD_INTEGER,
                       :target => @port_target, :selector => FXDataTarget::ID_VALUE) do |widget|
@@ -68,7 +68,7 @@ module Flipped
       end
 
       FXHorizontalFrame.new(@broadcast_box, :opts => LAYOUT_FILL_X)
-      @player_name_label = FXLabel.new(@broadcast_grid, "Player name")
+      @player_name_label = FXLabel.new(@broadcast_grid, t.broadcast.name)
       @player_name_target = FXDataTarget.new(options[:player_name])
       @player_name_field = FXTextField.new(@broadcast_grid, 20, :opts => TEXTFIELD_NORMAL|LAYOUT_RIGHT,
                       :target => @player_name_target, :selector => FXDataTarget::ID_VALUE) do |widget|
@@ -76,6 +76,8 @@ module Flipped
       end
 
       update_broadcast_group
+
+      
     end
 
   protected
