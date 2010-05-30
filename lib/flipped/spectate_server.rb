@@ -78,7 +78,7 @@ module Flipped
 
     def listen
       begin
-        @server = TCPServer.new('localhost', @port)
+        @server = TCPServer.new(@port)
       rescue Exception => ex
         raise Exception.new("#{self.class} failed to start on port #{@port}! #{ex}")
       end
