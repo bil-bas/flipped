@@ -1,3 +1,5 @@
+require 'book'
+
 module Flipped
   class SiD
     SETTINGS_EXTENSION = '.ini'
@@ -5,6 +7,8 @@ module Flipped
     EXECUTABLE = (RUBY_PLATFORM =~ /cygwin|win32|mingw/) ? 'SleepIsDeath.exe' : 'SleepIsDeathApp'
 
     SID_DIRECTORIES = %w[graphics languages loadingBay resourceCache settings templates]
+
+    FLIP_BOOK_DIRECTORY_FORMAT = "%05d"
 
     SETTINGS = {
       :auto_host => :boolean,
@@ -100,9 +104,36 @@ EOS
       true
     end
 
+    # The number of flip-books created by the game (00001..0000N). Only counts consecutive ones starting from '00001'.
+    #
+    # Returns: Number of automatically generated flip-books.
+    def number_of_automatic_flip_books
+      i = 0
+
+      while File.directory?(flip_book_directory(i + 1))
+        i += 1
+      end
+
+      i
+    end
+
+    # +number+:: Number of flipbook (starting at 1).
+    def flip_book_directory(number)
+      File.join(flip_book_dir, sprintf(FLIP_BOOK_DIRECTORY_FORMAT, number))      
+    end
+
+    # +number+:: Number of flipbook (starting at 1).
+    def flip_book(number)
+      Book.new(flip_book_directory(number))
+    end
+
   protected
     def settings_folder
       File.join(@root, 'settings')
+    end
+
+    def flip_book_dir
+      File.join(@root, 'flipBooks')
     end
 
     # Convert a symbolic to string name.

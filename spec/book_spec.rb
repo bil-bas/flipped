@@ -7,7 +7,7 @@ TEMPLATE_FILES = %w[footer.php header.php index.html index.php next.png prev.png
 
 describe Book do
   before :each do
-    @flip_book_dir = File.join(ROOT, 'test_data', 'flipBooks')
+    @flip_book_dir = File.join(ROOT, 'test_data', 'sid_with_flip_books', 'flipBooks')
     @book1_dir = File.join(@flip_book_dir, '00001')
     @book2_dir = File.join(@flip_book_dir, '00002')
     @book3_dir = File.join(@flip_book_dir, '00003')
@@ -164,6 +164,18 @@ describe Book do
     end    
   end
 
+  describe "==()" do
+    it "should find books equal to themselves or another book created from the same directory" do
+      @book1.should == @book1
+      Book.new(@book1_dir).should == @book1
+    end
+
+    it "should find different books not to be equal" do
+      @book1.should_not == @book2
+      @book1.should_not == 12
+    end
+  end
+
   describe "write()" do
     before :each do
       rm_rf(@output_dir) if File.exists? @output_dir
@@ -172,12 +184,12 @@ describe Book do
 
     it "should create a directory identical to the original" do
       [@book1_dir, @book2_dir, @book3_dir].each do |dir|
-        out_dir = dir.sub('flipBooks', 'output')
+        out_dir = dir.sub(/sid_with_flip_books.flipBooks/, 'output')
         rm_r out_dir if File.exists? out_dir
         book = Book.new(dir)
         book.write(out_dir, @template_dir)
         Dir["#{dir}/**/*.*"].each do |filename|
-          File.read(filename).should == File.read(filename.sub('flipBooks', 'output'))
+          File.read(filename).should == File.read(filename.sub(/sid_with_flip_books.flipBooks/, 'output'))
         end
       end
     end
@@ -208,16 +220,6 @@ describe Book do
         base = File.basename(filename)
         File.read(File.join(@output_dir, 'images', base)).should == File.read(filename)
       end
-    end
-  end
-
-  describe "self.latest_automatic_directory()" do
-    it "should find the last flip-book in a flip-book directory" do
-      Book.latest_automatic_directory(@flip_book_dir).should == @book3_dir
-    end
-
-    it "should return nil if there are no numbered flip-books in a directory" do
-      Book.latest_automatic_directory(ROOT).should be_nil
     end
   end
 end

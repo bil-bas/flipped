@@ -6,7 +6,7 @@ include Flipped
 
 describe SpectateClient do
   before :each do
-    @book_dir = File.expand_path(File.join(ROOT, 'test_data', 'flipBooks', '00001'))
+    @book_dir = File.expand_path(File.join(ROOT, 'test_data', 'sid_with_flip_books', 'flipBooks', '00001'))
     @out_dir = File.expand_path(File.join(ROOT, 'test_data', 'output'))
     @book = Book.new(@book_dir)
     @template_dir = File.join(ROOT, 'templates')

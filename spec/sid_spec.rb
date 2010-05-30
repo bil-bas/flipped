@@ -9,6 +9,8 @@ SID_DIR = 'C:\Users\Spooner\Desktop\SiD PLAY 15'
 describe SiD do
   before :each do
     @sid = SiD.new(File.join(ROOT, 'test_data', 'sid'))
+    @sid_with_flip_books = SiD.new(File.join(ROOT, 'test_data', 'sid_with_flip_books'))
+    @sid_flip_books_dir = File.join(ROOT, 'test_data', 'sid_with_flip_books', 'flipBooks')
   end
 
   it "read in the correct values" do
@@ -61,6 +63,32 @@ describe SiD do
 
     it "should reject a non-installation of SiD" do
       @sid.valid_root?(File.dirname(__FILE__)).should be_false      
+    end
+  end
+
+  describe "flip_book_directory()" do
+    it "should give the path to the indexed flip-book (even if it doesn't exist" do
+      (1..4).each do |i|
+        @sid_with_flip_books.flip_book_directory(i).should == "#{@sid_flip_books_dir}/0000#{i}"
+      end
+    end
+  end
+
+  describe "flip_book()" do
+    it "should create the automatic flip-book at the appropriate index" do
+      (1..3).each do |i|
+        @sid_with_flip_books.flip_book(i).should == Book.new("#{@sid_flip_books_dir}/0000#{i}")
+      end
+    end
+  end
+
+  describe "number_of_automatic_flip_books()" do
+    it "should find the number of flip-books in the flipBooks directory" do
+      @sid_with_flip_books.number_of_automatic_flip_books().should == 3
+    end
+
+    it "should return 0 if there are no numbered flip-books in a directory" do
+      @sid.number_of_automatic_flip_books().should == 0
     end
   end
 end
