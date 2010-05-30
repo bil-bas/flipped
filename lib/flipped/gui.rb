@@ -596,9 +596,11 @@ module Flipped
 
       @zoom_menu.enabled = (not @book.empty?)
 
-      [@append_menu, @save_menu, @delete_menu, @delete_after_menu, @delete_before_menu, @delete_identical_menu].each do |m|
+      [@append_menu, @delete_menu, @delete_after_menu, @delete_before_menu, @delete_identical_menu].each do |m|
         m.enabled = can_delete?
       end
+
+      @save_menu.enabled = (not @book.empty?)
       
       nil
     end
@@ -769,6 +771,7 @@ module Flipped
 
         disable_monitors
         self.monitoring = true
+        select_frame(@book.size - 1)
 
       rescue Exception => ex
         log.error { ex }
@@ -867,6 +870,7 @@ module Flipped
           @player_name = player_name
           @current_flip_book_directory = directory
           self.spectating = true
+          select_frame(@book.size - 1)
         end
       rescue => ex
         log.error { ex }
