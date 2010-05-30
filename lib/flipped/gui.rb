@@ -573,13 +573,10 @@ module Flipped
       @current_frame_index = index
 
       if @book.empty?
-        @frame_label.text = t.book.empty
-        setTitle t.title.empty
         @size_label.text = ''
-      else
-        @frame_label.text = t.book.loaded(index + 1, @book.size)
-        setTitle t.title.loaded(index + 1, @book.size)
       end
+
+      update_info_and_title
 
       [@start_button, @start_menu, @previous_button, @previous_menu].each do |widget|
         widget.enabled = (index > 0)
@@ -603,6 +600,33 @@ module Flipped
       @save_menu.enabled = (not @book.empty?)
       
       nil
+    end
+
+    def current_player_name
+      if controller_turn?
+        "CONTROLLER" # TODO: get from spectate server.
+      else
+        "PLAYER" # TODO: Get from specate server.
+      end
+    end
+
+    # Update the info line and the title bar.
+    def update_info_and_title
+      if monitoring? or spectating?
+        elapsed = Time.at(Time.now - @story_started_at)
+        elapsed = "%d:%02d:%02d" % [elapsed.hour, elapsed.min, elapsed.sec]
+        type = controller_turn? ? t.controller : t.player  
+        setTitle t.title.spectate(@current_frame_index + 1, @book.size, elapsed, type, current_player_name)
+        @frame_label.text = t.book.spectate(@current_frame_index + 1, @book.size, elapsed, type, current_player_name)
+      else
+        if @book.empty?
+          setTitle t.title.empty
+          @frame_label.text = t.book.empty
+        else
+          setTitle t.title.loaded(@current_frame_index + 1, @book.size)
+          @frame_label.text = t.book.loaded(@current_frame_index + 1, @book.size)          
+        end
+      end
     end
 
     def can_delete?
@@ -789,9 +813,10 @@ module Flipped
     end
 
     def disable_monitors
-      spectating = false if spectating?
-      monitoring = false if monitoring?
-      broadcasting = false if broadcasting?
+      self.spectating = false if spectating?
+      self.monitoring = false if monitoring?
+      self.broadcasting = false if broadcasting?
+      update_info_and_title
     end
 
     def monitoring?
@@ -805,6 +830,7 @@ module Flipped
     def monitoring=(enable)
       if enable
         log.info { "Started monitoring"}
+        @story_started_at = Time.now
         @monitor_timeout = app.addTimeout(MONITOR_INTERVAL * 1000, method(:on_monitor_timeout), :repeat => true)
       else
         log.info { "Ended monitoring"}
@@ -826,6 +852,7 @@ module Flipped
 
     def on_monitor_timeout(sender, selector, event)
       num_new_frames = @book.update(@current_flip_book_directory)
+      update_info_and_title
 
       if num_new_frames > 0
         @spectate_server.update_spectators(@book)
@@ -887,6 +914,7 @@ module Flipped
     def spectating=(enable)
       if enable
         log.info { "Started spectating"}
+        @story_started_at = Time.now
         @spectate_timeout = app.addTimeout(SPECTATE_INTERVAL * 1000, method(:on_spectate_timeout), :repeat => true)
       else
         log.info { "Ended spectating"}
@@ -899,7 +927,7 @@ module Flipped
 
     def on_spectate_timeout(sender, selector, event)
       new_frames = @spectate_client.frames_buffer
-
+      update_info_and_title
       unless new_frames.empty?
         @book.insert(@book.size, *new_frames)
         show_frames(@book.size - 1)

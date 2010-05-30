@@ -274,9 +274,16 @@ Windows executable generated with Ocra (http://ocra.rubyforge.org/).
 
 # General strings.
 book:
+  spectate: %1/%2 - %3 - %4 turn (%5)
   loaded: Frame %1 of %2
   empty: Empty flip-book
 
 title:
-  loaded: Flipped - Frame %1 of %2
+  # %1 => Current frame, %2 => Total frames, %3 => elapsed time, %4 => type (player/controller/spectator)
+  # %5 => Name of player whose turn it is.
+  spectate: %1/%2 - %3 - %4 turn (%5)
+  loaded: Frame %1 of %2
   empty: Flipped - The SiD flip-book tool
+
+player: Player
+controller: Controller
