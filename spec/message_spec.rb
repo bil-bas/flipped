@@ -86,3 +86,35 @@ end
 describe Message::Story do
   it_should_behave_like "Message"
 end
+
+describe Message::Connected do
+  it_should_behave_like "Message"
+
+  it "should store and retrieve data" do
+    message = described_class.new(:id => 12, :name => 'fred', :role => :player)
+    message = JSON.parse(message.to_json)
+    message.id.should == 12
+    message.name.should == 'fred'
+    message.role.should == :player
+  end
+end
+
+describe Message::Disconnected do
+  it_should_behave_like "Message"
+end
+
+describe Message::Rename do
+  it_should_behave_like "Message"
+end
+
+describe Message::Chat do
+  it_should_behave_like "Message"
+end
+
+describe Message::Kick do
+ it_should_behave_like "Message"
+end
+
+describe Message::Quit do
+ it_should_behave_like "Message"
+end

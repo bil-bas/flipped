@@ -18,9 +18,14 @@ module Flipped
       @port_target.value.to_i
     end
 
-    attr_reader :player_name
-    def player_name # :nodoc:
-      @player_name_target.value
+    attr_reader :user_name
+    def user_name # :nodoc:
+      @user_name_target.value
+    end
+
+    attr_reader :time_limit
+    def time_limit # :nodoc:
+      @time_limit_target.value.to_i
     end
 
     def initialize(owner, translations, options = {})
@@ -50,6 +55,20 @@ module Flipped
           end
         end
       end
+      
+      skip_grid
+
+      # Time limit
+      FXLabel.new(@grid, t.time_limit)
+      @time_limit_target = FXDataTarget.new(options[:time_limit].to_s)
+      FXTextField.new(@grid, 6, :opts => TEXTFIELD_NORMAL|JUSTIFY_RIGHT|TEXTFIELD_INTEGER,
+                      :target => @time_limit_target, :selector => FXDataTarget::ID_VALUE) do |widget|
+        widget.text = @time_limit_target.value
+      end
+
+      skip_grid
+
+      # Broadcast?
       skip_grid
 
       @broadcast_target = FXDataTarget.new(options[:broadcast])
@@ -68,21 +87,19 @@ module Flipped
       end
 
       FXHorizontalFrame.new(@broadcast_box, :opts => LAYOUT_FILL_X)
-      @player_name_label = FXLabel.new(@broadcast_grid, t.broadcast.name)
-      @player_name_target = FXDataTarget.new(options[:player_name])
-      @player_name_field = FXTextField.new(@broadcast_grid, 20, :opts => TEXTFIELD_NORMAL|LAYOUT_RIGHT,
-                      :target => @player_name_target, :selector => FXDataTarget::ID_VALUE) do |widget|
-        widget.text = @player_name_target.value
+      @user_name_label = FXLabel.new(@broadcast_grid, t.broadcast.name)
+      @user_name_target = FXDataTarget.new(options[:user_name])
+      @user_name_field = FXTextField.new(@broadcast_grid, 20, :opts => TEXTFIELD_NORMAL|LAYOUT_RIGHT,
+                      :target => @user_name_target, :selector => FXDataTarget::ID_VALUE) do |widget|
+        widget.text = @user_name_target.value
       end
 
-      update_broadcast_group
-
-      
+      update_broadcast_group      
     end
 
   protected
     def update_broadcast_group(*args)
-      [@broadcast_box, @port_label, @port_field, @player_name_label, @player_name_field].each do |widget|
+      [@broadcast_box, @port_label, @port_field, @user_name_label, @user_name_field].each do |widget|
         widget.enabled = @broadcast_target.value
       end
     end

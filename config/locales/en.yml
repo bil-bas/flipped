@@ -32,6 +32,7 @@ monitor:
   help: Load flip-book and monitor it while playing SiD, optionally also broadcasting it over the network (%1)
   dialog:
     title: Monitor flip-book directory
+    time_limit: Time limit (secs)
     flip_book_directory:
       label: Flip-book directory
       browse_button: Browse...
@@ -69,6 +70,7 @@ spectate:
   help: Spectate player's flip-book over network during a game (%1)
   dialog:
     title: Spectate remote flip-book
+    time_limit: Time limit (secs)
     flip_book_directory:
       label: Flip-book directory
       browse_button: Browse...
@@ -274,14 +276,16 @@ Windows executable generated with Ocra (http://ocra.rubyforge.org/).
 
 # General strings.
 book:
-  spectate: %1/%2 - %3 - %4 turn (%5)
+  # %1 => Current frame, %2 => Total frames, %3 => elapsed time, %4 => type (player/controller/spectator)
+  # %5 => Time left, %6 => Name of player whose turn it is.
+  spectate: %1/%2 - %3 - %4 has %5s (%6)
   loaded: Frame %1 of %2
   empty: Empty flip-book
 
 title:
   # %1 => Current frame, %2 => Total frames, %3 => elapsed time, %4 => type (player/controller/spectator)
-  # %5 => Name of player whose turn it is.
-  spectate: %1/%2 - %3 - %4 turn (%5)
+  # %5 => Time left, %6 => Name of player whose turn it is.
+  spectate: %1/%2 - %3 - %4 has %5s (%6)
   loaded: Frame %1 of %2
   empty: Flipped - The SiD flip-book tool
 

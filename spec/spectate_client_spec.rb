@@ -14,10 +14,19 @@ describe SpectateClient do
     @log = Logger.new(STDOUT)
     @log.progname = "SPEC SpectateClient"
 
-    @server = SpectateServer.new(SpectateServer::DEFAULT_PORT, "Test Server")
+    @player_name = "Test Server"
+    @server = SpectateServer.new(SpectateServer::DEFAULT_PORT, true)
+  end
+
+  after :each do
+    @server.close
   end
 
   it "should do something" do
+    player = described_class.new('localhost', SpectateServer::DEFAULT_PORT, "Player client", :player, 60)
+    sleep 0.2
+    player.send_frames(@book.frames)
+
     @threads = []
     5.times do |i|
       sleep 0.01
@@ -30,7 +39,7 @@ describe SpectateClient do
           FileUtils.rm_r dir if File.exists? dir
         end
 
-        spectator = described_class.new('localhost', SpectateServer::DEFAULT_PORT, "Spectator client #{i}")
+        spectator = described_class.new('localhost', SpectateServer::DEFAULT_PORT, "Spectator client #{i}", :spectator, nil)
 
         sleep 3
         
@@ -45,7 +54,6 @@ describe SpectateClient do
     end
 
     sleep 1
-    @server.update_spectators(@book)
 
     @threads.each { |t| t.join }
     

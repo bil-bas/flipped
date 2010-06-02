@@ -83,7 +83,9 @@ module Flipped
       :spectate_port => ['@spectate_port', SpectateServer::DEFAULT_PORT],
       :spectate_address => ['@spectate_address', ''],
 
-      :player_name => ['@player_name', 'Player'],
+      :user_name => ['@user_name', 'User'],
+      :player_time_limit => ['@player_time_limit', 30],
+      :controller_time_limit => ['@controller_time_limit', 30],
 
       :notification_sound => ['@notification_sound', File.join(INSTALLATION_ROOT, 'media', 'sounds', 'shortbeeptone.wav')],
       :notification_enabled => ['@notification_enabled', true],
@@ -169,6 +171,7 @@ module Flipped
 
       # TODO: should be configured.
       @controller = true
+      @turn_finishes_at = Time.now
       
       select_frame(-1)
 
@@ -604,9 +607,17 @@ module Flipped
 
     def current_player_name
       if controller_turn?
-        "CONTROLLER" # TODO: get from spectate server.
+        @spectate_client.controller_name
       else
-        "PLAYER" # TODO: Get from specate server.
+        @spectate_client.player_name
+      end
+    end
+
+    def current_player_time_limit
+      if controller_turn?
+        @spectate_client.controller_time_limit
+      else
+        @spectate_client.player_time_limit
       end
     end
 
@@ -615,9 +626,10 @@ module Flipped
       if monitoring? or spectating?
         elapsed = Time.at(Time.now - @story_started_at)
         elapsed = "%d:%02d:%02d" % [elapsed.hour, elapsed.min, elapsed.sec]
+        time_left = (@turn_finishes_at - Time.now).ceil
         type = controller_turn? ? t.controller : t.player  
-        setTitle t.title.spectate(@current_frame_index + 1, @book.size, elapsed, type, current_player_name)
-        @frame_label.text = t.book.spectate(@current_frame_index + 1, @book.size, elapsed, type, current_player_name)
+        setTitle t.title.spectate(@current_frame_index + 1, @book.size, elapsed, type, time_left, current_player_name)
+        @frame_label.text = t.book.spectate(@current_frame_index + 1, @book.size, elapsed, type, time_left, current_player_name)
       else
         if @book.empty?
           setTitle t.title.empty
@@ -772,30 +784,33 @@ module Flipped
 
     # Open a new flip-book and monitor it for changes.
     def on_cmd_monitor(sender, selector, event)
-      dialog = MonitorDialog.new(self, t.monitor.dialog, :port => @spectate_port, :player_name => @player_name,
-        :flip_book_directory => @current_flip_book_directory, :broadcast => @broadcast_when_monitoring)
+      dialog = MonitorDialog.new(self, t.monitor.dialog, :port => @spectate_port, :user_name => @user_name,
+        :flip_book_directory => @current_flip_book_directory, :broadcast => @broadcast_when_monitoring,
+        :time_limit => @player_time_limit)
 
       return unless dialog.execute == 1
 
       directory = dialog.flip_book_directory
       broadcast = dialog.broadcast?
       port = dialog.port
-      player_name = dialog.player_name
+      user_name = dialog.user_name
+      player_time_limit = dialog.time_limit
+      
       begin
         app.beginWaitCursor do
-          # Replace with new book, viewing last frame.
-          @book = Book.new(directory)
+          @book = Book.new
           @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
           show_frames(@book.size - 1)
         end
         @broadcast_when_monitoring = broadcast
         @current_flip_book_directory = directory
         @spectate_port = port if broadcast # Only remember the port number of broadcasting.
-        @player_name = player_name if broadcast
+        @user_name = user_name if broadcast
+        @player_time_limit = player_time_limit
 
         disable_monitors
-        self.monitoring = true
         select_frame(@book.size - 1)
+        self.monitoring = true
 
       rescue Exception => ex
         log.error { ex }
@@ -803,7 +818,9 @@ module Flipped
       end
 
       begin
-        self.broadcasting = true if @broadcast_when_monitoring
+        # Connect to self, in order to spectate own story.
+        @spectate_client = SpectateClient.new('localhost', port, @user_name, :player, @player_time_limit)
+        self.spectating = true
       rescue Exception => ex
         log.error { ex }
         error_dialog(t.monitor.error.server_failed.title, t.monitor.error.server_failed.text(port.to_s))
@@ -815,16 +832,11 @@ module Flipped
     def disable_monitors
       self.spectating = false if spectating?
       self.monitoring = false if monitoring?
-      self.broadcasting = false if broadcasting?
       update_info_and_title
     end
 
     def monitoring?
       defined?(@monitor_timeout) ? (not @monitor_timeout.nil?) : false
-    end
-
-    def broadcasting?
-      defined?(@spectate_server) ? (not @spectate_server.nil?) : false
     end
     
     def monitoring=(enable)
@@ -832,19 +844,11 @@ module Flipped
         log.info { "Started monitoring"}
         @story_started_at = Time.now
         @monitor_timeout = app.addTimeout(MONITOR_INTERVAL * 1000, method(:on_monitor_timeout), :repeat => true)
+        @spectate_server = SpectateServer.new(@spectate_port, @broadcast_when_monitoring)
       else
         log.info { "Ended monitoring"}
         app.removeTimeout(@monitor_timeout)
         @monitor_timeout = nil
-      end
-    end
-
-    def broadcasting=(enable)
-      if enable
-        log.info { "Started broadcasting"}
-        @spectate_server = SpectateServer.new(@spectate_port, @player_name)
-      else
-        log.info { "Ended broadcasting"}
         @spectate_server.close
         @spectate_server = nil
       end
@@ -852,21 +856,23 @@ module Flipped
 
     def on_monitor_timeout(sender, selector, event)
       num_new_frames = @book.update(@current_flip_book_directory)
-      update_info_and_title
 
       if num_new_frames > 0
-        @spectate_server.update_spectators(@book)
+        # Send all the new frames to the server.
+        @spectate_client.send_frames(@book.frames[(-num_new_frames)..-1])
+
+        # Always select the last frame.
         show_frames(@book.size - 1)
 
         # Player gets notified on their own turn
         if notification_enabled? and player_turn?
           Sound.play(@notification_sound)
         end
+
+        @turn_finishes_at = Time.now + current_player_time_limit
       end
 
-      if broadcasting?
-        @spectate_server.update_spectators(@book) if @spectate_server.need_update?
-      end
+      update_info_and_title
 
       return 1
     end
@@ -874,19 +880,21 @@ module Flipped
     # Open a new flip-book and monitor it for changes.
     def on_cmd_spectate(sender, selector, event)
       dialog = SpectateDialog.new(self, t.spectate.dialog, :address => @spectate_address, :port => @spectate_port,
-        :player_name => @player_name, :flip_book_directory => @current_flip_book_directory)
+        :user_name => @user_name, :flip_book_directory => @current_flip_book_directory,
+        :time_limit => @controller_time_limit)
 
       return unless dialog.execute == 1
 
       directory = dialog.flip_book_directory
       address = dialog.address
       port = dialog.port
-      player_name = dialog.player_name
+      user_name = dialog.user_name
+      controller_time_limit = dialog.time_limit
       
       begin
         app.beginWaitCursor do
           # Replace with new book, viewing last frame.
-          spectate_client = SpectateClient.new(address, port, player_name)
+          spectate_client = SpectateClient.new(address, port, user_name, :controller, controller_time_limit)
           @book = Book.new
           @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
           show_frames(-1)
@@ -894,8 +902,9 @@ module Flipped
           @spectate_client = spectate_client
           @spectate_address = address
           @spectate_port = port
-          @player_name = player_name
+          @user_name = user_name
           @current_flip_book_directory = directory
+          @controller_time_limit = controller_time_limit
           self.spectating = true
           select_frame(@book.size - 1)
         end
@@ -915,11 +924,15 @@ module Flipped
       if enable
         log.info { "Started spectating"}
         @story_started_at = Time.now
-        @spectate_timeout = app.addTimeout(SPECTATE_INTERVAL * 1000, method(:on_spectate_timeout), :repeat => true)
+        unless monitoring?
+          @spectate_timeout = app.addTimeout(SPECTATE_INTERVAL * 1000, method(:on_spectate_timeout), :repeat => true)
+        end
       else
         log.info { "Ended spectating"}
-        app.removeTimeout(@spectate_timeout)
-        @spectate_timeout = nil
+        if @spectate_timeout
+          app.removeTimeout(@spectate_timeout)
+          @spectate_timeout = nil
+        end
         @spectate_client.close
         @spectate_client = nil
       end
@@ -927,7 +940,7 @@ module Flipped
 
     def on_spectate_timeout(sender, selector, event)
       new_frames = @spectate_client.frames_buffer
-      update_info_and_title
+
       unless new_frames.empty?
         @book.insert(@book.size, *new_frames)
         show_frames(@book.size - 1)
@@ -936,9 +949,17 @@ module Flipped
         if notification_enabled? and (controller_turn? or (not controller?))
           Sound.play(@notification_sound)
         end
+
+        @turn_finishes_at = Time.now + current_player_time_limit
       end
 
+      update_info_and_title
+
       return 1
+    end
+
+    def player?
+      monitoring?
     end
 
     def controller?

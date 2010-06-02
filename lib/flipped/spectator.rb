@@ -6,42 +6,69 @@ module Flipped
     include Log
     
     INITIAL_POSITION = -1
+    ROLES = [:controller, :player, :spectator] # initially nil.
 
-    attr_reader :socket, :id
-    attr_accessor :position, :name
+    attr_reader :socket, :id, :time_limit, :role, :name, :position
 
     @@next_spectator_id = 1
 
-    def initialize(owner, socket)
-      @owner, @socket = owner, socket
+    public
+    def logged_in?; @logged_in; end
+    def controller?; @role == :controller; end
+    def player?; @role == :player; end
+    def spectator?; @role == :spectator; end
+
+    protected
+    def initialize(server, socket)
+      @server, @socket = server, socket
 
       @name = nil
       @position = INITIAL_POSITION
+      @time_limit = nil # Implies that this isn't the controller
+      @logged_in = false
+      @role = nil
+      
       @id = @@next_spectator_id
       @@next_spectator_id += 1
 
       Thread.new do
         begin
+          send(Message::Challenge.new)
+          
           message = Message.read(@socket)
           case message
             when Message::Login
               @name = message.name
+              @role = message.role
+              raise Exception.new("Unrecognised role: '#{@role.inspect}'") unless ROLES.include? @role
+              @time_limit = message.time_limit
               # TODO: Check password.
+
+              @server.connect_spectator(self)
+
               log.info { "#{@socket.addr[3]}:#{@socket.addr[1]} identified as #{@name}." }
-              send(Message::Accept.new)
-              
+              @logged_in = true            
             else
               # Ignore.
           end
         rescue Exception => ex
-          log.error { "#{@name} died unexpectedly while reading" }
+          log.error { "#{@name} died unexpectedly while reading." }
           log.error { ex }
-          @socket.close unless @socket.closed?
+          close
         end
       end
     end
 
+    public
+    def close
+      @socket.close unless @socket.closed?
+      log.info { "Spectator '#{name}' disconnected." }
+      @server.disconnect_spectator(self) if logged_in?
+      @logged_in = false
+    end
+
     # Send a particular packet.
+    public
     def send(message)
       return if @socket.closed?
       begin
@@ -58,7 +85,6 @@ module Flipped
           @position += 1
 
         when Message::Story
-          # TODO: Clear the local book.
           @position = INITIAL_POSITION
       end
 
