@@ -24,6 +24,9 @@ begin
   ORIGINAL_STDERR = $stderr.dup
   $stderr.reopen(File.join(Flipped::LOG_DIR, 'stderr.log'))
 
+  ORIGINAL_STDOUT = $stdout.dup
+  $stdout.reopen(File.join(Flipped::LOG_DIR, 'stdout.log'))
+
   require 'logger'
 
   log = Logger.new(Flipped::LOG_FILE)
@@ -52,6 +55,7 @@ rescue Exception => ex
   
 ensure
   $stderr.reopen(ORIGINAL_STDERR)
+  $stdout.reopen(ORIGINAL_STDOUT)
   log.info { "Closing log" }
   Flipped::LOG_FILE.close
 end
