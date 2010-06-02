@@ -33,6 +33,8 @@ monitor:
   dialog:
     title: Monitor flip-book directory
     time_limit: Time limit (secs)
+    user_name:
+     label: User name
     flip_book_directory:
       label: Flip-book directory
       browse_button: Browse...
@@ -49,8 +51,7 @@ monitor:
     broadcast:
        label: Broadcast over network?
        group: Broadcast options
-       port: Port
-       name: User name
+       port: Port      
       
   error:
     server_failed:
@@ -88,7 +89,7 @@ spectate:
  
     ip_address:
       label: IP Address
-    spectator_name:
+    user_name:
       label: User name
     
   error:

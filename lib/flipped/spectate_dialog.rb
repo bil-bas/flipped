@@ -1,10 +1,10 @@
 require 'book'
-require 'dialog'
+require 'game_dialog'
 
 module Flipped
 
   # Dialog to get flip-book directory when starting to spectate (also gets address/port).
-  class SpectateDialog < Dialog
+  class SpectateDialog < GameDialog
     attr_reader :flip_book_directory
     def flip_book_directory # :nodoc:
       @flip_book_directory_target.value
@@ -20,19 +20,10 @@ module Flipped
       @port_target.value.to_i
     end
 
-    attr_reader :user_name
-    def user_name # :nodoc:
-      @user_name_target.value
-    end
+    def initialize(owner, translations, options = {})
+      super(owner, translations, options)
 
-    attr_reader :time_limit
-    def time_limit # :nodoc:
-      @time_limit_target.value.to_i
-    end
-
-    def initialize(owner, translation, options = {})
-      t = translation
-      super(owner, t.title)
+      t = translations
 
       # Flip-book directory.
       FXLabel.new(@grid, t.flip_book_directory.label)
@@ -58,17 +49,6 @@ module Flipped
       end
       skip_grid
 
-      # Time limit
-      FXLabel.new(@grid, t.time_limit)
-      @time_limit_target = FXDataTarget.new(options[:time_limit].to_s)
-      FXTextField.new(@grid, 6, :opts => TEXTFIELD_NORMAL|JUSTIFY_RIGHT|TEXTFIELD_INTEGER,
-                      :target => @time_limit_target, :selector => FXDataTarget::ID_VALUE) do |widget|
-        widget.text = @time_limit_target.value
-      end
-
-      skip_grid
-      skip_grid
-
       # IP Address
       FXLabel.new(@grid, t.ip_address.label)
       address_frame = FXHorizontalFrame.new(@grid, :padLeft => 0, :padRight => 0, :padTop => 0, :padBottom => 0)
@@ -85,16 +65,6 @@ module Flipped
         widget.text = @port_target.value
       end
       skip_grid
-
-      # User name
-      skip_grid
-      @user_name_label = FXLabel.new(@grid, t.spectator_name.label)
-      @user_name_target = FXDataTarget.new(options[:user_name])
-      @user_name_field = FXTextField.new(@grid, 20, :opts => TEXTFIELD_NORMAL|LAYOUT_RIGHT|LAYOUT_FILL_X,
-                      :target => @user_name_target, :selector => FXDataTarget::ID_VALUE) do |widget|
-        widget.text = @user_name_target.value
-      end
-
     end
   end
 end

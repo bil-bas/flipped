@@ -1,9 +1,9 @@
 require 'book'
-require 'dialog'
+require 'game_dialog'
 
 module Flipped
   # Dialog to get flip-book directory and whether to broadcast when starting to monitor (also gets port).
-  class MonitorDialog < Dialog
+  class MonitorDialog < GameDialog
     attr_reader :flip_book_directory
     def flip_book_directory # :nodoc:
       @flip_book_directory_target.value
@@ -18,20 +18,10 @@ module Flipped
       @port_target.value.to_i
     end
 
-    attr_reader :user_name
-    def user_name # :nodoc:
-      @user_name_target.value
-    end
-
-    attr_reader :time_limit
-    def time_limit # :nodoc:
-      @time_limit_target.value.to_i
-    end
-
     def initialize(owner, translations, options = {})
-      t = translations
+      super(owner, translations, options)
 
-      super(owner, t.title)
+      t = translations
 
       # Flip-book directory.
       FXLabel.new(@grid, t.flip_book_directory.label)
@@ -58,19 +48,7 @@ module Flipped
       
       skip_grid
 
-      # Time limit
-      FXLabel.new(@grid, t.time_limit)
-      @time_limit_target = FXDataTarget.new(options[:time_limit].to_s)
-      FXTextField.new(@grid, 6, :opts => TEXTFIELD_NORMAL|JUSTIFY_RIGHT|TEXTFIELD_INTEGER,
-                      :target => @time_limit_target, :selector => FXDataTarget::ID_VALUE) do |widget|
-        widget.text = @time_limit_target.value
-      end
-
-      skip_grid
-
       # Broadcast?
-      skip_grid
-
       @broadcast_target = FXDataTarget.new(options[:broadcast])
       @broadcast_target.connect(SEL_COMMAND, method(:update_broadcast_group))
       broadcast = FXCheckButton.new(@grid, t.broadcast.label, :width => 10, :opts => JUSTIFY_NORMAL|ICON_AFTER_TEXT,
@@ -86,20 +64,12 @@ module Flipped
         widget.text = @port_target.value
       end
 
-      FXHorizontalFrame.new(@broadcast_box, :opts => LAYOUT_FILL_X)
-      @user_name_label = FXLabel.new(@broadcast_grid, t.broadcast.name)
-      @user_name_target = FXDataTarget.new(options[:user_name])
-      @user_name_field = FXTextField.new(@broadcast_grid, 20, :opts => TEXTFIELD_NORMAL|LAYOUT_RIGHT,
-                      :target => @user_name_target, :selector => FXDataTarget::ID_VALUE) do |widget|
-        widget.text = @user_name_target.value
-      end
-
       update_broadcast_group      
     end
 
   protected
     def update_broadcast_group(*args)
-      [@broadcast_box, @port_label, @port_field, @user_name_label, @user_name_field].each do |widget|
+      [@broadcast_box, @port_label, @port_field].each do |widget|
         widget.enabled = @broadcast_target.value
       end
     end
