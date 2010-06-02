@@ -60,6 +60,10 @@ module Flipped
     MAX_INTERVAL = 30
     NUM_INTERVALS_SEEN = 15
 
+    DEFAULT_GAME_SCREEN_WIDTH = 640
+    DEFAULT_TIME_LIMIT = 30
+    DEFAULT_FULL_SCREEN = false # Assume that if you are using Flipped, you want a window.
+
     SETTINGS_ATTRIBUTES = {
       :window_x => ['x', 100],
       :window_y => ['y', 100],
@@ -84,8 +88,18 @@ module Flipped
       :spectate_address => ['@spectate_address', ''],
 
       :user_name => ['@user_name', 'User'],
-      :player_time_limit => ['@player_time_limit', 30],
-      :controller_time_limit => ['@controller_time_limit', 30],
+      :hard_to_quit_mode => ['@hard_to_quit_mode', false],
+
+      :player_time_limit => ['@player_time_limit', DEFAULT_TIME_LIMIT],
+      :player_screen_width => ['@player_screen_width', DEFAULT_GAME_SCREEN_WIDTH],
+      :player_full_screen => ['@player_full_screen', DEFAULT_FULL_SCREEN],
+      
+      :controller_address => ['@controller_address', ''],
+      :controller_port => ['@controller_port', 7778],
+
+      :controller_time_limit => ['@controller_time_limit', DEFAULT_TIME_LIMIT],
+      :controller_screen_width => ['@controller_screen_width', DEFAULT_GAME_SCREEN_WIDTH],
+      :controller_fullscreen => ['@controller_full_screen', DEFAULT_FULL_SCREEN],
 
       :notification_sound => ['@notification_sound', File.join(INSTALLATION_ROOT, 'media', 'sounds', 'shortbeeptone.wav')],
       :notification_enabled => ['@notification_enabled', true],
@@ -784,29 +798,30 @@ module Flipped
 
     # Open a new flip-book and monitor it for changes.
     def on_cmd_monitor(sender, selector, event)
-      dialog = MonitorDialog.new(self, t.monitor.dialog, :port => @spectate_port, :user_name => @user_name,
+      dialog = MonitorDialog.new(self, t, :spectate_port => @spectate_port, :user_name => @user_name,
         :flip_book_directory => @current_flip_book_directory, :broadcast => @broadcast_when_monitoring,
-        :time_limit => @player_time_limit)
+        :time_limit => @player_time_limit, :screen_width => @player_screen_width,
+        :full_screen => @player_full_screen, :hard_to_quit_mode => @hard_to_quit_mode,
+        :controller_address => @controller_address, :controller_port => @controller_port)
 
       return unless dialog.execute == 1
 
-      directory = dialog.flip_book_directory
-      broadcast = dialog.broadcast?
-      port = dialog.port
-      user_name = dialog.user_name
-      player_time_limit = dialog.time_limit
-      
       begin
         app.beginWaitCursor do
           @book = Book.new
           @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
           show_frames(@book.size - 1)
         end
-        @broadcast_when_monitoring = broadcast
-        @current_flip_book_directory = directory
-        @spectate_port = port if broadcast # Only remember the port number of broadcasting.
-        @user_name = user_name if broadcast
-        @player_time_limit = player_time_limit
+        @broadcast_when_monitoring = dialog.broadcast?
+        @current_flip_book_directory = dialog.flip_book_directory
+        @spectate_port = dialog.spectate_port
+        @user_name = dialog.user_name
+        @player_time_limit = dialog.time_limit
+        @player_screen_width = dialog.screen_width
+        @player_full_screen = dialog.full_screen?
+        @hard_to_quit_mode = dialog.hard_to_quit_mode?
+        @controller_address = dialog.controller_address
+        @controller_port = dialog.controller_port
 
         disable_monitors
         select_frame(@book.size - 1)
@@ -819,7 +834,7 @@ module Flipped
 
       begin
         # Connect to self, in order to spectate own story.
-        @spectate_client = SpectateClient.new('localhost', port, @user_name, :player, @player_time_limit)
+        @spectate_client = SpectateClient.new('localhost', @spectate_port, @user_name, :player, @player_time_limit)
         self.spectating = true
       rescue Exception => ex
         log.error { ex }
@@ -879,38 +894,38 @@ module Flipped
 
     # Open a new flip-book and monitor it for changes.
     def on_cmd_spectate(sender, selector, event)
-      dialog = SpectateDialog.new(self, t.spectate.dialog, :address => @spectate_address, :port => @spectate_port,
+      dialog = SpectateDialog.new(self, t, :address => @spectate_address, :port => @spectate_port,
         :user_name => @user_name, :flip_book_directory => @current_flip_book_directory,
-        :time_limit => @controller_time_limit)
+        :time_limit => @controller_time_limit, :screen_width => @controller_screen_width,
+        :full_screen => @controller_full_screen, :hard_to_quit_mode => @hard_to_quit_mode)
 
       return unless dialog.execute == 1
-
-      directory = dialog.flip_book_directory
-      address = dialog.address
-      port = dialog.port
-      user_name = dialog.user_name
-      controller_time_limit = dialog.time_limit
       
       begin
         app.beginWaitCursor do
           # Replace with new book, viewing last frame.
-          spectate_client = SpectateClient.new(address, port, user_name, :controller, controller_time_limit)
+          spectate_client = SpectateClient.new(dialog.address, dialog.port, dialog.user_name, :controller, dialog.time_limit)
           @book = Book.new
           @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
           show_frames(-1)
           disable_monitors
           @spectate_client = spectate_client
-          @spectate_address = address
-          @spectate_port = port
-          @user_name = user_name
-          @current_flip_book_directory = directory
-          @controller_time_limit = controller_time_limit
+          @spectate_address = dialog.address
+          @spectate_port = dialog.port
+          @user_name = dialog.user_name
+          @current_flip_book_directory = dialog.flip_book_directory
+
+          @controller_time_limit = dialog.time_limit
+          @controller_screen_width = dialog.screen_width
+          @controller_full_screen = dialog.full_screen?
+          @hard_to_quit_mode = dialog.hard_to_quit_mode?
+
           self.spectating = true
           select_frame(@book.size - 1)
         end
       rescue => ex
         log.error { ex }
-        error_dialog(t.spectate.error.title, t.spectate.error.text("#{address}:#{port}"))
+        error_dialog(t.spectate.error.title, t.spectate.error.text("#{@spectate_address}:#{@spectate_port}"))
       end
 
       return 1

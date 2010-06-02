@@ -32,9 +32,6 @@ monitor:
   help: Load flip-book and monitor it while playing SiD, optionally also broadcasting it over the network (%1)
   dialog:
     title: Monitor flip-book directory
-    time_limit: Time limit (secs)
-    user_name:
-     label: User name
     flip_book_directory:
       label: Flip-book directory
       browse_button: Browse...
@@ -50,8 +47,7 @@ monitor:
  
     broadcast:
        label: Broadcast over network?
-       group: Broadcast options
-       port: Port      
+       port: Spectator port      
       
   error:
     server_failed:
@@ -71,7 +67,6 @@ spectate:
   help: Spectate player's flip-book over network during a game (%1)
   dialog:
     title: Spectate remote flip-book
-    time_limit: Time limit (secs)
     flip_book_directory:
       label: Flip-book directory
       browse_button: Browse...
@@ -95,6 +90,20 @@ spectate:
   error:
     title: Spectate remote flip-book error
     text: "Failed to connect to %1"
+
+# Dialog used as parent of spectate and broadcast dialogs.
+game:
+  dialog:
+    resolution:
+      label: Resolution
+    hard_to_quit_mode:
+      label: Hard to quit mode?
+    user_name:
+      label: User name
+    time_limit:
+      label: Time limit (secs)
+    full_screen:
+      label: Full screen?
 
 save_as:
   menu: "&Save flip-book as..."
