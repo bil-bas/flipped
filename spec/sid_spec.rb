@@ -51,8 +51,8 @@ describe SiD do
 
   describe "run()" do
     it "should run the game" do
-      @sid.instance_variable_set('@root', SID_DIR)
-      @sid.run
+      @real_sid = SiD.new(SID_DIR)
+      @real_sid.run
     end
   end
 
