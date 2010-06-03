@@ -17,13 +17,14 @@ require 'fileutils'
 # Rest of the app.
 require 'book'
 require 'options_dialog'
-require 'monitor_dialog'
-require 'spectate_dialog'
+require 'play_dialog'
+require 'control_dialog'
 require 'settings_manager'
 require 'image_canvas'
 require 'spectate_server'
 require 'spectate_client'
 require 'sound'
+require 'sid'
 
 module Flipped
   module ZoomOption
@@ -61,8 +62,12 @@ module Flipped
     NUM_INTERVALS_SEEN = 15
 
     DEFAULT_GAME_SCREEN_WIDTH = 640
+    DEFAULT_GAME_SCREEN_HEIGHT = DEFAULT_GAME_SCREEN_WIDTH * 3 / 4
     DEFAULT_TIME_LIMIT = 30
     DEFAULT_FULL_SCREEN = false # Assume that if you are using Flipped, you want a window.
+    DEFAULT_SID_DIRECTORY = File.expand_path(File.join(INSTALLATION_ROOT, '..'))
+    DEFAULT_SID_PORT = 7778
+    DEFAULT_FLIP_BOOK_PATTERN = "%s (%c - %p) %d %t" # Story (controller - player) date time.
 
     SETTINGS_ATTRIBUTES = {
       :window_x => ['x', 100],
@@ -83,42 +88,51 @@ module Flipped
       :status_bar_shown => ['@status_bar_shown', true],
       :thumbnails_shown => ['@thumbnails_shown', true],
 
-      :broadcast_when_monitoring => ['@broadcast_when_monitoring', false],
       :spectate_port => ['@spectate_port', SpectateServer::DEFAULT_PORT],
-      :spectate_address => ['@spectate_address', ''],
+      :sid_port => ['@sid_port', DEFAULT_SID_PORT],
+      :flip_book_pattern => ['@flip_book_pattern', DEFAULT_FLIP_BOOK_PATTERN],
 
       :user_name => ['@user_name', 'User'],
+      :story_name => ['@story_name', 'Story'],
       :hard_to_quit_mode => ['@hard_to_quit_mode', false],
 
       :player_time_limit => ['@player_time_limit', DEFAULT_TIME_LIMIT],
       :player_screen_width => ['@player_screen_width', DEFAULT_GAME_SCREEN_WIDTH],
+      :player_screen_height => ['@player_screen_height', DEFAULT_GAME_SCREEN_HEIGHT],
       :player_full_screen => ['@player_full_screen', DEFAULT_FULL_SCREEN],
-      
-      :controller_address => ['@controller_address', ''],
-      :controller_port => ['@controller_port', 7778],
+      :player_sid_directory => ['@player_sid_directory', DEFAULT_SID_DIRECTORY],
 
+      :controller_address => ['@controller_address', ''],
       :controller_time_limit => ['@controller_time_limit', DEFAULT_TIME_LIMIT],
       :controller_screen_width => ['@controller_screen_width', DEFAULT_GAME_SCREEN_WIDTH],
-      :controller_fullscreen => ['@controller_full_screen', DEFAULT_FULL_SCREEN],
+      :controller_screen_height => ['@controller_screen_height', DEFAULT_GAME_SCREEN_HEIGHT],
+      :controller_full_screen => ['@controller_full_screen', DEFAULT_FULL_SCREEN],
+      :controller_sid_directory => ['@controller_sid_directory', DEFAULT_SID_DIRECTORY],
 
       :notification_sound => ['@notification_sound', File.join(INSTALLATION_ROOT, 'media', 'sounds', 'shortbeeptone.wav')],
       :notification_enabled => ['@notification_enabled', true],
     }
 
     KEYS_ATTRIBUTES = {
+      # File
       :open => ['@key[:open]', 'Ctrl-O'],
       :append => ['@key[:append]', 'Ctrl-A'],
-      :monitor => ['@key[:monitor]', 'Ctrl-M'],
-      :spectate => ['@key[:spectate]', 'Ctrl-R'],
       :save_as => ['@key[:save_as]', 'Ctrl-S'],
       :quit => ['@key[:quit]', 'Ctrl-Q'],
 
+      # SleepIsDeath
+      :play_sid => ['@key[:play_sid]', 'Ctrl-P'],
+      :control_sid => ['@key[:control_sid]', 'Ctrl-C'],
+      :spectate_sid => ['@key[:spectate_sid]', 'Ctrl-E'],
+
+      # Navigation
       :start => ['@key[:start]', 'Home'],
       :previous => ['@key[:previous]', 'Left'],
       :play => ['@key[:play]', 'Space'],
       :next => ['@key[:next]', 'Right'],
       :end => ['@key[:end]', 'End'],
 
+      # View
       :toggle_nav_buttons_bar => ['@key[:toggle_nav_buttons_bar]', 'Ctrl-B'],
       :toggle_status_bar => ['@key[:toggle_status_bar]', 'Ctrl-U'],
       :toggle_thumbs => ['@key[:toggle_thumbs]', 'Ctrl-T'],
@@ -130,6 +144,7 @@ module Flipped
 
       :toggle_looping => ['@key[:loops]', 'Ctrl-L'],
 
+      # Edit
       :delete_single => ['@key[:delete_single]', 'Ctrl-X'],
       :delete_before => ['@key[:delete_before]', ''],
       :delete_after => ['@key[:delete_after]', ''],
@@ -137,8 +152,8 @@ module Flipped
     }
 
     FRAMES_RENDERED_PER_CHORE = 5
-    SPECTATE_INTERVAL = 0.5 # Half a second between checking for receiving new frames.
-    MONITOR_INTERVAL = 0.5 # Half a second between checking for new frames in folder.
+    SPECTATE_INTERVAL = 0.2 # Delay between checking for receiving new frames.
+    MONITOR_INTERVAL = 0.2 # Delay between checking for new frames in folder.
 
     IMAGE_BACKGROUND_COLOR = Fox::FXColor::Black
     THUMB_BACKGROUND_COLOR = Fox::FXColor::White
@@ -219,13 +234,19 @@ module Flipped
 
       create_menu(file_menu, :open)
       @append_menu = create_menu(file_menu, :append)
-      FXMenuSeparator.new(file_menu)
-      @monitor_folder_menu = create_menu(file_menu, :monitor)
-      @spectate_remote_menu = create_menu(file_menu, :spectate)
+
       FXMenuSeparator.new(file_menu)
       @save_menu = create_menu(file_menu, :save_as)
       FXMenuSeparator.new(file_menu)
       create_menu(file_menu, :quit)
+
+      # SleepIsDeath menu
+      sid_menu = FXMenuPane.new(self)
+      FXMenuTitle.new(menu_bar, t.sleep_is_death, nil, sid_menu)
+
+      create_menu(sid_menu, :control_sid)
+      create_menu(sid_menu, :play_sid)
+      create_menu(sid_menu, :spectate_sid)
 
       # Navigation menu.
       nav_menu = FXMenuPane.new(self)
@@ -540,11 +561,11 @@ module Flipped
       name = (value ? :pause : :play)
       
       @play_menu.text = t[name].menu
-      @play_menu.helpText = t[name].help(:key => @key[:play])
+      @play_menu.helpText = t[name].help(:key => @key[name])
 
       @play_button.icon = load_icon(name)
       @play_button.tipText = t[name].tip
-      @play_button.helpText = t[name].help(@key[:play])
+      @play_button.helpText = t[name].help(@key[name])
 
       nil
     end
@@ -638,12 +659,17 @@ module Flipped
     # Update the info line and the title bar.
     def update_info_and_title
       if monitoring? or spectating?
-        elapsed = Time.at(Time.now - @story_started_at)
-        elapsed = "%d:%02d:%02d" % [elapsed.hour, elapsed.min, elapsed.sec]
-        time_left = (@turn_finishes_at - Time.now).ceil
-        type = controller_turn? ? t.controller : t.player  
-        setTitle t.title.spectate(@current_frame_index + 1, @book.size, elapsed, type, time_left, current_player_name)
-        @frame_label.text = t.book.spectate(@current_frame_index + 1, @book.size, elapsed, type, time_left, current_player_name)
+        if @story_started_at
+          elapsed = Time.at(Time.now - @story_started_at)
+          elapsed = "%d:%02d:%02d" % [elapsed.hour, elapsed.min, elapsed.sec]
+          time_left = (@turn_finishes_at - Time.now).ceil
+          type = controller_turn? ? t.controller : t.player
+          setTitle t.title.spectate(@current_frame_index + 1, @book.size, elapsed, type, time_left, current_player_name)
+          @frame_label.text = t.book.spectate(@current_frame_index + 1, @book.size, elapsed, type, time_left, current_player_name)
+        else
+          setTitle "Waiting for story to start..."
+          @frame_label.text = "Waiting for story to start..."
+        end
       else
         if @book.empty?
           setTitle t.title.empty
@@ -797,12 +823,13 @@ module Flipped
     end
 
     # Open a new flip-book and monitor it for changes.
-    def on_cmd_monitor(sender, selector, event)
-      dialog = MonitorDialog.new(self, t, :spectate_port => @spectate_port, :user_name => @user_name,
-        :flip_book_directory => @current_flip_book_directory, :broadcast => @broadcast_when_monitoring,
-        :time_limit => @player_time_limit, :screen_width => @player_screen_width,
+    def on_cmd_play_sid(sender, selector, event)
+      dialog = PlayDialog.new(self, t, :spectate_port => @spectate_port, :user_name => @user_name,
+        :time_limit => @player_time_limit, :screen_width => @player_screen_width, :screen_height => @player_screen_height,
         :full_screen => @player_full_screen, :hard_to_quit_mode => @hard_to_quit_mode,
-        :controller_address => @controller_address, :controller_port => @controller_port)
+        :controller_address => @controller_address,
+        :sid_directory => @player_sid_directory, :sid_port => @sid_port,
+        :flip_book_pattern => @flip_book_pattern)
 
       return unless dialog.execute == 1
 
@@ -812,16 +839,31 @@ module Flipped
           @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
           show_frames(@book.size - 1)
         end
-        @broadcast_when_monitoring = dialog.broadcast?
-        @current_flip_book_directory = dialog.flip_book_directory
         @spectate_port = dialog.spectate_port
         @user_name = dialog.user_name
         @player_time_limit = dialog.time_limit
         @player_screen_width = dialog.screen_width
+        @player_screen_height = dialog.screen_height
         @player_full_screen = dialog.full_screen?
         @hard_to_quit_mode = dialog.hard_to_quit_mode?
         @controller_address = dialog.controller_address
-        @controller_port = dialog.controller_port
+        @player_sid_directory = dialog.sid_directory
+        @sid_port = dialog.sid_port
+        @flip_book_pattern = dialog.flip_book_pattern
+
+        @sid = SiD.new(@player_sid_directory)
+
+        # Find out what the path to the flip-book directory the game will create will be called.
+        @story_flip_book_directory = @sid.flip_book_directory(@sid.number_of_automatic_flip_books + 1)
+        @story_started_at = nil
+
+        @sid.default_server_address = @controller_address
+        @sid.port = @sid_port
+        @sid.time_limit = @player_time_limit
+        @sid.screen_width = @player_screen_width
+        @sid.screen_height = @player_screen_height
+        @sid.fullscreen = @player_full_screen
+        @sid.run(:player)
 
         disable_monitors
         select_frame(@book.size - 1)
@@ -829,7 +871,7 @@ module Flipped
 
       rescue Exception => ex
         log.error { ex }
-        error_dialog(t.monitor.error.load_failed.title, t.monitor.error.load_failed.text(directory))
+        error_dialog(t.play_sid.error.load_failed.title, t.play_sid.error.load_failed.text(@sid_directory))
       end
 
       begin
@@ -838,7 +880,7 @@ module Flipped
         self.spectating = true
       rescue Exception => ex
         log.error { ex }
-        error_dialog(t.monitor.error.server_failed.title, t.monitor.error.server_failed.text(port.to_s))
+        error_dialog(t.monitor.error.server_failed.title, t.monitor.error.server_failed.text(@spectate_port.to_s))
       end
 
       return 1
@@ -857,19 +899,26 @@ module Flipped
     def monitoring=(enable)
       if enable
         log.info { "Started monitoring"}
-        @story_started_at = Time.now
         @monitor_timeout = app.addTimeout(MONITOR_INTERVAL * 1000, method(:on_monitor_timeout), :repeat => true)
-        @spectate_server = SpectateServer.new(@spectate_port, @broadcast_when_monitoring)
       else
         log.info { "Ended monitoring"}
         app.removeTimeout(@monitor_timeout)
         @monitor_timeout = nil
-        @spectate_server.close
-        @spectate_server = nil
       end
     end
 
     def on_monitor_timeout(sender, selector, event)
+      unless @story_started_at
+        if File.directory?(@story_flip_book_directory)
+          @current_flip_book_directory = @story_flip_book_directory
+          @story_started_at = Time.now
+          log.info { "Story started with flip-book at #{@current_flip_book_directory}" }
+        else
+          update_info_and_title
+          return 1
+        end
+      end
+
       num_new_frames = @book.update(@current_flip_book_directory)
 
       if num_new_frames > 0
@@ -893,42 +942,65 @@ module Flipped
     end
 
     # Open a new flip-book and monitor it for changes.
-    def on_cmd_spectate(sender, selector, event)
-      dialog = SpectateDialog.new(self, t, :address => @spectate_address, :port => @spectate_port,
+    def on_cmd_control_sid(sender, selector, event)
+      dialog = ControlDialog.new(self, t, :spectate_port => @spectate_port,
         :user_name => @user_name, :flip_book_directory => @current_flip_book_directory,
-        :time_limit => @controller_time_limit, :screen_width => @controller_screen_width,
-        :full_screen => @controller_full_screen, :hard_to_quit_mode => @hard_to_quit_mode)
+        :time_limit => @controller_time_limit, :story_name => @story_name,
+        :screen_width => @controller_screen_width, :screen_height => @controller_screen_height,
+        :full_screen => @controller_full_screen, :hard_to_quit_mode => @hard_to_quit_mode,
+        :sid_directory => @controller_sid_directory, :sid_port => @sid_port,
+        :flip_book_pattern => @flip_book_pattern)
 
       return unless dialog.execute == 1
       
       begin
         app.beginWaitCursor do
           # Replace with new book, viewing last frame.
-          spectate_client = SpectateClient.new(dialog.address, dialog.port, dialog.user_name, :controller, dialog.time_limit)
+          @spectate_server = SpectateServer.new(dialog.spectate_port)         
           @book = Book.new
           @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
           show_frames(-1)
           disable_monitors
-          @spectate_client = spectate_client
-          @spectate_address = dialog.address
-          @spectate_port = dialog.port
+
+          @spectate_client = SpectateClient.new('localhost', dialog.spectate_port, dialog.user_name, :controller, dialog.time_limit)
+          @spectate_port = dialog.spectate_port
           @user_name = dialog.user_name
-          @current_flip_book_directory = dialog.flip_book_directory
+          @flip_book_pattern = dialog.flip_book_pattern
 
           @controller_time_limit = dialog.time_limit
           @controller_screen_width = dialog.screen_width
+          @controller_screen_height = dialog.screen_height
           @controller_full_screen = dialog.full_screen?
+          @controller_sid_directory = dialog.sid_directory
+          @sid_port = dialog.sid_port
+          @story_name = dialog.story_name
           @hard_to_quit_mode = dialog.hard_to_quit_mode?
+          
+          @story_flip_book_directory = "flippy"
+
+          @story_started_at = nil
+
+          @sid = SiD.new(@controller_sid_directory)
+          @sid.port = @sid_port
+          @sid.time_limit = @controller_time_limit
+          @sid.screen_width = @controller_screen_width
+          @sid.screen_height = @controller_screen_height
+          @sid.fullscreen = @controller_full_screen
+          @sid.run(:controller)
 
           self.spectating = true
           select_frame(@book.size - 1)
         end
       rescue => ex
         log.error { ex }
-        error_dialog(t.spectate.error.title, t.spectate.error.text("#{@spectate_address}:#{@spectate_port}"))
+        error_dialog(t.control_sid.error.title, t.control_sid.error.text("#{@spectate_port}"))
       end
 
       return 1
+    end
+
+    def on_cmd_spectate_sid(sender, selector, event)
+      # TODO: Implement spectation (without playing)
     end
 
     def spectating?
@@ -938,7 +1010,7 @@ module Flipped
     def spectating=(enable)
       if enable
         log.info { "Started spectating"}
-        @story_started_at = Time.now
+        @story_started_at = nil
         unless monitoring?
           @spectate_timeout = app.addTimeout(SPECTATE_INTERVAL * 1000, method(:on_spectate_timeout), :repeat => true)
         end
@@ -950,11 +1022,20 @@ module Flipped
         end
         @spectate_client.close
         @spectate_client = nil
+
+        @spectate_server.close
+        @spectate_server = nil
       end
     end
 
     def on_spectate_timeout(sender, selector, event)
       new_frames = @spectate_client.frames_buffer
+
+      unless @story_started_at and new_frames.empty? 
+        @current_flip_book_directory = @story_flip_book_directory
+        @story_started_at = Time.now
+        log.info { "Story started with flip-book at #{@current_flip_book_directory}" }
+      end
 
       unless new_frames.empty?
         @book.insert(@book.size, *new_frames)
@@ -966,6 +1047,8 @@ module Flipped
         end
 
         @turn_finishes_at = Time.now + current_player_time_limit
+
+        # TODO: Autosave flip-book.
       end
 
       update_info_and_title

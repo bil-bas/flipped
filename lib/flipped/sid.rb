@@ -40,7 +40,9 @@ EOS
     end
     
     def initialize(root_directory)
-      @root = root_directory
+      raise ArgumentError.new("Bad root_directory: #{root_directory}") unless self.class.valid_root? root_directory
+            
+      @root = File.expand_path(root_directory)
       @thread = nil
       read_settings
     end
@@ -78,7 +80,22 @@ EOS
       nil
     end
 
-    def run
+    def run(role)
+
+      case role
+        when :player
+          self.auto_host = false
+          self.auto_join = true
+          self.flip_book = true
+
+        when :controller
+          self.auto_host = true
+          self.auto_join = false
+          
+        else
+          raise Exception.new("Unrecognised role, '#{role.inspect}')")
+      end
+      
       write_settings
 
       @thread = Thread.new do
@@ -93,8 +110,9 @@ EOS
       @thread.kill if @thread
     end
 
-    # Is the directory a valid root directory for the Sleep Is Death game? 
-    def valid_root?(directory)
+    # Is the directory a valid root directory for the Sleep Is Death game?
+    public
+    def self.valid_root?(directory)
       return false unless File.exists?(File.join(directory, EXECUTABLE))
 
       SID_DIRECTORIES.each do |sub_directory|
@@ -107,6 +125,7 @@ EOS
     # The number of flip-books created by the game (00001..0000N). Only counts consecutive ones starting from '00001'.
     #
     # Returns: Number of automatically generated flip-books.
+    public
     def number_of_automatic_flip_books
       i = 0
 
@@ -118,11 +137,13 @@ EOS
     end
 
     # +number+:: Number of flipbook (starting at 1).
+    public
     def flip_book_directory(number)
       File.join(flip_book_dir, sprintf(FLIP_BOOK_DIRECTORY_FORMAT, number))      
     end
 
     # +number+:: Number of flipbook (starting at 1).
+    public
     def flip_book(number)
       Book.new(flip_book_directory(number))
     end

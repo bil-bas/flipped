@@ -7,11 +7,14 @@ require 'book'
 
 module Flipped
   class Dialog < FXDialogBox
+
+    TEXT_COLUMNS = 40
+    
     def initialize(owner, title)
       super(owner, title, :opts => DECOR_TITLE|DECOR_BORDER)
 
       # 4 columns wide.
-      @grid = FXMatrix.new(self, :n => 4, :opts => MATRIX_BY_COLUMNS|LAYOUT_FILL_X, :hSpacing => 8, :vSpacing => 8)
+      @grid = FXMatrix.new(self, :n => 4, :opts => MATRIX_BY_COLUMNS|LAYOUT_FILL_X, :hSpacing => 8, :vSpacing => 20)
 
       FXHorizontalSeparator.new(self, :padTop => 10)
 

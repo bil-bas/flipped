@@ -19,8 +19,8 @@ module Flipped
     DEFAULT_TIME_LIMIT = 0
     
     protected
-    def initialize(port, broadcasting)
-      @port, @broadcasting =  port, broadcasting
+    def initialize(port)
+      @port =  port
 
       srand
 
@@ -161,11 +161,7 @@ module Flipped
     protected
     def listen
       begin
-        @server = if @broadcasting
-          TCPServer.new(@port) # Allow remote connections.
-        else
-          TCPServer.new('localhost', @port) # Don't allow remote connections.
-        end
+        @server = TCPServer.new(@port)
       rescue Exception => ex
         raise Exception.new("#{self.class} failed to start on port #{@port}! #{ex}")
       end
