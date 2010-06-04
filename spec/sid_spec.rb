@@ -50,19 +50,34 @@ describe SiD do
   end
 
   describe "run()" do
-    it "should run the game" do
-      @real_sid = SiD.new(SID_DIR)
-      @real_sid.run
+    it "should run the game as a controller" do
+      real_sid = SiD.new(SID_DIR)
+      closed = false
+      real_sid.run(:controller) do |sid|
+        sid.should == real_sid
+        closed = true
+      end
+      until closed; end
+    end
+
+    it "should run the game as a player" do
+      real_sid = SiD.new(SID_DIR)
+      closed = false
+      real_sid.run(:player) do |sid|
+        sid.should == real_sid
+        closed = true
+      end
+      until closed; end
     end
   end
 
-  describe "valid_root?()" do
+  describe "self.valid_root?()" do
     it "should recognise a real installation of SiD" do
-      @sid.valid_root?(SID_DIR).should be_true
+      SiD.valid_root?(SID_DIR).should be_true
     end
 
     it "should reject a non-installation of SiD" do
-      @sid.valid_root?(File.dirname(__FILE__)).should be_false      
+      SiD.valid_root?(File.dirname(__FILE__)).should be_false
     end
   end
 

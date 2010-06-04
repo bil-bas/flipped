@@ -80,7 +80,7 @@ EOS
       nil
     end
 
-    def run(role)
+    def run(role, &block)
 
       case role
         when :player
@@ -98,9 +98,10 @@ EOS
       
       write_settings
 
-      @thread = Thread.new do
+      @thread = Thread.new(block) do
         Dir.chdir @root # SiD is dumb enough to REQUIRE current directory!
         system executable
+        block.call(self) if block
       end
 
       nil
