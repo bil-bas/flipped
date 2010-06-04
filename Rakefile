@@ -4,7 +4,7 @@ require 'fileutils'
 require 'yaml'
 include FileUtils
 
-RELEASE_VERSION = '0.3.0-beta1'
+RELEASE_VERSION = '0.3.0-beta2'
 
 OCRA = 'ruby build/ocrasa.rb'
 

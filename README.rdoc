@@ -128,7 +128,7 @@ Full text of the license is provided in COPYING.txt
 
 == Credits
 
-* Thanks to SiliconEidolon and ubik for testing and feedback.
+* Thanks to SiliconEidolon, Pie and ubik for testing and feedback.
 * Thanks to {SiDtube}[http://sidtube.com] for providing a marvellous community site for SiD players.
 * Thanks to {github}[http://github.com] for hosting my project.
 

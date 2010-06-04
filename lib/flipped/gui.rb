@@ -681,7 +681,8 @@ module Flipped
     def update_info_and_title
       if monitoring? or spectating?
         if @spectate_client.story_started_at
-          elapsed = Time.at(Time.now - @spectate_client.story_started_at)
+          # Clocks might be unsynced, so assume that the game was always started BEFORE now.
+          elapsed = Time.at([Time.now - @spectate_client.story_started_at, 0].max)
           elapsed = "%d:%02d:%02d" % [elapsed.hour, elapsed.min, elapsed.sec]
           time_left = (@turn_finishes_at - Time.now).ceil
           type = controller_turn? ? t.controller : t.player
@@ -897,8 +898,8 @@ module Flipped
       end
 
       begin
-        # Connect to self, in order to spectate own story.
-        @spectate_client = SpectateClient.new('localhost', @spectate_port, @user_name, :player, @player_time_limit)
+        # Connect to the controller, in order to spectate own story.
+        @spectate_client = SpectateClient.new(@controller_address, @spectate_port, @user_name, :player, @player_time_limit)
         self.spectating = true
 
         @sid.run(:player) do |sid|
@@ -911,7 +912,7 @@ module Flipped
         end
       rescue Exception => ex
         log.error { ex }
-        error_dialog(t.monitor.error.server_failed.title, t.monitor.error.server_failed.text(@spectate_port.to_s))
+        error_dialog(t.play_sid.error.server_failed.title, t.play_sid.error.server_failed.text(@spectate_port.to_s))
       end
 
       return 1
@@ -1067,7 +1068,45 @@ module Flipped
     end
 
     def on_cmd_spectate_sid(sender, selector, event)
-      # TODO: Implement spectation (without playing)
+      return # TODO: Complete implementation of this.
+
+      dialog = SpectateDialog.new(self, t, :spectate_address => @controller_address, :spectate_port => @spectate_port,
+        :user_name => @user_name, :flip_book_pattern => @flip_book_pattern)
+
+      return unless dialog.execute == 1
+
+      begin
+        app.beginWaitCursor do
+          @spectate_client = SpectateClient.new(dialog.spectate_address, dialog.spectate_port, dialog.user_name, :spectator, nil)
+          # Replace with new book, viewing last frame.
+          @book = Book.new
+          @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
+          show_frames(-1)
+          disable_monitors          
+          @spectate_client.story_name = dialog.story_name
+          @controller_address = dialog.spectate_address
+          @spectate_port = dialog.spectate_port
+          @user_name = dialog.user_name
+          @flip_book_pattern = dialog.flip_book_pattern
+
+          # TODO: How to manage this?
+#          @sid = SiD.new(@controller_sid_directory)
+#          unless @book.empty?
+#            flip_book_dir = @sid.ensure_unique_flip_book(expand_flip_book_pattern(@spectate_client, @flip_book_pattern))
+#            log.info { "Writing #{@book.frames} frames to #{flip_book_dir}" }
+#            @book.write(flip_book_dir, @template_directory)
+#          end
+#          disable_monitors
+
+          self.spectating = true
+          select_frame(@book.size - 1)
+        end
+      rescue => ex
+        log.error { ex }
+        error_dialog(t.spectate_sid.error.title, t.spectate_sid.error.text(@controller_address, @spectate_port))
+      end
+
+      return 1
     end
 
     def spectating?
@@ -1096,11 +1135,13 @@ module Flipped
     end
 
     def on_spectate_timeout(sender, selector, event)
-      if @spectate_client.story_started_at
-        @current_flip_book_directory = expand_flip_book_pattern(@spectate_client, @flip_book_pattern)
-        log.info { "Story #{@spectate_client.story_name} started at #{@spectate_client.story_started_at} with flip-book at #{@current_flip_book_directory}" }
-      else
-        return 1
+      if @book.empty?
+        if @spectate_client.story_started_at
+          @current_flip_book_directory = expand_flip_book_pattern(@spectate_client, @flip_book_pattern)
+          log.info { "Story '#{@spectate_client.story_name}' started at #{@spectate_client.story_started_at} with flip-book at #{@current_flip_book_directory}" }
+        else
+          return 1
+        end
       end
 
       new_frames = @spectate_client.frames_buffer
@@ -1167,6 +1208,8 @@ module Flipped
 
     # Quit the application
     def on_cmd_quit(sender, selector, event)
+      disable_monitors
+
       @thumbnails_shown = @toggle_thumbs_menu.checkState == 1
       @status_bar_shown = @toggle_status_menu.checkState == 1
       @information_bar_shown = @toggle_info_menu.checkState == 1

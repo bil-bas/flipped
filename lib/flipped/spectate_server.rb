@@ -14,7 +14,6 @@ module Flipped
     include Log
     
     DEFAULT_PORT = 7777
-    DEFAULT_AUTO_SAVE = true
     DEFAULT_NAME = 'User'
     DEFAULT_TIME_LIMIT = 0
     
@@ -51,7 +50,6 @@ module Flipped
     public
     def close
       @server.close unless @server.closed?
-      @listen_thread.join
 
       @spectators.synchronize do
         @spectators.each { |s| s.close }
@@ -125,9 +123,10 @@ module Flipped
                 end
             end
           end
-        rescue Exception => ex
+        rescue IOError, Errno::ECONNABORTED => ex
           log.error { "Problem when waiting for player updates."}
           log.error { ex }
+          close
         end
       end
     end
@@ -147,9 +146,10 @@ module Flipped
                 end
             end
           end
-        rescue Exception => ex
+        rescue IOError, Errno::ECONNABORTED => ex
           log.error { "Problem when waiting for controller messages."}
           log.error { ex }
+          close
         end
       end
     end
@@ -166,24 +166,31 @@ module Flipped
           wait_for_controller_messages
       end
 
-      spectator.send(Message::Accept.new)
+      begin
 
-      message = Message::Connected.new(:name => spectator.name, :id => spectator.id, :role => spectator.role, :time_limit => spectator.time_limit)
-      spectator.send(message) # Remind them about themselves first.
-      @spectators.synchronize do
-        @spectators.each do |other|
-          if other.logged_in?
-            # Make sure everyone else knows about the newly connected spectator.
-            other.send(message)
-            # Make sure the newly connected spectator knows about everyone already logged in.
-            spectator.send(Message::Connected.new(:name => other.name, :id => other.id, :role => other.role, :time_limit => other.time_limit))
+        spectator.send(Message::Accept.new)
+
+        message = Message::Connected.new(:name => spectator.name, :id => spectator.id, :role => spectator.role, :time_limit => spectator.time_limit)
+        spectator.send(message) # Remind them about themselves first.
+        @spectators.synchronize do
+          @spectators.each do |other|
+            if other.logged_in?
+              # Make sure everyone else knows about the newly connected spectator.
+              other.send(message)
+              # Make sure the newly connected spectator knows about everyone already logged in.
+              spectator.send(Message::Connected.new(:name => other.name, :id => other.id, :role => other.role, :time_limit => other.time_limit))
+            end
           end
+
+          spectator.send(@story_named) if @story_named
+          spectator.send(@story_started) if @story_started
+
+          update_spectator(spectator) unless spectator.player?
         end
-
-        spectator.send(@story_named) if @story_named
-        spectator.send(@story_started) if @story_started
-
-        update_spectator(spectator) unless spectator.player?
+      rescue IOError, Errno::ECONNABORTED => ex
+        log.error { "Failed to connect spectator."}
+        log.error { ex }
+        close
       end
 
       nil
@@ -195,8 +202,9 @@ module Flipped
     def listen
       begin
         @server = TCPServer.new(@port)
-      rescue Exception => ex
-        raise Exception.new("#{self.class} failed to start on port #{@port}! #{ex}")
+      rescue IOError => ex
+        log.error(ex)
+        raise Exception.new("#{self.class} failed to start on port #{@port}!")
       end
 
       log.info { "#{@name} waiting for a connection on port #{@port}." }
@@ -206,9 +214,10 @@ module Flipped
           while socket = @server.accept
             add_spectator(socket)
           end
-        rescue Exception => ex
+        rescue IOError, Errno::ECONNABORTED => ex
+          log.error { "Failed to listen."}
           log.error { ex }
-          @server.close unless @server.closed?
+          close
         end
       end
 
@@ -219,7 +228,7 @@ module Flipped
     protected
     def add_spectator(socket)
       Thread.new(socket) do |socket|
-        begin         
+        begin
           spectator = Spectator.new(self, socket)
 
           @spectators.synchronize do
@@ -227,6 +236,7 @@ module Flipped
             @spectators.push spectator
           end
         rescue => ex
+          # socket.addr can fail, apparently.
           log.error { ex }
         end
       end

@@ -146,7 +146,9 @@ module Flipped
               log.error { "Unrecognised message type: #{message.class}" }
           end
         end
-      rescue IOError, Errno::ECONNABORTED
+      rescue IOError, Errno::ECONNABORTED => ex
+        log.error { "Failed to read message."}
+        log.error { ex }
         close
       end
 
@@ -157,8 +159,15 @@ module Flipped
     public
     def send_frames(frames)
       log.info { "Sending #{frames.size} frames to server."}
-      frames.each do |frame|
-        Message::Frame.new(:frame => frame).write(@socket)
+
+      begin
+        frames.each do |frame|
+          Message::Frame.new(:frame => frame).write(@socket)
+        end
+      rescue IOError, Errno::ECONNABORTED => ex
+        log.error { "Failed to send frames."}
+        log.error { ex }
+        close
       end
       
       nil
@@ -169,7 +178,14 @@ module Flipped
     def send_story_started
       @story_started_at = Time.now
       message = Message::StoryStarted.new(:started_at => @story_started_at)
-      message.write(@socket)
+
+      begin
+        message.write(@socket)
+      rescue IOError, Errno::ECONNABORTED => ex
+        log.error { "Failed to send story started."}
+        log.error { ex }
+        close
+      end
 
       @story_started_at
     end
@@ -178,8 +194,6 @@ module Flipped
     #
     protected
     def connect()
-      # Connect to a server
-
       @socket = TCPSocket.open(@address, @port)
 
       log.info { "Connected to #{@address}:#{@port}." }
