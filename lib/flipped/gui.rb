@@ -941,7 +941,7 @@ module Flipped
     protected
     def rename_flip_book(directory, spectate_client, pattern)
 
-      new_directory = File.join(File.dirname(directory), expand_flip_book_pattern(spectate_client, pattern))
+      new_directory = @sid.ensure_unique_flip_book(expand_flip_book_pattern(spectate_client, pattern))
       FileUtils.mv(directory, new_directory)
 
       new_directory
@@ -1048,7 +1048,7 @@ module Flipped
           @sid.run(:controller) do |sid|
             sleep 0.5
             unless @book.empty?
-              flip_book_dir = File.join(sid.flip_book_dir, expand_flip_book_pattern(@spectate_client, @flip_book_pattern))
+              flip_book_dir = @sid.ensure_unique_flip_book(expand_flip_book_pattern(@spectate_client, @flip_book_pattern))
               log.info { "Writing #{@book.frames} frames to #{flip_book_dir}" }
               @book.write(flip_book_dir, @template_directory)
             end

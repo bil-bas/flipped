@@ -137,6 +137,24 @@ EOS
       i
     end
 
+    # Ensure a directory-name is unique by adding/incrementing a postfix if needed.
+    #   "frog" => "frog_1" (assuming "frog" exists).
+    #   "frog" => "frog_2" (assuming "frog" and "frog_1" exist)
+    #   "frog_1" => "frog_2" (assuming "frog_1" exists).
+    public
+    def ensure_unique_flip_book(directory)
+      path = File.join(flip_book_dir, directory)
+      if File.exists? path
+        if directory =~ /__\d+$/
+          ensure_unique_flip_book(directory.sub(/\d+$/) { |i| i.to_i + 1 })
+        else
+          ensure_unique_flip_book("#{directory}__1")
+        end
+      else
+        path
+      end
+    end
+
     # +number+:: Number of flipbook (starting at 1).
     public
     def flip_book_directory(number)

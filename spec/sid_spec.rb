@@ -106,4 +106,19 @@ describe SiD do
       @sid.number_of_automatic_flip_books().should == 0
     end
   end
+
+  describe "ensure_unique_flip_book()" do
+    it "should allow a flip-book that isn't a duplicate as provided" do
+      @sid_with_flip_books.ensure_unique_flip_book('00009').should == File.join(@sid_flip_books_dir, '00009')
+    end
+
+    it "should add a index if a flip-book exists" do
+      @sid_with_flip_books.ensure_unique_flip_book('00001').should == File.join(@sid_flip_books_dir, '00001__1')
+    end
+
+    it "should add/increment an index if multiple flip-books already exist" do
+      @sid_with_flip_books.ensure_unique_flip_book('00003').should == File.join(@sid_flip_books_dir, '00003__2')
+      @sid_with_flip_books.ensure_unique_flip_book('00003__1').should == File.join(@sid_flip_books_dir, '00003__2')
+    end
+  end
 end
