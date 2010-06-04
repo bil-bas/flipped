@@ -17,6 +17,12 @@
     </requirement>
     <requirement>
       <requirement>
+        <dependency name="rspec" version="0" bound="GREATER_OR_EQUAL" git="false" />
+      </requirement>
+      <source from="Rakefile" />
+    </requirement>
+    <requirement>
+      <requirement>
         <dependency name="win32-api" version="0" bound="GREATER_OR_EQUAL" git="false" />
       </requirement>
       <source manual="true" />
