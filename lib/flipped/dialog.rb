@@ -41,5 +41,54 @@ module Flipped
     def skip_grid
       FXLabel.new(@grid, '')
     end
+
+    # Letter, number, _, &, -, ', ", %, ., ,, space
+    protected
+    def verify_text(sender, selector, text)
+       if text =~ /^[A-Za-z0-9_\&-'"%., ]*$/
+        false
+      else
+        true
+      end
+    end
+
+    # Letter, number, _
+    protected
+    def verify_name(sender, selector, text)
+       if text =~ /^[A-Za-z0-9_]*$/
+        false
+      else
+        true
+      end
+    end
+
+    # Internet address.
+    protected
+    def verify_address(sender, selector, text)
+       if text =~ /^[A-Za-z0-9_\-\.]*$/
+        false
+      else
+        true
+      end
+    end
+
+    # 1..65535 required in port.
+    protected
+    def verify_port(sender, selector, text)
+      if text =~ /^(\d*)$/
+        not (1..65535).include?($1.to_i)
+      else
+        true
+      end
+    end
+
+    protected
+    def verify_positive_number(sender, selector, text)
+      if text =~ /^(\d*)$/
+        $1.to_i < 1
+      else
+        true
+      end
+    end
   end
 end

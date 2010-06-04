@@ -89,6 +89,7 @@ module Flipped
 
       @flip_book_pattern_field = FXTextField.new(@grid, 20, :opts => TEXTFIELD_NORMAL|LAYOUT_RIGHT|LAYOUT_FILL_X) do |widget|
         widget.text = pattern
+        widget.connect(SEL_VERIFY, method(:verify_text))
       end
 
       Button.new(@grid, t.default_button, :opts => LAYOUT_FILL_X).connect(SEL_COMMAND) do |sender, selector, event|
@@ -106,6 +107,7 @@ module Flipped
 
       @user_name_field = FXTextField.new(@grid, 20, :opts => TEXTFIELD_NORMAL|LAYOUT_RIGHT|LAYOUT_FILL_X) do |widget|
         widget.text = initial
+        widget.connect(SEL_VERIFY, method(:verify_name))
       end
 
       skip_grid
@@ -119,10 +121,7 @@ module Flipped
       FXLabel.new(@grid, t.label)
       @time_limit_field = FXTextField.new(@grid, 6, :opts => TEXTFIELD_NORMAL|JUSTIFY_RIGHT|TEXTFIELD_INTEGER) do |widget|
         widget.text = initial.to_s
-        widget.connect(SEL_CHANGED) do |sender, selector, text|
-          # Ensure the value can't be negative.
-          sender.text = (text.to_i.abs).to_s
-        end
+        widget.connect(SEL_VERIFY, method(:verify_positive_number))
       end
 
       Button.new(@grid, t.default_button, :opts => LAYOUT_FILL_X).connect(SEL_COMMAND) do |sender, selector, event|
@@ -144,10 +143,8 @@ module Flipped
       # Screen width.
       @screen_width_field = FXTextField.new(frame, 6, :opts => TEXTFIELD_NORMAL|JUSTIFY_RIGHT|TEXTFIELD_INTEGER) do |widget|
         widget.text = width.to_s
+        widget.connect(SEL_VERIFY, method(:verify_positive_number))
         widget.connect(SEL_CHANGED) do |sender, selector, text|
-          # Ensure the value can't be negative.
-          sender.text = (text.to_i.abs).to_s
-
           # Show what the height would be, based on the width.
           calculate_screen_height unless full_screen
         end
@@ -159,10 +156,7 @@ module Flipped
       @screen_height_field = FXTextField.new(frame, 6, :opts => TEXTFIELD_NORMAL|JUSTIFY_RIGHT|TEXTFIELD_INTEGER) do |widget|
         widget.text = height.to_s
         widget.enabled = full_screen
-        widget.connect(SEL_CHANGED) do |sender, selector, text|
-          # Ensure the value can't be negative.
-          sender.text = (text.to_i.abs).to_s
-        end
+        widget.connect(SEL_VERIFY, method(:verify_positive_number))
       end
 
       # Full screen?
@@ -190,7 +184,7 @@ module Flipped
     # Calculate the screen height based on the width, assuming 4:3 aspect ratio.
     protected
     def calculate_screen_height
-      @screen_height_field.text = (@screen_width_field.text.to_i * 3 / 4).to_s
+      @screen_height_field.text = [(@screen_width_field.text.to_i * 3 / 4), 1].max.to_s
 
       nil
     end
@@ -211,13 +205,10 @@ module Flipped
     end
 
     protected
-    def port_field(container, initial_port)
+    def port_field(container, port)
       FXTextField.new(container, 6, :opts => TEXTFIELD_NORMAL|JUSTIFY_RIGHT|TEXTFIELD_INTEGER) do |widget|
-        widget.text = initial_port.to_s
-        widget.connect(SEL_CHANGED) do |sender, selector, text|
-          # Ensure the value can't be negative.
-          sender.text = (text.to_i.abs).to_s
-        end
+        widget.text = port.to_s
+        widget.connect(SEL_VERIFY, method(:verify_port))
       end
     end
 
@@ -225,6 +216,7 @@ module Flipped
     def address_field(container, address)
       FXTextField.new(container, 15, :opts => TEXTFIELD_NORMAL|LAYOUT_FILL_X) do |widget|
         widget.text = address
+        widget.connect(SEL_VERIFY, method(:verify_address))
       end
     end
 

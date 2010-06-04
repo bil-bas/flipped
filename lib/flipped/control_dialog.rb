@@ -27,6 +27,7 @@ module Flipped
 
       @story_name_field = FXTextField.new(@grid, 20, :opts => TEXTFIELD_NORMAL|LAYOUT_RIGHT|LAYOUT_FILL_X) do |widget|
         widget.text = name
+        widget.connect(SEL_VERIFY, method(:verify_text))
       end
 
       skip_grid
