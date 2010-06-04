@@ -149,16 +149,18 @@ EOS
       Book.new(flip_book_directory(number))
     end
 
-  protected
+    protected
     def settings_folder
       File.join(@root, 'settings')
     end
 
+    public
     def flip_book_dir
       File.join(@root, 'flipBooks')
     end
 
     # Convert a symbolic to string name.
+    protected
     def symbol_to_string(str)
       str.to_s.gsub(/(_[a-z])/) { |c| c[1..1].upcase }
     end

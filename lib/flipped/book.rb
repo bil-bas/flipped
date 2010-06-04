@@ -1,8 +1,7 @@
 require 'fileutils'
+include FileUtils
 
 module Flipped
-  include FileUtils
-
   # A flip-book for SleepIsDeath.
   #
   # Enables reading/editing/writing flip-books.

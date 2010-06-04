@@ -35,6 +35,15 @@ module Flipped
     DEFAULT = ORIGINAL
   end
 
+  module FlipBookPattern
+    PATTERN = /%\w/
+    CONTROLLER = '%c'
+    PLAYER = '%p'
+    DATE = '%d'
+    TIME = '%t'
+    STORY = '%s'
+  end
+
   class Gui < FXMainWindow
     include Log
     include SettingsManager    
@@ -67,7 +76,7 @@ module Flipped
     DEFAULT_FULL_SCREEN = false # Assume that if you are using Flipped, you want a window.
     DEFAULT_SID_DIRECTORY = File.expand_path(File.join(INSTALLATION_ROOT, '..'))
     DEFAULT_SID_PORT = 7778
-    DEFAULT_FLIP_BOOK_PATTERN = "%s (%c - %p) %d %t" # Story (controller - player) date time.
+    DEFAULT_FLIP_BOOK_PATTERN = "#{FlipBookPattern::STORY} (#{FlipBookPattern::CONTROLLER} - #{FlipBookPattern::PLAYER}) #{FlipBookPattern::DATE} #{FlipBookPattern::TIME}"
 
     SETTINGS_ATTRIBUTES = {
       :window_x => ['x', 100],
@@ -659,16 +668,16 @@ module Flipped
     # Update the info line and the title bar.
     def update_info_and_title
       if monitoring? or spectating?
-        if @story_started_at
-          elapsed = Time.at(Time.now - @story_started_at)
+        if @spectate_client.story_started_at
+          elapsed = Time.at(Time.now - @spectate_client.story_started_at)
           elapsed = "%d:%02d:%02d" % [elapsed.hour, elapsed.min, elapsed.sec]
           time_left = (@turn_finishes_at - Time.now).ceil
           type = controller_turn? ? t.controller : t.player
           setTitle t.title.spectate(@current_frame_index + 1, @book.size, elapsed, type, time_left, current_player_name)
           @frame_label.text = t.book.spectate(@current_frame_index + 1, @book.size, elapsed, type, time_left, current_player_name)
         else
-          setTitle "Waiting for story to start..."
-          @frame_label.text = "Waiting for story to start..."
+          setTitle t.title.waiting_for_start(@spectate_client.story_name)
+          @frame_label.text = t.book.waiting_for_start(@spectate_client.story_name)
         end
       else
         if @book.empty?
@@ -855,7 +864,6 @@ module Flipped
 
         # Find out what the path to the flip-book directory the game will create will be called.
         @story_flip_book_directory = @sid.flip_book_directory(@sid.number_of_automatic_flip_books + 1)
-        @story_started_at = nil
 
         @sid.default_server_address = @controller_address
         @sid.port = @sid_port
@@ -863,7 +871,9 @@ module Flipped
         @sid.screen_width = @player_screen_width
         @sid.screen_height = @player_screen_height
         @sid.fullscreen = @player_full_screen
-        @sid.run(:player)
+
+        @story_started_sent = false
+        @story_ended_at = nil
 
         disable_monitors
         select_frame(@book.size - 1)
@@ -878,12 +888,51 @@ module Flipped
         # Connect to self, in order to spectate own story.
         @spectate_client = SpectateClient.new('localhost', @spectate_port, @user_name, :player, @player_time_limit)
         self.spectating = true
+
+        @sid.run(:player) do |sid|
+          sleep 0.5 # Allow the game to finish writing the files.
+          if File.directory? @story_flip_book_directory
+            rename_flip_book(@story_flip_book_directory, @spectate_client, @flip_book_pattern)
+            @story_ended_at = Time.now
+          end
+          disable_monitors
+        end
       rescue Exception => ex
         log.error { ex }
         error_dialog(t.monitor.error.server_failed.title, t.monitor.error.server_failed.text(@spectate_port.to_s))
       end
 
       return 1
+    end
+
+    protected
+    def expand_flip_book_pattern(spectate_client, pattern)
+      pattern.gsub(FlipBookPattern::PATTERN) do |code|
+        case code
+          when FlipBookPattern::CONTROLLER
+            spectate_client.controller_name
+          when FlipBookPattern::PLAYER
+            spectate_client.player_name
+          when FlipBookPattern::STORY
+            spectate_client.story_name
+          when FlipBookPattern::DATE
+            spectate_client.story_started_at.strftime("%Y-%m-%d")
+          when FlipBookPattern::TIME
+            # For filename, so can't use colon, ':'.
+            spectate_client.story_started_at.strftime("%H.%M")
+          else
+            code
+        end
+      end
+    end
+
+    protected
+    def rename_flip_book(directory, spectate_client, pattern)
+
+      new_directory = File.join(File.dirname(directory), expand_flip_book_pattern(spectate_client, pattern))
+      FileUtils.mv(directory, new_directory)
+
+      new_directory
     end
 
     def disable_monitors
@@ -908,11 +957,12 @@ module Flipped
     end
 
     def on_monitor_timeout(sender, selector, event)
-      unless @story_started_at
-        if File.directory?(@story_flip_book_directory)
-          @current_flip_book_directory = @story_flip_book_directory
-          @story_started_at = Time.now
-          log.info { "Story started with flip-book at #{@current_flip_book_directory}" }
+      unless @spectate_client.story_started_at
+        if (not @story_started_sent) and Book.valid_flip_book_directory?(@story_flip_book_directory)
+            @current_flip_book_directory = @story_flip_book_directory
+            @spectate_client.send_story_started
+            @story_started_sent = true
+            log.info { "Story started with flip-book at '#{@story_flip_book_directory}'" }
         else
           update_info_and_title
           return 1
@@ -963,6 +1013,7 @@ module Flipped
           disable_monitors
 
           @spectate_client = SpectateClient.new('localhost', dialog.spectate_port, dialog.user_name, :controller, dialog.time_limit)
+          @spectate_client.story_name = dialog.story_name
           @spectate_port = dialog.spectate_port
           @user_name = dialog.user_name
           @flip_book_pattern = dialog.flip_book_pattern
@@ -975,10 +1026,6 @@ module Flipped
           @sid_port = dialog.sid_port
           @story_name = dialog.story_name
           @hard_to_quit_mode = dialog.hard_to_quit_mode?
-          
-          @story_flip_book_directory = "flippy"
-
-          @story_started_at = nil
 
           @sid = SiD.new(@controller_sid_directory)
           @sid.port = @sid_port
@@ -986,7 +1033,15 @@ module Flipped
           @sid.screen_width = @controller_screen_width
           @sid.screen_height = @controller_screen_height
           @sid.fullscreen = @controller_full_screen
-          @sid.run(:controller)
+          @sid.run(:controller) do |sid|
+            sleep 0.5
+            unless @book.empty?
+              flip_book_dir = File.join(sid.flip_book_dir, expand_flip_book_pattern(@spectate_client, @flip_book_pattern))
+              log.info { "Writing #{@book.frames} frames to #{flip_book_dir}" }
+              @book.write(flip_book_dir, @template_directory)
+            end
+            disable_monitors
+          end
 
           self.spectating = true
           select_frame(@book.size - 1)
@@ -1010,7 +1065,6 @@ module Flipped
     def spectating=(enable)
       if enable
         log.info { "Started spectating"}
-        @story_started_at = nil
         unless monitoring?
           @spectate_timeout = app.addTimeout(SPECTATE_INTERVAL * 1000, method(:on_spectate_timeout), :repeat => true)
         end
@@ -1020,22 +1074,24 @@ module Flipped
           app.removeTimeout(@spectate_timeout)
           @spectate_timeout = nil
         end
-        @spectate_client.close
+        
+        @spectate_client.close if @spectate_client
         @spectate_client = nil
 
-        @spectate_server.close
+        @spectate_server.close if @spectate_server
         @spectate_server = nil
       end
     end
 
     def on_spectate_timeout(sender, selector, event)
-      new_frames = @spectate_client.frames_buffer
-
-      unless @story_started_at and new_frames.empty? 
-        @current_flip_book_directory = @story_flip_book_directory
-        @story_started_at = Time.now
-        log.info { "Story started with flip-book at #{@current_flip_book_directory}" }
+      if @spectate_client.story_started_at
+        @current_flip_book_directory = expand_flip_book_pattern(@spectate_client, @flip_book_pattern)
+        log.info { "Story #{@spectate_client.story_name} started at #{@spectate_client.story_started_at} with flip-book at #{@current_flip_book_directory}" }
+      else
+        return 1
       end
+
+      new_frames = @spectate_client.frames_buffer
 
       unless new_frames.empty?
         @book.insert(@book.size, *new_frames)

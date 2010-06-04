@@ -15,7 +15,7 @@ module Flipped
     
     DEFAULT_PORT = 7777
     DEFAULT_AUTO_SAVE = true
-    DEFAULT_NAME = '?'
+    DEFAULT_NAME = 'User'
     DEFAULT_TIME_LIMIT = 0
     
     protected
@@ -104,9 +104,9 @@ module Flipped
     end
 
     protected
-    def wait_for_frame_updates
+    def wait_for_player_messages
       Thread.new do
-        log.info { "Started waiting for player frame updates"}
+        log.info { "Started waiting for player updates"}
         begin
           loop do
             case message = Message.read(@player.socket)
@@ -116,10 +116,39 @@ module Flipped
                 end
 
                 update_spectators
+
+              when Message::StoryStarted
+                @story_started = message
+
+                @spectators.synchronize do
+                  @spectators.each {|s| s.send(message) if s.logged_in? }
+                end
             end
           end
         rescue Exception => ex
-          log.error { "Problem when waiting for frame updates."}
+          log.error { "Problem when waiting for player updates."}
+          log.error { ex }
+        end
+      end
+    end
+
+    protected
+    def wait_for_controller_messages
+      Thread.new do
+        log.info { "Started waiting for controller messages"}
+        begin
+          loop do
+            case message = Message.read(@controller.socket)
+              when Message::StoryNamed
+                @story_named = message
+
+                @spectators.synchronize do
+                  @spectators.each {|s| s.send(message) if s.logged_in? }
+                end
+            end
+          end
+        rescue Exception => ex
+          log.error { "Problem when waiting for controller messages."}
           log.error { ex }
         end
       end
@@ -128,15 +157,16 @@ module Flipped
     # Called from the spectator itself.
     public
     def connect_spectator(spectator)
-      spectator.send(Message::Accept.new)
-
       case spectator.role
         when :player
           @player = spectator
-          wait_for_frame_updates
+          wait_for_player_messages
         when :controller
           @controller = spectator
+          wait_for_controller_messages
       end
+
+      spectator.send(Message::Accept.new)
 
       message = Message::Connected.new(:name => spectator.name, :id => spectator.id, :role => spectator.role, :time_limit => spectator.time_limit)
       spectator.send(message) # Remind them about themselves first.
@@ -149,6 +179,9 @@ module Flipped
             spectator.send(Message::Connected.new(:name => other.name, :id => other.id, :role => other.role, :time_limit => other.time_limit))
           end
         end
+
+        spectator.send(@story_named) if @story_named
+        spectator.send(@story_started) if @story_started
 
         update_spectator(spectator) unless spectator.player?
       end

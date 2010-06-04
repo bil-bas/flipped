@@ -83,8 +83,20 @@ describe Message::Frame do
   end  
 end
 
-describe Message::Story do
+describe Message::StoryNamed do
   it_should_behave_like "Message"
+end
+
+describe Message::StoryStarted do
+  it_should_behave_like "Message"
+
+  it "should deserialize time correctly" do
+    time = Time.now
+    instance = described_class.new(:started_at => time)
+    processed = JSON.parse(instance.to_json)
+    # Allow for milliseconds, which we don't care about, being wiped in transit.
+    (time - processed.started_at).abs.should < 1
+  end
 end
 
 describe Message::Connected do

@@ -84,7 +84,7 @@ module Flipped
         when Message::Frame
           @position += 1
 
-        when Message::Story
+        when Message::StoryNamed, Message::StoryStarted
           @position = INITIAL_POSITION
       end
 

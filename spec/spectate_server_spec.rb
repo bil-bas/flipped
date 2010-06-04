@@ -15,7 +15,7 @@ describe SpectateServer do
     @log = Logger.new(STDOUT)
     @log.progname = "SPEC SpectateServer"
     @player_name = "Test Server"
-    @server = described_class.new(described_class::DEFAULT_PORT, true)
+    @server = described_class.new(described_class::DEFAULT_PORT)
   end
 
   after :each do

@@ -310,6 +310,7 @@ book:
   spectate: %1/%2 - %3 - %4 has %5s (%6)
   loaded: Frame %1 of %2
   empty: Empty flip-book
+  waiting_for_start: Waiting for story, '%1', to start...
 
 title:
   # %1 => Current frame, %2 => Total frames, %3 => elapsed time, %4 => type (player/controller/spectator)
@@ -317,6 +318,7 @@ title:
   spectate: %1/%2 - %3 - %4 has %5s (%6)
   loaded: Frame %1 of %2
   empty: Flipped - The SiD flip-book tool
+  waiting_for_start: Waiting for story, '%1', to start...
 
 player: Player
 controller: Controller

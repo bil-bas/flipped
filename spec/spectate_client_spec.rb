@@ -15,7 +15,7 @@ describe SpectateClient do
     @log.progname = "SPEC SpectateClient"
 
     @player_name = "Test Server"
-    @server = SpectateServer.new(SpectateServer::DEFAULT_PORT, true)
+    @server = SpectateServer.new(SpectateServer::DEFAULT_PORT)
   end
 
   after :each do

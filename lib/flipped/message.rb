@@ -1,6 +1,7 @@
 require 'base64'
 require 'json'
 require 'zlib'
+require 'time'
 
 require 'log'
 
@@ -143,11 +144,22 @@ module Flipped
     end
 
     # Sent by server to tell the client to clear current book ready for a new story.
-    class Story < Message
+    class StoryStarted < Message
       include Log
 
-      value :name, 'Story'
       value :started_at, nil
+
+      # Redefine started at so that time string is parsed back into a Time object.
+      alias_method :started_at_OLD, :started_at
+      def started_at
+        Time.parse(started_at_OLD)
+      end
+    end
+
+    class StoryNamed < Message
+      include Log
+           
+      value :name, 'Story'
     end
 
     # A spectator or controller has connected.

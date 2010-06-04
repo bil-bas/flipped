@@ -15,8 +15,10 @@ module Flipped
     DEFAULT_PORT = SpectateServer::DEFAULT_PORT
     DEFAULT_NAME = SpectateServer::DEFAULT_NAME
     DEFAULT_TIME_LIMIT = SpectateServer::DEFAULT_TIME_LIMIT
+    DEFAULT_STORY_NAME = 'Story'
 
-    attr_reader :socket
+    attr_reader :socket, :story_name, :story_started_at
+    attr_writer :story_name
 
     protected    
     def initialize(address, port, name, role, time_limit)
@@ -24,7 +26,8 @@ module Flipped
 
       @player, @controller = nil, nil
       @spectators = Array.new
-      @story = nil
+      @story_started_at = nil
+      @story_name = DEFAULT_STORY_NAME
 
       Thread.abort_on_exception = true
 
@@ -105,6 +108,11 @@ module Flipped
                 @name = message.renamed_as
               end
 
+              # If the controller has logged in, update everyone else with the name of the story.
+              if @role == :controller and @story_name
+                 Message::StoryNamed.new(:name => @story_name).write(socket)
+              end
+
             when Message::Connected
               case message.role
                 when :controller
@@ -126,10 +134,13 @@ module Flipped
               @player = nil if to_remove.id == @player.id
               log.info { "Spectator '#{to_remove.name}' disconnected." }
 
-            when Message::Story
-              @story = message
-              log.info { "Story '#{@story.name}' started at #{@story.started_at}" }          
-              @frames_buffer.clear
+            when Message::StoryNamed
+              @story_name = message.name
+              log.info { "Story named as '#{@story_name}'" }
+
+            when Message::StoryStarted
+              @story_started_at = message.started_at
+              log.info { "Story started at '#{@story_started_at}'" }
 
             else
               log.error { "Unrecognised message type: #{message.class}" }
@@ -151,6 +162,16 @@ module Flipped
       end
       
       nil
+    end
+
+    # ONLY ON THE PLAYER client.
+    public
+    def send_story_started
+      @story_started_at = Time.now
+      message = Message::StoryStarted.new(:started_at => @story_started_at)
+      message.write(@socket)
+
+      @story_started_at
     end
 
     #
