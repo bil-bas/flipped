@@ -33,7 +33,7 @@ module Flipped
 
       Thread.new do
         begin
-          send(Message::Challenge.new)
+          send(Message::Challenge.new(:version => Gui::VERSION))
           
           message = Message.read(@socket)
           case message

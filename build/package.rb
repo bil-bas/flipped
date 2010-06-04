@@ -46,6 +46,8 @@ namespace :build do
     FILES.each do |file|	
       cp "#{file}", RELEASE_DIR	
     end
+
+    create_version_file File.join(RELEASE_DIR, 'lib', 'flipped', 'version.yml') 
 	
     # Remove .git crud.	
     Find.find(RELEASE_DIR) do |path|	

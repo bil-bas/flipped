@@ -1,9 +1,10 @@
 require 'rake/rdoctask'
 require 'rake/clean'
 require 'fileutils'
+require 'yaml'
 include FileUtils
 
-RELEASE_VERSION = '0.2.0'
+RELEASE_VERSION = '0.3.0-beta1'
 
 OCRA = 'ruby build/ocrasa.rb'
 
@@ -13,6 +14,8 @@ BINARY_DIR = 'bin'
 SOURCE_DIR = 'lib'
 APP = 'flipped'
 APP_EXE = File.join(BINARY_DIR, "#{APP}.exe")
+
+VERSION_FILE = File.join(SOURCE_DIR, APP, 'version.yml')
 
 RELEASE_DIR = File.join("release", "#{APP}_v#{RELEASE_VERSION.gsub(/\./, '_')}")
 RELEASE_PACKAGE_7Z = "#{RELEASE_DIR}.7z"
@@ -46,13 +49,24 @@ namespace :compile do
 
   task APP => APP_EXE
   
-  prerequisites = FileList["lib/#{APP}.rb*", "lib/#{APP}/**/*.rb"]
+  prerequisites = FileList["lib/#{APP}.rb*", "lib/#{APP}/**/*.rb", "config/locales/*.yml", "media/icons/*.png"]
   file APP_EXE => prerequisites do |t|
+    create_version_file VERSION_FILE
+
     puts "Creating exe using #{OCRA}"
-    system "#{OCRA} #{prerequisites.join(' ')}"
+    p "#{OCRA} #{(prerequisites + FileList[VERSION_FILE]).join(' ')}", VERSION_FILE
+    system "#{OCRA} #{(prerequisites + FileList[VERSION_FILE]).join(' ')}"
     mkdir_p BINARY_DIR
     move "lib/#{APP}.exe", APP_EXE
+
+    FileUtils.rm VERSION_FILE
     puts 'Done.'
+  end
+end
+
+def create_version_file(file_name)
+  File.open(file_name, 'w') do |file|
+    file.print({ :version => RELEASE_VERSION, :build_date => Time.now }.to_yaml)
   end
 end
 

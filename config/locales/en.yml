@@ -289,17 +289,18 @@ about:
     title: About Flipped
     text: "Flipped is a flip-book tool for the game, Sleep Is Death.
 
-Allows the user to view and edit flip-books.
 
+Allows the user to view and edit flip-books and also control, play and spectate stories in SleepIsDeath itself.
+
+
+Version: %1 (Built: %2)
 
 Project: spooner/flipped (http://wiki.github.com/Spooner/flipped/)
 
 Author: Spooner (Bil Bas) bil.bagpuss@gmail.com
 
 
-Libraries: FXRuby (http://www.fxruby.org/) and r18n (http://r18n.rubyforge.org/).
-
-Windows executable generated with Ocra (http://ocra.rubyforge.org/).
+Gem libraries: FXRuby, json and r18n. Windows executable generated with Ocra.
 "
 
 
