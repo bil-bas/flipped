@@ -85,7 +85,7 @@ module Flipped
             when Message::Challenge
               log.info { "Server at #{@address}:#{@port} identified as #{@player_name}." }
 
-              Message::Login.new(:name => @name, :role => @role, :time_limit => @time_limit, :version => Gui::VERSION).write(socket)
+              Message::Login.new(:name => @name, :role => @role, :time_limit => @time_limit, :version => VERSION).write(socket)
 
             when Message::Accept
               log.info { "Login accepted" }

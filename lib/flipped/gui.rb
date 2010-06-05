@@ -44,21 +44,21 @@ module Flipped
   SETTINGS_FILE = File.join(INSTALLATION_ROOT, 'config', 'settings.yml')
   KEYS_FILE = File.join(INSTALLATION_ROOT, 'config', 'keys.yml')
 
+  version_file = File.join(File.dirname(__FILE__), 'version.yml')
+  if File.exists? version_file
+    version_data = YAML::load(File.read(version_file))
+    VERSION = version_data[:version]
+    BUILD_DATE = version_data[:build_date]
+  else
+    VERSION = 'TEST'
+    BUILD_DATE = Time.at(0)
+  end 
+
   class Gui < FXMainWindow
     include Log
     include SettingsManager
     include GuiMenus
     include GuiFileCommands
-
-    version_file = File.join(File.dirname(__FILE__), 'version.yml')
-    if File.exists? version_file
-      version_data = YAML::load(File.read(version_file))
-      VERSION = version_data[:version]
-      BUILD_DATE = version_data[:build_date]
-    else
-      VERSION = 'TEST'
-      BUILD_DATE = Time.at(0)
-    end
 
     log.info { "Version: #{VERSION}; Built: #{BUILD_DATE}" }
 
