@@ -17,6 +17,7 @@ module Flipped
 
     # Values are stored internally keyed by strings, but for the user they are symbols.
     # Boolean values are read via "value?()".
+    protected
     def self.value(symbol, default)
       @@value_defaults[self][symbol] = default
       class_eval(<<-EOS, __FILE__, __LINE__)
@@ -30,6 +31,7 @@ module Flipped
       EOS
     end
 
+    protected
     def initialize(values = {})
       @values = Hash.new
       @@value_defaults[self.class].each_pair do |symbol, default|
@@ -42,10 +44,12 @@ module Flipped
       end
     end
 
+    public
     def to_json(*args)
       @values.merge(JSON_CLASS => self.class.name).to_json(*args)
     end
 
+    protected
     def self.json_create(message)
       new(message)
     end
@@ -56,6 +60,7 @@ module Flipped
     # +io+:: Stream from which to read a message.
     #
     # Returns message read [Message]
+    public
     def self.read(io)
       json = io.gets
       raise IOError.new("Failed to read message") unless json
@@ -72,6 +77,7 @@ module Flipped
     # +io+:: Stream on which to write self.
     #
     # Returns the number of bytes written (not including the size header).
+    public
     def write(io)
       json = to_json
       log.info { "Sending #{json.size} bytes." }
@@ -81,6 +87,7 @@ module Flipped
       json.size
     end
 
+    public
     def ==(other)
       (other.class == self.class) and (other.instance_eval { @values } == @values)
     end
@@ -89,6 +96,7 @@ module Flipped
     class Challenge < Message
       include Log
 
+      public
       def require_password?
         not self.password_seed.nil?
       end
@@ -128,10 +136,12 @@ module Flipped
 
       value :data, ''
 
+      public
       def frame
         Base64.decode64(@values['data'])
       end
 
+      protected
       def initialize(values = {})
         super(:data => values[:frame] ? Base64.encode64(values[:frame]) : values['data'] )
       end
@@ -145,7 +155,9 @@ module Flipped
 
       # Redefine started at so that time string is parsed back into a Time object.
       alias_method :started_at_OLD, :started_at
-      def started_at
+      public
+      attr_reader :started_at
+      def started_at # :nodoc:
         Time.parse(started_at_OLD)
       end
     end
@@ -160,14 +172,17 @@ module Flipped
     class Connected < Message
       include Log
 
+      public
       def controller?
         self.role == :controller
       end
 
+      public
       def player?
         self.role == :player
       end
 
+      public
       def spectator?
         self.role == :spectator
       end

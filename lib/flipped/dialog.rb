@@ -9,7 +9,8 @@ module Flipped
   class Dialog < FXDialogBox
 
     TEXT_COLUMNS = 40
-    
+
+    protected
     def initialize(owner, title)
       super(owner, title, :opts => DECOR_TITLE|DECOR_BORDER)
 
@@ -38,6 +39,7 @@ module Flipped
     end
 
     # Skip a grid cell.
+    protected
     def skip_grid
       FXLabel.new(@grid, '')
     end

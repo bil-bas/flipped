@@ -2,8 +2,9 @@ require 'defaults'
 
 module Flipped
   # Commands on the file menu in the Flipped::Gui class.
-  module GuiFileCommands
+  class Gui < FXMainWindow
     # Open a new flip-book.
+    protected
     def on_cmd_open(sender, selector, event)
       open_dir = FXFileDialog.getOpenDirectory(self, t.open.dialog.title, @current_flip_book_directory)
       return if open_dir.empty?
@@ -25,6 +26,7 @@ module Flipped
     end
 
     # Append a flip-book onto an already loaded flip-book.
+    protected
     def on_cmd_append(sender, selector, event)
       open_dir = FXFileDialog.getOpenDirectory(self, t.append.dialog.title, @current_flip_book_directory)
       return if open_dir.empty?
@@ -47,6 +49,7 @@ module Flipped
     end
 
     # Save this flip-book
+    protected
     def on_cmd_save_as(sender, selector, event)
       save_dir = FXFileDialog.getSaveFilename(self, t.save_as.dialog.title, @current_flip_book_directory)
       return if save_dir.empty?
@@ -68,6 +71,7 @@ module Flipped
     end
 
     # Quit the application
+    protected
     def on_cmd_quit(sender, selector, event)
       disable_monitors
 

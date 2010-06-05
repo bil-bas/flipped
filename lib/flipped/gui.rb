@@ -57,8 +57,6 @@ module Flipped
   class Gui < FXMainWindow
     include Log
     include SettingsManager
-    include GuiMenus
-    include GuiFileCommands
 
     log.info { "Version: #{VERSION}; Built: #{BUILD_DATE}" }
 
@@ -984,6 +982,7 @@ module Flipped
     # Call the interrupts that have previously been requested via request_interrupt.
     #
     # Returns: nil
+    protected
     def on_requested_events_chore(sender, selector, event)
       @pending_events.synchronize do
         @pending_events.each do |method, args|

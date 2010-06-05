@@ -17,8 +17,8 @@ module Flipped
     DEFAULT_TIME_LIMIT = SpectateServer::DEFAULT_TIME_LIMIT
     DEFAULT_STORY_NAME = 'Story'
 
-    attr_reader :socket, :story_name, :story_started_at
-    attr_writer :story_name
+    attr_reader :socket, :story_started_at
+    attr_accessor :story_name
 
     protected    
     def initialize(owner, address, port, name, role, time_limit)
@@ -35,22 +35,26 @@ module Flipped
     end
 
     public
-    def controller_name
+    attr_reader :controller_name
+    def controller_name # :nodoc:
       @controller ? @controller.name : DEFAULT_NAME
     end
 
     public
-    def controller_time_limit
+    attr_reader :controller_time_limit
+    def controller_time_limit # :nodoc:
       @controller ? @controller.time_limit : DEFAULT_TIME_LIMIT
     end
 
     public
-    def player_name
+    attr_reader :player_name
+    def player_name # :nodoc:
       @player ? @player.name : DEFAULT_NAME
     end
 
     public
-    def player_time_limit
+    attr_reader :player_time_limit
+    def player_time_limit # :nodoc:
       @player ? @player.time_limit : DEFAULT_TIME_LIMIT
     end
 

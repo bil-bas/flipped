@@ -1,6 +1,6 @@
 module Flipped
   # Manages the creation of menu bar and context menus in the Flipped::Gui.
-  module GuiMenus
+  class Gui < FXMainWindow
     # Create the complete menu bar.
     #
     # === Parameters
