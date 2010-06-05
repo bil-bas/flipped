@@ -132,7 +132,7 @@ module Flipped
               log.error { "Unrecognised message type: #{message.class}" }
           end
         end
-      rescue IOError, Errno::ECONNABORTED => ex
+      rescue IOError => ex
         log.error { "Failed to read message."}
         log.error { ex }
         close
