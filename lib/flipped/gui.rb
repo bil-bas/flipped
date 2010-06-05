@@ -143,8 +143,8 @@ module Flipped
 
       # SleepIsDeath
       :play_sid => ['@key[:play_sid]', 'Ctrl-P'],
-      :control_sid => ['@key[:control_sid]', 'Ctrl-C'],
-      :spectate_sid => ['@key[:spectate_sid]', 'Ctrl-E'],
+      :control_sid => ['@key[:control_sid]', 'Ctrl-N'],
+      :spectate_sid => ['@key[:spectate_sid]', 'Ctrl-P'],
 
       # Navigation
       :start => ['@key[:start]', 'Home'],
