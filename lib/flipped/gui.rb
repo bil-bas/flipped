@@ -13,6 +13,7 @@ require 'r18n-desktop'
 # Standard libraries.
 require 'yaml'
 require 'fileutils'
+require 'thread'
 
 # Require GUI modules.
 require 'defaults'
@@ -80,7 +81,7 @@ module Flipped
     NUM_INTERVALS_SEEN = 15
 
     FRAMES_RENDERED_PER_CHORE = 5
-    SPECTATE_INTERVAL = 0.2 # Delay between checking for receiving new frames.
+    SPECTATE_INTERVAL = 0.05 # Delay between checking for receiving new frames.
     MONITOR_INTERVAL = 0.2 # Delay between checking for new frames in folder.
 
     IMAGE_BACKGROUND_COLOR = Fox::FXColor::Black
@@ -626,7 +627,7 @@ module Flipped
 
       begin
         # Connect to the controller, in order to spectate own story.
-        @spectate_client = SpectateClient.new(@controller_address, @spectate_port, @user_name, :player, @player_time_limit)
+        @spectate_client = SpectateClient.new(self, @controller_address, @spectate_port, @user_name, :player, @player_time_limit)
         self.spectating = true
 
         @sid.run(:player) do |sid|
@@ -752,7 +753,7 @@ module Flipped
           show_frames(-1)
           disable_monitors
 
-          @spectate_client = SpectateClient.new('localhost', dialog.spectate_port, dialog.user_name, :controller, dialog.time_limit)
+          @spectate_client = SpectateClient.new(self, 'localhost', dialog.spectate_port, dialog.user_name, :controller, dialog.time_limit)
           @spectate_client.story_name = dialog.story_name
           @spectate_port = dialog.spectate_port
           @user_name = dialog.user_name
@@ -804,7 +805,7 @@ module Flipped
 
       begin
         app.beginWaitCursor do
-          @spectate_client = SpectateClient.new(dialog.spectate_address, dialog.spectate_port, dialog.user_name, :spectator, nil)
+          @spectate_client = SpectateClient.new(self, dialog.spectate_address, dialog.spectate_port, dialog.user_name, :spectator, nil)
           # Replace with new book, viewing last frame.
           @book = Book.new
           @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
@@ -862,34 +863,35 @@ module Flipped
     end
 
     def on_spectate_timeout(sender, selector, event)
-      if @book.empty?
-        if @spectate_client.story_started_at
-          @current_flip_book_directory = expand_flip_book_pattern(@spectate_client, @flip_book_pattern)
-          log.info { "Story '#{@spectate_client.story_name}' started at #{@spectate_client.story_started_at} with flip-book at #{@current_flip_book_directory}" }
-        else
-          return 1
-        end
+      update_info_and_title
+      
+      nil
+    end
+
+    def on_story_started(name, started_at)
+      @story_flip_book_directory = expand_flip_book_pattern(@spectate_client, @flip_book_pattern)
+      log.info { "Story '#{name}' started at #{started_at} with flip-book at #{@story_flip_book_directory}" }
+
+      nil
+    end
+
+    # Received new frames.
+    # Returns: nil
+    def on_frame_received(frame_data)
+      @book.insert(@book.size, frame_data)
+      show_frames(@book.size - 1)
+
+      # Spectators get all notifications. Controller only gets it on start of their turn.
+      if notification_enabled? and (controller_turn? or (not controller?))
+        Sound.play(@notification_sound)
       end
 
-      new_frames = @spectate_client.frames_buffer
-
-      unless new_frames.empty?
-        @book.insert(@book.size, *new_frames)
-        show_frames(@book.size - 1)
-
-        # Spectators get all notifications. Controller only gets it on start of their turn.
-        if notification_enabled? and (controller_turn? or (not controller?))
-          Sound.play(@notification_sound)
-        end
-
-        @turn_finishes_at = Time.now + current_player_time_limit
-
-        # TODO: Autosave flip-book.
-      end
+      # TODO: Should be the time that the last frame was created, not when it was received.
+      @turn_finishes_at = Time.now + current_player_time_limit
 
       update_info_and_title
 
-      return 1
+      nil
     end
 
     def player?
@@ -951,6 +953,47 @@ module Flipped
       @image_viewer.connect(SEL_MOUSEWHEEL, method(:on_mouse_wheel))
       
       accelTable.addAccel(fxparseAccel("Alt+F4"), self, FXSEL(SEL_CLOSE, 0))
+    end
+
+    # Request that a method be called when the GUI is free. Interrupts will be called in the order that they were
+    # requested in.
+    #
+    # === Parameters
+    # +method+:: Name of method to call [Symbol]
+    # +args+:: Arguments to pass to the method [Array]
+    #
+    # Returns: nil
+    public
+    def request_event(method_name, *args)
+      unless defined? @pending_events
+        @pending_events = Array.new
+        @pending_events.extend Mutex_m
+      end
+
+      @pending_events.synchronize do
+        if @pending_events.empty?
+          app.addChore(method :on_requested_events_chore)
+        end
+
+        @pending_events.push [method(method_name), args]
+      end
+
+      nil
+    end
+
+    # Call the interrupts that have previously been requested via request_interrupt.
+    #
+    # Returns: nil
+    def on_requested_events_chore(sender, selector, event)
+      @pending_events.synchronize do
+        @pending_events.each do |method, args|
+          method.call(*args)
+        end
+
+        @pending_events.clear
+      end
+
+      nil
     end
   end
 end

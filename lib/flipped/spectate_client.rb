@@ -21,8 +21,8 @@ module Flipped
     attr_writer :story_name
 
     protected    
-    def initialize(address, port, name, role, time_limit)
-      @address, @port, @name, @role, @time_limit = address, port, name, role, time_limit
+    def initialize(owner, address, port, name, role, time_limit)
+      @owner, @address, @port, @name, @role, @time_limit = owner, address, port, name, role, time_limit
 
       @player, @controller = nil, nil
       @spectators = Array.new
@@ -68,17 +68,6 @@ module Flipped
       nil
     end
 
-    public
-    def frames_buffer
-      frames = nil
-      @frames_buffer.synchronize do
-        frames = @frames_buffer.dup
-        @frames_buffer.clear
-      end
-      
-      frames
-    end
-    
     protected
     def read()
       @frames_buffer = []
@@ -91,9 +80,7 @@ module Flipped
             when Message::Frame
               frame_data = message.frame
               log.info { "Received frame (#{frame_data.size} bytes)" }
-              @frames_buffer.synchronize do
-                @frames_buffer.push frame_data
-              end
+              @owner.request_event(:on_frame_received, frame_data)
 
             when Message::Challenge
               log.info { "Server at #{@address}:#{@port} identified as #{@player_name}." }
@@ -138,7 +125,8 @@ module Flipped
 
             when Message::StoryStarted
               @story_started_at = message.started_at
-              log.info { "Story started at '#{@story_started_at}'" }
+              log.info { "Story '#{@story_name}' started at '#{@story_started_at}'" }
+              @owner.request_event(:on_story_started, @story_name, @story_started_at)
 
             else
               log.error { "Unrecognised message type: #{message.class}" }
