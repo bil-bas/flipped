@@ -86,6 +86,7 @@ module Flipped
     THUMB_BACKGROUND_COLOR = Fox::FXColor::White
     THUMB_SELECTED_COLOR = Fox::FXRGB(50, 50, 50)
 
+    protected
     def initialize(app)
       super(app, '', :opts => DECOR_ALL)
       log.info { "Initializing GUI" }
@@ -133,24 +134,26 @@ module Flipped
       add_hot_keys
     end
 
-  protected
+    protected
     attr_accessor :slide_show_interval
-    def slide_show_interval #:nodoc
+    def slide_show_interval # :nodoc:
       @slide_show_interval_target.value
     end
-    def slide_show_interval=(value) #:nodoc
+    def slide_show_interval=(value) # :nodoc:
       @slide_show_interval_target.value = value
     end
 
-    def slide_show_loops? #:nodoc
+    protected
+    def slide_show_loops?
       @slide_show_loops_target.value
     end
     alias_method :slide_show_loops, :slide_show_loops?
     attr_writer :slide_show_loops
-    def slide_show_loops=(value) #:nodoc
+    def slide_show_loops=(value) # :nodoc:
       @slide_show_loops_target.value = value
     end
 
+    protected
     def resize_frame(zoom)
       return if @book.empty?
 
@@ -163,12 +166,14 @@ module Flipped
       nil
     end
 
+    protected
     def on_cmd_about(sender, selector, event)
       FXMessageBox.information(self, MBOX_OK, t.about.dialog.title, t.about.dialog.text(VERSION, BUILD_DATE.to_s))
 
       return 1
     end
 
+    protected
     def on_cmd_settings(sender, selector, event)
       dialog = OptionsDialog.new(self, t.settings.dialog, :template_directory => @template_directory, :notification_sound => @notification_sound)
 
@@ -180,9 +185,8 @@ module Flipped
       return 1
     end
 
-
-
     # Convenience function to construct a PNG icon
+    protected
     def load_icon(name)
       begin
         filename = File.join(ICON_DIR, "#{name}.png")
@@ -196,22 +200,27 @@ module Flipped
       end
     end
 
+    protected
     def on_cmd_toggle_thumbs(sender, selector, event)
       show_window(@thumbs_window, sender.checked?)
     end
 
+    protected
     def on_cmd_toggle_status_bar(sender, selector, event)
       show_window(@status_bar, sender.checked?)
     end
 
+    protected
     def on_cmd_toggle_nav_buttons_bar(sender, selector, event)
       show_window(@button_bar, sender.checked?)
     end
 
+    protected
     def on_cmd_toggle_info(sender, selector, event)
       show_window(@info_bar, sender.checked?)
     end
 
+    protected
     def show_window(window, show)
       if show
         window.show
@@ -222,6 +231,7 @@ module Flipped
       return 1
     end
 
+    protected
     def add_button_bar(window)
       @button_bar = FXHorizontalFrame.new(window, :opts => LAYOUT_CENTER_X)
 
@@ -247,6 +257,7 @@ module Flipped
       nil
     end
 
+    protected
     def create_button(menu, name)
       button = FXButton.new(menu, "\t#{t[name].tip}\t#{t[name].help(@key[name])}", load_icon(name), NAV_BUTTON_OPTIONS)
       button.connect(SEL_COMMAND, method(:"on_cmd_#{name}"))
@@ -254,6 +265,7 @@ module Flipped
       button
     end
 
+    protected
     def show_frames(selected = 0)
       # Trim off excess thumb viewers.
       (@book.size...@thumbs_row.numChildren).reverse_each do |i|
@@ -289,6 +301,7 @@ module Flipped
       nil
     end
 
+    protected
     def on_thumbs_chore(sender, selector, event)
       frames_to_render = FRAMES_RENDERED_PER_CHORE
 
@@ -322,24 +335,28 @@ module Flipped
       return 1
     end
 
+    protected
     def on_cmd_start(sender, selector, event)
       select_frame(0)
 
       return 1
     end
 
+    protected
     def on_cmd_previous(sender, selector, event)
       select_frame(@current_frame_index - 1) unless @current_frame_index == 0
 
       return 1
     end
 
+    protected
     def on_cmd_play(sender, selector, event)
       play(!playing?)
 
       return 1
     end
 
+    protected
     def on_slide_show_timer(sender, selector, event)
       if playing? and not @book.empty?
         select_frame((@current_frame_index + 1).modulo(@book.size))
@@ -351,10 +368,12 @@ module Flipped
       return 1
     end
 
+    protected
     def playing?
       not @slide_show_timer.nil?
     end
 
+    protected
     def play(value)
       if value
         @slide_show_timer = app.addTimeout(slide_show_interval * 1000, method(:on_slide_show_timer))
@@ -375,18 +394,21 @@ module Flipped
       nil
     end
 
+    protected
     def on_cmd_next(sender, selector, event)
       select_frame(@current_frame_index + 1) unless @current_frame_index == @book.size - 1
 
       return 1
     end
 
+    protected
     def on_cmd_end(sender, selector, event)
       select_frame(@book.size - 1)
 
       return 1
     end
 
+    protected
     def select_frame(index)
       # Invert the old frame thumbnail.
       if defined?(@current_frame_index) and (@current_frame_index >= 0) and
@@ -445,6 +467,7 @@ module Flipped
       nil
     end
 
+    protected
     def current_player_name
       if controller_turn?
         @spectate_client.controller_name
@@ -453,6 +476,7 @@ module Flipped
       end
     end
 
+    protected
     def current_player_time_limit
       if controller_turn?
         @spectate_client.controller_time_limit
@@ -462,6 +486,7 @@ module Flipped
     end
 
     # Update the info line and the title bar.
+    protected
     def update_info_and_title
       if monitoring? or spectating?
         if @spectate_client.story_started_at
@@ -487,11 +512,13 @@ module Flipped
       end
     end
 
+    protected
     def can_delete?
       not (@book.empty? or monitoring? or spectating?)
     end
 
     # Event when clicking on a thumbnail - select.
+    protected
     def on_thumb_left_click(sender, selector, event)
       index = @thumbs_row.indexOfChild(sender.parent)
       select_frame(index)
@@ -500,6 +527,7 @@ module Flipped
     end
 
     # Event when clicking on a thumbnail - context menu.
+    protected
     def on_thumb_right_click(sender, selector, event)
       if can_delete?
         index = @thumbs_row.indexOfChild(sender.parent)
@@ -511,6 +539,7 @@ module Flipped
     end
 
     # Event when right-clicking on the main image - context menu.
+    protected
     def on_image_right_click(sender, selector, event)
       if can_delete?
         image_context_menu(@current_frame_index, event.root_x, event.root_y)
@@ -519,21 +548,25 @@ module Flipped
       return 1
     end
 
+    protected
     def on_cmd_delete_single(sender, selector, event)
       delete_frames(@current_frame_index)
       return 1
     end
 
+    protected
     def on_cmd_delete_before(sender, selector, event)
       delete_frames(*(0..@current_frame_index).to_a)
       return 1
     end
 
+    protected
     def on_cmd_delete_after(sender, selector, event)
       delete_frames(*(@current_frame_index..(@book.size - 1)).to_a)
       return 1
     end
 
+    protected
     def on_cmd_delete_identical(sender, selector, event)
       frame_data = @book[@current_frame_index]
       identical_frame_indices = []
@@ -545,6 +578,7 @@ module Flipped
       return 1
     end
 
+    protected
     def delete_frames(*indices)
       indices.sort.reverse_each do |index|
         @book.delete_at(index)
@@ -566,11 +600,13 @@ module Flipped
       nil
     end
 
+    protected
     def error_dialog(caption, message)
       FXMessageBox.error(self, MBOX_OK, caption, message)
     end
 
     # Open a new flip-book and monitor it for changes.
+    protected
     def on_cmd_play_sid(sender, selector, event)
       dialog = PlayDialog.new(self, t, :spectate_port => @spectate_port, :user_name => @user_name,
         :time_limit => @player_time_limit, :screen_width => @player_screen_width, :screen_height => @player_screen_height,
@@ -674,17 +710,21 @@ module Flipped
       new_directory
     end
 
+    protected
     def disable_monitors
       self.spectating = false if spectating?
       self.monitoring = false if monitoring?
       update_info_and_title
     end
 
+    protected
     def monitoring?
       defined?(@monitor_timeout) ? (not @monitor_timeout.nil?) : false
     end
-    
-    def monitoring=(enable)
+
+    protected
+    attr_writer :monitoring
+    def monitoring=(enable) # :nodoc:
       if enable
         log.info { "Started monitoring"}
         @monitor_timeout = app.addTimeout(MONITOR_INTERVAL * 1000, method(:on_monitor_timeout), :repeat => true)
@@ -695,6 +735,7 @@ module Flipped
       end
     end
 
+    protected
     def on_monitor_timeout(sender, selector, event)
       unless @spectate_client.story_started_at
         if (not @story_started_sent) and Book.valid_flip_book_directory?(@story_flip_book_directory)
@@ -731,6 +772,7 @@ module Flipped
     end
 
     # Open a new flip-book and monitor it for changes.
+    protected
     def on_cmd_control_sid(sender, selector, event)
       dialog = ControlDialog.new(self, t, :spectate_port => @spectate_port,
         :user_name => @user_name, :flip_book_directory => @current_flip_book_directory,
@@ -776,7 +818,7 @@ module Flipped
             sleep 0.5
             unless @book.empty?
               flip_book_dir = @sid.ensure_unique_flip_book(expand_flip_book_pattern(@spectate_client, @flip_book_pattern))
-              log.info { "Writing #{@book.frames} frames to #{flip_book_dir}" }
+              log.info { "Writing #{@book.size} frames to #{flip_book_dir}" }
               @book.write(flip_book_dir, @template_directory)
             end
             disable_monitors
@@ -793,6 +835,7 @@ module Flipped
       return 1
     end
 
+    protected
     def on_cmd_spectate_sid(sender, selector, event)
       return # TODO: Complete implementation of this.
 
@@ -835,11 +878,14 @@ module Flipped
       return 1
     end
 
+    protected
     def spectating?
       defined?(@spectate_client) ? (not @spectate_client.nil?) : false
     end
 
-    def spectating=(enable)
+    protected
+    attr_writer :spectating
+    def spectating=(enable) # :nodoc:
       if enable
         log.info { "Started spectating"}
         unless monitoring?
@@ -860,12 +906,14 @@ module Flipped
       end
     end
 
+    protected
     def on_spectate_timeout(sender, selector, event)
       update_info_and_title
       
       nil
     end
 
+    protected
     def on_story_started(name, started_at)
       @story_flip_book_directory = expand_flip_book_pattern(@spectate_client, @flip_book_pattern)
       log.info { "Story '#{name}' started at #{started_at} with flip-book at #{@story_flip_book_directory}" }
@@ -875,6 +923,7 @@ module Flipped
 
     # Received new frames.
     # Returns: nil
+    protected
     def on_frame_received(frame_data)
       @book.insert(@book.size, frame_data)
       show_frames(@book.size - 1)
@@ -892,26 +941,32 @@ module Flipped
       nil
     end
 
+    protected
     def player?
       monitoring?
     end
 
+    protected
     def controller?
       @controller
     end
 
+    protected
     def controller_turn?
       @book.size.modulo(2) == 0
     end
 
+    protected
     def player_turn?
       @book.size.modulo(2) == 1
     end
 
+    protected
     def notification_enabled?
       @notification_enabled
     end
 
+    protected
     def create
       log.info { "Creating GUI" }
 
@@ -935,6 +990,7 @@ module Flipped
       return 1
     end
 
+    protected
     def on_mouse_wheel(sender, selector, event)
       if event.code > 0 or (event.code < 0 and @mouse_wheel_inverted)
         on_cmd_previous(sender, selector, event)
@@ -943,6 +999,7 @@ module Flipped
       end
     end
 
+    protected
     def add_hot_keys
       # Not a hotkey, but ensure that all attempts to quit are caught so
       # we can save settings.
@@ -979,7 +1036,7 @@ module Flipped
       nil
     end
 
-    # Call the interrupts that have previously been requested via request_interrupt.
+    # Call the events that have previously been requested via #request_event.
     #
     # Returns: nil
     protected

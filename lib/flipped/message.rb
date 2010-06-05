@@ -137,7 +137,8 @@ module Flipped
       value :data, ''
 
       public
-      def frame
+      attr_reader :frame
+      def frame # :nodoc:
         Base64.decode64(@values['data'])
       end
 
@@ -173,19 +174,9 @@ module Flipped
       include Log
 
       public
-      def controller?
-        self.role == :controller
-      end
-
-      public
-      def player?
-        self.role == :player
-      end
-
-      public
-      def spectator?
-        self.role == :spectator
-      end
+      def controller?; self.role == :controller; end
+      def player?; self.role == :player; end
+      def spectator?; self.role == :spectator; end
 
       value :id, nil
       value :name, DEFAULT_NAME

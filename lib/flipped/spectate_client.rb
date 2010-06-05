@@ -17,7 +17,9 @@ module Flipped
     DEFAULT_TIME_LIMIT = SpectateServer::DEFAULT_TIME_LIMIT
     DEFAULT_STORY_NAME = 'Story'
 
-    attr_reader :socket, :story_started_at
+     # Time that the Player first received a frame [Time].
+    attr_reader :story_started_at
+    # Name that the Controller gave to the story [String].
     attr_accessor :story_name
 
     protected    
@@ -78,8 +80,8 @@ module Flipped
       @frames_buffer.extend(Mutex_m)
 
       begin
-        until socket.closed?
-          message = Message.read(socket)
+        until @socket.closed?
+          message = Message.read(@socket)
           case message
             when Message::Frame
               frame_data = message.frame
@@ -89,7 +91,7 @@ module Flipped
             when Message::Challenge
               log.info { "Server at #{@address}:#{@port} identified as #{@player_name}." }
 
-              Message::Login.new(:name => @name, :role => @role, :time_limit => @time_limit, :version => VERSION).write(socket)
+              Message::Login.new(:name => @name, :role => @role, :time_limit => @time_limit, :version => VERSION).write(@socket)
 
             when Message::Accept
               log.info { "Login accepted" }
@@ -99,7 +101,7 @@ module Flipped
 
               # If the controller has logged in, update everyone else with the name of the story.
               if @role == :controller and @story_name
-                 Message::StoryNamed.new(:name => @story_name).write(socket)
+                 Message::StoryNamed.new(:name => @story_name).write(@socket)
               end
 
             when Message::Connected
