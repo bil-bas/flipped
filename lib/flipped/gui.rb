@@ -15,6 +15,8 @@ require 'yaml'
 require 'fileutils'
 
 # Rest of the app.
+require 'gui_menus'
+
 require 'book'
 require 'options_dialog'
 require 'play_dialog'
@@ -47,6 +49,7 @@ module Flipped
   class Gui < FXMainWindow
     include Log
     include SettingsManager
+    include GuiMenus
 
     version_file = File.join(File.dirname(__FILE__), 'version.yml')
     if File.exists? version_file
@@ -186,12 +189,11 @@ module Flipped
 
       @key = {}
       read_config(KEYS_ATTRIBUTES, KEYS_FILE)
-      
+
       FXToolTip.new(getApp(), TOOLTIP_NORMAL)
       @status_bar = FXStatusBar.new(self, :opts => LAYOUT_FILL_X|LAYOUT_SIDE_BOTTOM)
-      
-      create_menu_bar
 
+      create_menu_bar(MIN_INTERVAL..MAX_INTERVAL)
       @main_frame = FXVerticalFrame.new(self, LAYOUT_FILL_X|LAYOUT_FILL_Y)
 
       # Scrolling area into which to place thumbnail images.
@@ -246,122 +248,6 @@ module Flipped
       @slide_show_loops_target.value = value
     end
 
-    def create_menu_bar
-      menu_bar = FXMenuBar.new(self, LAYOUT_SIDE_TOP|LAYOUT_FILL_X|FRAME_RAISED)
-
-      # File menu
-      file_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, t.file, nil, file_menu)
-
-      create_menu(file_menu, :open)
-      @append_menu = create_menu(file_menu, :append)
-
-      FXMenuSeparator.new(file_menu)
-      @save_menu = create_menu(file_menu, :save_as)
-      FXMenuSeparator.new(file_menu)
-      create_menu(file_menu, :quit)
-
-      # SleepIsDeath menu
-      sid_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, t.sleep_is_death, nil, sid_menu)
-
-      create_menu(sid_menu, :control_sid)
-      create_menu(sid_menu, :play_sid)
-      create_menu(sid_menu, :spectate_sid)
-
-      # Navigation menu.
-      nav_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, t.navigate, nil, nav_menu)
-
-      @start_menu = create_menu(nav_menu, :start)
-      @previous_menu = create_menu(nav_menu, :previous)
-      @play_menu = create_menu(nav_menu, :play)
-      @next_menu = create_menu(nav_menu, :next)
-      @end_menu = create_menu(nav_menu, :end)
-
-      # edit menu
-      edit_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, t.edit, nil, edit_menu)
-
-      @delete_menu = create_menu(edit_menu, :delete_single)
-      @delete_before_menu = create_menu(edit_menu, :delete_before)
-      @delete_after_menu = create_menu(edit_menu, :delete_after)
-      @delete_identical_menu = create_menu(edit_menu, :delete_identical)
-
-      # View menu.
-      view_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, t.view, nil, view_menu)
-
-      zoom_menu = FXMenuPane.new(self)
-      @zoom_menu = FXMenuCascade.new(view_menu, t.zoom, nil, zoom_menu)
-      @zoom_target = FXDataTarget.new(ZoomOption::DEFAULT)
-      @zoom_target.connect(SEL_COMMAND) do |sender, selector, option|
-        zoom_level = case option
-          when ZoomOption::HALF
-            0.5
-          when ZoomOption::ORIGINAL
-            1
-          when ZoomOption::DOUBLE
-            2
-        end
-        resize_frame(zoom_level)
-      end
-      half = create_menu(zoom_menu, :view_half_size, FXMenuRadio)
-      half.target = @zoom_target
-      half.selector = FXDataTarget::ID_OPTION + ZoomOption::HALF
-      original = create_menu(zoom_menu, :view_original_size, FXMenuRadio)
-      original.target = @zoom_target
-      original.selector = FXDataTarget::ID_OPTION + ZoomOption::ORIGINAL
-      double = create_menu(zoom_menu, :view_double_size, FXMenuRadio)
-      double.target = @zoom_target
-      double.selector = FXDataTarget::ID_OPTION + ZoomOption::DOUBLE
-
-      # Show submenu (on view)
-      show_menu = FXMenuPane.new(self)
-      FXMenuCascade.new(view_menu, t.show, nil, show_menu)
-      @toggle_navigation_menu = create_menu(show_menu, :toggle_nav_buttons_bar, FXMenuCheck)
-      @toggle_info_menu = create_menu(show_menu, :toggle_info, FXMenuCheck)
-      @toggle_status_menu = create_menu(show_menu, :toggle_status_bar, FXMenuCheck)
-      @toggle_thumbs_menu = create_menu(show_menu, :toggle_thumbs, FXMenuCheck)
-
-      # Options menu.
-      options_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, t.options, nil, options_menu)
-      
-      @slide_show_loops_target = FXDataTarget.new
-      @slide_show_loops_target.connect(SEL_COMMAND) do |sender, selector, event|
-        select_frame(@current_frame_index) # Update buttons.
-      end
-      FXMenuCheck.new(options_menu, "#{t.loops.menu}\t#{@key[:loops]}\t#{t.loops.help(@key[:loops])}.",
-                       :target => @slide_show_loops_target, :selector => FXDataTarget::ID_VALUE)
-
-      @slide_show_interval_target = FXDataTarget.new
-      # Ensure that playback changes to use the new interval.
-      @slide_show_interval_target.connect(SEL_COMMAND) do |sender, selector, event|
-        # Toggle the playing state, so we use the new interval immediately.
-        if playing?
-          play(false)
-          play(true)
-        end
-      end
-
-      interval_menu = FXMenuPane.new(menu_bar)
-      (MIN_INTERVAL..MAX_INTERVAL).each do |i|
-        FXMenuRadio.new(interval_menu, "#{i}", :target => @slide_show_interval_target, :selector => FXDataTarget::ID_OPTION + i)
-      end
-      FXMenuCascade.new(options_menu, "#{t.interval.menu}\t\t#{t.interval.help}", :popupMenu => interval_menu)
-      
-      FXMenuSeparator.new(options_menu)
-      
-      @options_menu = create_menu(options_menu, :settings)
-
-      # Help menu
-      help_menu = FXMenuPane.new(self)
-      FXMenuTitle.new(menu_bar, t.help, nil, help_menu, LAYOUT_RIGHT)
-
-      create_menu(help_menu, :about)
-    end
-
     def resize_frame(zoom)
       return if @book.empty?
 
@@ -391,12 +277,7 @@ module Flipped
       return 1
     end
 
-    def create_menu(owner, name, type = FXMenuCommand, options = {})
-      text = [t[name].menu, @key[name], t[name].help(@key[name])].join("\t")
-      menu = type.new(owner, text, options)
-      menu.connect(SEL_COMMAND, method(:"on_cmd_#{name}")) unless type == FXMenuRadio
-      menu
-    end
+
 
     # Convenience function to construct a PNG icon
     def load_icon(name)
@@ -759,21 +640,6 @@ module Flipped
       delete_frames(*identical_frame_indices)
 
       return 1
-    end
-
-    def image_context_menu(index, x, y)
-      FXMenuPane.new(self) do |menu_pane|
-        create_menu(menu_pane, :delete_single)
-        create_menu(menu_pane, :delete_before)
-        create_menu(menu_pane, :delete_after)
-        create_menu(menu_pane, :delete_identical)
-
-        menu_pane.create
-        menu_pane.popup(nil, x, y)
-        app.runModalWhileShown(menu_pane)
-      end
-
-      nil
     end
 
     def delete_frames(*indices)

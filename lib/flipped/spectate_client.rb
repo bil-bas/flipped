@@ -29,8 +29,6 @@ module Flipped
       @story_started_at = nil
       @story_name = DEFAULT_STORY_NAME
 
-      Thread.abort_on_exception = true
-
       connect
 
       nil
