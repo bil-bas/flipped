@@ -14,9 +14,12 @@ require 'r18n-desktop'
 require 'yaml'
 require 'fileutils'
 
-# Rest of the app.
+# Require GUI modules.
+require 'defaults'
 require 'gui_menus'
+require 'gui_file_commands'
 
+# Rest of the app.
 require 'book'
 require 'options_dialog'
 require 'play_dialog'
@@ -37,19 +40,14 @@ module Flipped
     DEFAULT = ORIGINAL
   end
 
-  module FlipBookPattern
-    PATTERN = /%\w/
-    CONTROLLER = '%c'
-    PLAYER = '%p'
-    DATE = '%d'
-    TIME = '%t'
-    STORY = '%s'
-  end
+  SETTINGS_FILE = File.join(INSTALLATION_ROOT, 'config', 'settings.yml')
+  KEYS_FILE = File.join(INSTALLATION_ROOT, 'config', 'keys.yml')
 
   class Gui < FXMainWindow
     include Log
     include SettingsManager
     include GuiMenus
+    include GuiFileCommands
 
     version_file = File.join(File.dirname(__FILE__), 'version.yml')
     if File.exists? version_file
@@ -66,11 +64,7 @@ module Flipped
     R18n.set(R18n::I18n.new('en', File.join(EXECUTION_ROOT, 'config', 'locales')))
     include R18n::Helpers
 
-    SETTINGS_FILE = File.join(INSTALLATION_ROOT, 'config', 'settings.yml')
-    KEYS_FILE = File.join(INSTALLATION_ROOT, 'config', 'keys.yml')
-    
     ICON_DIR = File.join(EXECUTION_ROOT, 'media', 'icons')
-    DEFAULT_TEMPLATE_DIR = File.join(INSTALLATION_ROOT, 'templates')
 
     IMAGE_WIDTH = 640
     IMAGE_HEIGHT = 416
@@ -84,96 +78,6 @@ module Flipped
     MIN_INTERVAL = 1
     MAX_INTERVAL = 30
     NUM_INTERVALS_SEEN = 15
-
-    DEFAULT_GAME_SCREEN_WIDTH = 640
-    DEFAULT_GAME_SCREEN_HEIGHT = DEFAULT_GAME_SCREEN_WIDTH * 3 / 4
-    DEFAULT_TIME_LIMIT = 30
-    DEFAULT_FULL_SCREEN = false # Assume that if you are using Flipped, you want a window.
-    DEFAULT_SID_DIRECTORY = File.expand_path(File.join(INSTALLATION_ROOT, '..'))
-    DEFAULT_SID_PORT = 7778
-    DEFAULT_FLIP_BOOK_PATTERN = "'#{FlipBookPattern::STORY}' (#{FlipBookPattern::CONTROLLER} - #{FlipBookPattern::PLAYER}) #{FlipBookPattern::DATE} #{FlipBookPattern::TIME}"
-
-    SETTINGS_ATTRIBUTES = {
-      :window_x => ['x', 100],
-      :window_y => ['y', 100],
-      :window_width => ['width', 800],
-      :window_height => ['height', 800],
-
-      :current_flip_book_directory => ['@current_flip_book_directory', Dir.pwd],
-      :template_directory => ['@template_directory', DEFAULT_TEMPLATE_DIR],
-      
-      :slide_show_interval => ['slide_show_interval', 5],
-      :slide_show_loops => ['slide_show_loops', false],
-
-      :mouse_wheel_inverted => ['@mouse_wheel_inverted', false],
-
-      :navigation_buttons_shown => ['@navigation_buttons_shown', true],
-      :information_bar_shown => ['@information_bar_shown', true],
-      :status_bar_shown => ['@status_bar_shown', true],
-      :thumbnails_shown => ['@thumbnails_shown', true],
-
-      :spectate_port => ['@spectate_port', SpectateServer::DEFAULT_PORT],
-      :sid_port => ['@sid_port', DEFAULT_SID_PORT],
-      :flip_book_pattern => ['@flip_book_pattern', DEFAULT_FLIP_BOOK_PATTERN],
-
-      :user_name => ['@user_name', 'User'],
-      :story_name => ['@story_name', 'Story'],
-      :hard_to_quit_mode => ['@hard_to_quit_mode', false],
-
-      :player_time_limit => ['@player_time_limit', DEFAULT_TIME_LIMIT],
-      :player_screen_width => ['@player_screen_width', DEFAULT_GAME_SCREEN_WIDTH],
-      :player_screen_height => ['@player_screen_height', DEFAULT_GAME_SCREEN_HEIGHT],
-      :player_full_screen => ['@player_full_screen', DEFAULT_FULL_SCREEN],
-      :player_sid_directory => ['@player_sid_directory', DEFAULT_SID_DIRECTORY],
-
-      :controller_address => ['@controller_address', ''],
-      :controller_time_limit => ['@controller_time_limit', DEFAULT_TIME_LIMIT],
-      :controller_screen_width => ['@controller_screen_width', DEFAULT_GAME_SCREEN_WIDTH],
-      :controller_screen_height => ['@controller_screen_height', DEFAULT_GAME_SCREEN_HEIGHT],
-      :controller_full_screen => ['@controller_full_screen', DEFAULT_FULL_SCREEN],
-      :controller_sid_directory => ['@controller_sid_directory', DEFAULT_SID_DIRECTORY],
-
-      :notification_sound => ['@notification_sound', File.join(INSTALLATION_ROOT, 'media', 'sounds', 'shortbeeptone.wav')],
-      :notification_enabled => ['@notification_enabled', true],
-    }
-
-    KEYS_ATTRIBUTES = {
-      # File
-      :open => ['@key[:open]', 'Ctrl-O'],
-      :append => ['@key[:append]', 'Ctrl-A'],
-      :save_as => ['@key[:save_as]', 'Ctrl-S'],
-      :quit => ['@key[:quit]', 'Ctrl-Q'],
-
-      # SleepIsDeath
-      :play_sid => ['@key[:play_sid]', 'Ctrl-P'],
-      :control_sid => ['@key[:control_sid]', 'Ctrl-N'],
-      :spectate_sid => ['@key[:spectate_sid]', 'Ctrl-P'],
-
-      # Navigation
-      :start => ['@key[:start]', 'Home'],
-      :previous => ['@key[:previous]', 'Left'],
-      :play => ['@key[:play]', 'Space'],
-      :next => ['@key[:next]', 'Right'],
-      :end => ['@key[:end]', 'End'],
-
-      # View
-      :toggle_nav_buttons_bar => ['@key[:toggle_nav_buttons_bar]', 'Ctrl-B'],
-      :toggle_status_bar => ['@key[:toggle_status_bar]', 'Ctrl-U'],
-      :toggle_thumbs => ['@key[:toggle_thumbs]', 'Ctrl-T'],
-      :toggle_info => ['@key[:toggle_info]', 'Ctrl-I'],
-
-      :view_half_size => ['@key[:view_half_size]', 'Ctrl-2'],
-      :view_original_size => ['@key[:view_original_size]', 'Ctrl-3'],
-      :view_double_size => ['@key[:view_double_size]', 'Ctrl-4'],
-
-      :toggle_looping => ['@key[:loops]', 'Ctrl-L'],
-
-      # Edit
-      :delete_single => ['@key[:delete_single]', 'Ctrl-X'],
-      :delete_before => ['@key[:delete_before]', ''],
-      :delete_after => ['@key[:delete_after]', ''],
-      :delete_identical => ['@key[:delete_identical]', 'Ctrl-Shift-X'],
-    }
 
     FRAMES_RENDERED_PER_CHORE = 5
     SPECTATE_INTERVAL = 0.2 # Delay between checking for receiving new frames.
@@ -663,49 +567,6 @@ module Flipped
       nil
     end
 
-    # Open a new flip-book
-    def on_cmd_open(sender, selector, event)
-      open_dir = FXFileDialog.getOpenDirectory(self, t.open.dialog.title, @current_flip_book_directory)
-      return if open_dir.empty?
-      
-      begin
-        app.beginWaitCursor do
-          @book = Book.new(open_dir)
-          @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
-          show_frames(0)
-        end
-        @current_flip_book_directory = open_dir
-        disable_monitors
-      rescue => ex
-        log.error { ex }
-        error_dialog(t.open.error.title, t.open.error.text(open_dir))
-      end
-
-      return 1
-    end
-
-    # Open a new flip-book
-    def on_cmd_append(sender, selector, event)
-      open_dir = FXFileDialog.getOpenDirectory(self, t.append.dialog.title, @current_flip_book_directory)
-      return if open_dir.empty?
-
-      begin
-        app.beginWaitCursor do
-          # Append new frames and select the first one.
-          new_frame = @book.size
-          @book.append(Book.new(open_dir))
-          show_frames(new_frame)
-        end
-        @current_flip_book_directory = open_dir
-        disable_monitors
-      rescue => ex
-        log.error { ex }
-        error_dialog(t.append.error.title, t.append.error.text(open_dir))
-      end
-
-      return 1
-    end
-
     def error_dialog(caption, message)
       FXMessageBox.error(self, MBOX_OK, caption, message)
     end
@@ -1049,45 +910,6 @@ module Flipped
 
     def notification_enabled?
       @notification_enabled
-    end
-
-    # Save this flip-book
-    def on_cmd_save_as(sender, selector, event)
-      save_dir = FXFileDialog.getSaveFilename(self, t.save_as.dialog.title, @current_flip_book_directory)
-      return if save_dir.empty?
-
-      if File.exists? save_dir
-        error_dialog(t.save_as.error.exists.title,t.save_as.error.exists.text(save_dir))
-      else
-        @current_flip_book_directory = save_dir
-        begin
-          @book.write(save_dir, @template_directory)
-        rescue => ex
-          log.error { ex }
-          error_dialog(t.save_as.error.templates.title,
-                 t.save_as.error.templates.text(save_dir, @template_directory))
-        end
-      end
-
-      return 1
-    end
-
-    # Quit the application
-    def on_cmd_quit(sender, selector, event)
-      disable_monitors
-
-      @thumbnails_shown = @toggle_thumbs_menu.checkState == 1
-      @status_bar_shown = @toggle_status_menu.checkState == 1
-      @information_bar_shown = @toggle_info_menu.checkState == 1
-      @navigation_buttons_shown = @toggle_navigation_menu.checkState == 1
-
-      write_config(SETTINGS_ATTRIBUTES, SETTINGS_FILE)
-      write_config(KEYS_ATTRIBUTES, KEYS_FILE)
-
-      # Quit
-      app.exit
-      
-      return 1
     end
 
     def create
