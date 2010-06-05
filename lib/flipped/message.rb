@@ -10,8 +10,6 @@ module Flipped
     include Log
     
     JSON_CLASS = 'json_class'
-    LENGTH_FORMAT = 'N' # 32-bit int, network order.
-    LENGTH_FORMAT_SIZE = 4 # 32-bit int
     DEFAULT_NAME = 'User'
 
     # Class => {name => default, name => default, ...]
