@@ -23,11 +23,11 @@ shared_examples_for "Message" do
   end
 
   describe "write()" do
-    it "should write a header which is the length of the following message body" do
+    it "should write the message onto the stream as json" do
       @default.write(@stream)
 
       # Should have header
-      @stream.string[0..3].unpack('N')[0].should == @stream.string.length - 4
+      @stream.string.should == "#{@default.to_json}\n"
     end
   end
 
