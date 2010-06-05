@@ -1,6 +1,5 @@
 require 'base64'
 require 'json'
-require 'zlib'
 require 'time'
 
 require 'log'
@@ -60,14 +59,13 @@ module Flipped
     #
     # Returns message read [Message]
     def self.read(io)
-      length = io.read(LENGTH_FORMAT_SIZE)
-      raise IOError.new("Failed to read message length") unless length
-      length = length.unpack(LENGTH_FORMAT)[0]
+      json = io.gets
+      raise IOError.new("Failed to read message") unless json
 
-      body = io.read(length)
-      raise IOError.new("Failed to read message body") unless body
+      log.info { "Received #{json.size} bytes." }
+      log.debug { json }
 
-      JSON.parse(Zlib::Inflate.inflate(body))      
+      JSON.parse(json)
     end
 
     # Write the message onto a stream.
@@ -77,14 +75,12 @@ module Flipped
     #
     # Returns the number of bytes written (not including the size header).
     def write(io)
-      encoded = to_json
-      compressed = Zlib::Deflate.deflate(encoded)
-      log.info { "Sending (#{encoded.size} => #{compressed.size} bytes)" }
-      log.debug { encoded }
-      io.write([compressed.size].pack(LENGTH_FORMAT))
-      io.write(compressed)
+      json = to_json
+      log.info { "Sending #{json.size} bytes." }
+      log.debug { json }
+      io.puts(json)
 
-      compressed.size
+      json.size
     end
 
     def ==(other)
