@@ -123,7 +123,7 @@ module Flipped
                 end
             end
           end
-        rescue IOError, Errno::ECONNABORTED => ex
+        rescue IOError, SystemCallError => ex
           log.error { "Problem when waiting for player updates."}
           log.error { ex }
           close
@@ -146,7 +146,7 @@ module Flipped
                 end
             end
           end
-        rescue IOError, Errno::ECONNABORTED => ex
+        rescue IOError, SystemCallError => ex
           log.error { "Problem when waiting for controller messages."}
           log.error { ex }
           close
@@ -187,7 +187,7 @@ module Flipped
 
           update_spectator(spectator) unless spectator.player?
         end
-      rescue IOError, Errno::ECONNABORTED => ex
+      rescue IOError, SystemCallError => ex
         log.error { "Failed to connect spectator."}
         log.error { ex }
         close
@@ -202,7 +202,7 @@ module Flipped
     def listen
       begin
         @server = TCPServer.new(@port)
-      rescue IOError => ex
+      rescue IOError, SystemCallError => ex
         log.error(ex)
         raise Exception.new("#{self.class} failed to start on port #{@port}!")
       end
@@ -214,7 +214,7 @@ module Flipped
           while socket = @server.accept
             add_spectator(socket)
           end
-        rescue IOError, Errno::ECONNABORTED => ex
+        rescue IOError, SystemCallError => ex
           log.error { "Failed to listen."}
           log.error { ex }
           close

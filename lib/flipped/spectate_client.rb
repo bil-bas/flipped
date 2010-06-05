@@ -132,7 +132,7 @@ module Flipped
               log.error { "Unrecognised message type: #{message.class}" }
           end
         end
-      rescue IOError => ex
+      rescue IOError, SystemCallError => ex
         log.error { "Failed to read message."}
         log.error { ex }
         close
@@ -150,7 +150,7 @@ module Flipped
         frames.each do |frame|
           Message::Frame.new(:frame => frame).write(@socket)
         end
-      rescue IOError, Errno::ECONNABORTED => ex
+      rescue IOError, SystemCallError => ex
         log.error { "Failed to send frames."}
         log.error { ex }
         close
@@ -167,7 +167,7 @@ module Flipped
 
       begin
         message.write(@socket)
-      rescue IOError, Errno::ECONNABORTED => ex
+      rescue IOError, SystemCallError => ex
         log.error { "Failed to send story started."}
         log.error { ex }
         close
