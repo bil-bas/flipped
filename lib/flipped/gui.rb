@@ -661,7 +661,7 @@ module Flipped
 
       begin
         # Connect to the controller, in order to spectate own story.
-        @spectate_client = SpectateClient.new(self, @controller_address, @spectate_port, @user_name, :player, @player_time_limit)
+        @spectate_client = SpectateClient.new(@controller_address, @spectate_port, @user_name, :player, @player_time_limit)
         self.spectating = true
 
         @sid.run(:player) do |sid|
@@ -793,7 +793,13 @@ module Flipped
           show_frames(-1)
           disable_monitors
 
-          @spectate_client = SpectateClient.new(self, 'localhost', dialog.spectate_port, dialog.user_name, :controller, dialog.time_limit)
+          @spectate_client = SpectateClient.new('localhost', dialog.spectate_port, dialog.user_name, :controller, dialog.time_limit)
+          @spectate_client.on_story_started do |name, time|
+            request_event(:on_story_started, name, time)
+          end
+          @spectate_client.on_frame_received do |frame_data|
+            request_event(:on_frame_received, frame_data)
+          end
           @spectate_client.story_name = dialog.story_name
           @spectate_port = dialog.spectate_port
           @user_name = dialog.user_name
@@ -846,7 +852,13 @@ module Flipped
 
       begin
         app.beginWaitCursor do
-          @spectate_client = SpectateClient.new(self, dialog.spectate_address, dialog.spectate_port, dialog.user_name, :spectator, nil)
+          @spectate_client = SpectateClient.new(dialog.spectate_address, dialog.spectate_port, dialog.user_name, :spectator, nil)
+          @spectate_client.on_story_started do |name, time|
+            request_event(:on_story_started, name, time)
+          end
+          @spectate_client.on_frame_received do |frame_data|
+            request_event(:on_frame_received, frame_data)
+          end
           # Replace with new book, viewing last frame.
           @book = Book.new
           @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
@@ -1018,7 +1030,7 @@ module Flipped
     # +args+:: Arguments to pass to the method [Array]
     #
     # Returns: nil
-    public
+    protected
     def request_event(method_name, *args)
       unless defined? @pending_events
         @pending_events = Array.new

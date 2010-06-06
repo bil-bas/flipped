@@ -4,8 +4,6 @@ require 'book'
 require 'spectate_client'
 include Flipped
 
-require File.join(File.dirname(__FILE__), 'mocks', 'gui_events_mock')
-
 describe SpectateClient do
   before :each do
     @book_dir = File.expand_path(File.join(ROOT, 'test_data', 'sid_with_flip_books', 'flipBooks', '00001'))
@@ -25,8 +23,7 @@ describe SpectateClient do
   end
 
   it "should do something" do
-    player_gui_mock = GuiEventsMock.new
-    player = described_class.new(player_gui_mock, 'localhost', SpectateServer::DEFAULT_PORT, "Player client", :player, 60)
+    player = described_class.new('localhost', SpectateServer::DEFAULT_PORT, "Player client", :player, 60)
     sleep 0.2
     player.send_frames(@book.frames)
 
@@ -42,17 +39,18 @@ describe SpectateClient do
           FileUtils.rm_r dir if File.exists? dir
         end
 
-        gui_mock = GuiEventsMock.new
-        spectator = described_class.new(gui_mock, 'localhost', SpectateServer::DEFAULT_PORT, "Spectator client #{i}", :spectator, nil)
+        spectator = described_class.new('localhost', SpectateServer::DEFAULT_PORT, "Spectator client #{i}", :spectator, nil)
+        spectator.on_story_started do |name, time|
+          # TODO: Check this?
+        end
+        frames = Array.new
+        spectator.on_frame_received do |frame_data|
+          frames.push frame_data
+        end
 
         sleep 3
 
-        gui_mock.events.size.should == @book.size
-        gui_mock.events.each_with_index do |data, i|
-          method, args = data
-          method.should == :on_frame_received
-          args.should == [@book[i]]
-        end
+        frames.should == @book.frames
 
         spectator.close
       end
@@ -61,8 +59,6 @@ describe SpectateClient do
     end
 
     sleep 1
-
-    player_gui_mock.events.size.should == 0
 
     @threads.each { |t| t.join }
     

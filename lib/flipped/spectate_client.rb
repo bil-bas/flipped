@@ -23,8 +23,8 @@ module Flipped
     attr_accessor :story_name
 
     protected    
-    def initialize(owner, address, port, name, role, time_limit)
-      @owner, @address, @port, @name, @role, @time_limit = owner, address, port, name, role, time_limit
+    def initialize(address, port, name, role, time_limit)
+      @address, @port, @name, @role, @time_limit = address, port, name, role, time_limit
 
       @player, @controller = nil, nil
       @spectators = Array.new
@@ -86,7 +86,9 @@ module Flipped
             when Message::Frame
               frame_data = message.frame
               log.info { "Received frame (#{frame_data.size} bytes)" }
-              @owner.request_event(:on_frame_received, frame_data)
+              if defined? @on_frame_received_block
+                @on_frame_received_block.call(frame_data)
+              end
 
             when Message::Challenge
               log.info { "Server at #{@address}:#{@port} identified as #{@player_name}." }
@@ -132,7 +134,9 @@ module Flipped
             when Message::StoryStarted
               @story_started_at = message.started_at
               log.info { "Story '#{@story_name}' started at '#{@story_started_at}'" }
-              @owner.request_event(:on_story_started, @story_name, @story_started_at)
+              if defined? @on_story_started_block
+                @on_story_started_block.call(@story_name, @story_started_at)
+              end
 
             else
               log.error { "Unrecognised message type: #{message.class}" }
@@ -145,6 +149,18 @@ module Flipped
       end
 
       nil
+    end
+
+    # Register event handler for a story starting.
+    public
+    def on_story_started(&block)
+      @on_story_started_block = block
+    end
+
+    # Register event handler for a frame being received.
+    public
+    def on_frame_received(&block)
+      @on_frame_received_block = block
     end
 
     # ONLY ON THE PLAYER client.
