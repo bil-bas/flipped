@@ -52,8 +52,8 @@ Ruby, but should also operate correctly with Ruby 1.8.6.
 
 ===== Windows
 
-Install using the 1.8.7 Windows installer (http://rubyinstaller.org/download.html) (you require
-"Ruby 1.8.7-p249 (RC2)").
+Install using the {1.8.7 Windows installer}[http://rubyinstaller.org/download.html]) (you require
+"Ruby 1.8.7-p249" or later release of "1.8.x". That is, not "1.9.x").
 
 ===== Linux
 
