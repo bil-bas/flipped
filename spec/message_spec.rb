@@ -83,6 +83,10 @@ describe Message::Frame do
   end  
 end
 
+describe Message::SiDStarted do
+  it_should_behave_like "Message"
+end
+
 describe Message::StoryNamed do
   it_should_behave_like "Message"
 end

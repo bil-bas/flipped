@@ -104,7 +104,7 @@ module Flipped
     protected
     def wait_for_player_messages
       Thread.new do
-        log.info { "Started waiting for player updates"}
+        log.info { "Started waiting for player messages..."}
         begin
           loop do
             case message = Message.read(@player.socket)
@@ -121,6 +121,9 @@ module Flipped
                 @spectators.synchronize do
                   @spectators.each {|s| s.send(message) if s.logged_in? }
                 end
+
+              else
+                log.error { "Unexpected message from player: #{message.class}"}
             end
           end
         rescue IOError, SystemCallError => ex
@@ -134,7 +137,7 @@ module Flipped
     protected
     def wait_for_controller_messages
       Thread.new do
-        log.info { "Started waiting for controller messages"}
+        log.info { "Started waiting for controller messages..."}
         begin
           loop do
             case message = Message.read(@controller.socket)
@@ -144,6 +147,13 @@ module Flipped
                 @spectators.synchronize do
                   @spectators.each {|s| s.send(message) if s.logged_in? }
                 end
+                
+              when Message::SiDStarted
+                @sid_started = message
+                @player.send(message) if @player and @player.logged_in?
+
+              else
+                log.error { "Unexpected message from controller: #{message.class}"}
             end
           end
         rescue IOError, SystemCallError => ex
@@ -185,7 +195,11 @@ module Flipped
           spectator.send(@story_named) if @story_named
           spectator.send(@story_started) if @story_started
 
-          update_spectator(spectator) unless spectator.player?
+          if spectator.player?
+            spectator.send(@sid_started) if defined? @sid_started
+          else
+            update_spectator(spectator)
+          end
         end
       rescue IOError, SystemCallError => ex
         log.error { "Failed to connect spectator."}

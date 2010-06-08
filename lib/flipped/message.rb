@@ -64,11 +64,13 @@ module Flipped
     def self.read(io)
       json = io.gets
       raise IOError.new("Failed to read message") unless json
-
-      log.info { "Received #{json.size} bytes." }
+      
       log.debug { json }
 
-      JSON.parse(json)
+      message = JSON.parse(json)
+      log.info { "Received #{message.class} (#{json.size} bytes)." }
+
+      message
     end
 
     # Write the message onto a stream.
@@ -146,6 +148,13 @@ module Flipped
       def initialize(values = {})
         super(:data => values[:frame] ? Base64.encode64(values[:frame]) : values['data'] )
       end
+    end
+
+    # Sent to the player when the controller starts up SiD.
+    class SiDStarted < Message
+      include Log
+      
+      value :port, nil
     end
 
     # Sent by server to tell the client to clear current book ready for a new story.

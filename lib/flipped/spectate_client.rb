@@ -86,8 +86,8 @@ module Flipped
             when Message::Frame
               frame_data = message.frame
               log.info { "Received frame (#{frame_data.size} bytes)" }
-              if defined? @on_frame_received_block
-                @on_frame_received_block.call(frame_data)
+              if defined? @on_frame_received
+                @on_frame_received.call(frame_data)
               end
 
             when Message::Challenge
@@ -134,8 +134,14 @@ module Flipped
             when Message::StoryStarted
               @story_started_at = message.started_at
               log.info { "Story '#{@story_name}' started at '#{@story_started_at}'" }
-              if defined? @on_story_started_block
-                @on_story_started_block.call(@story_name, @story_started_at)
+              if defined? @on_story_started
+                @on_story_started.call(@story_name, @story_started_at)
+              end
+
+            when Message::SiDStarted
+              log.info { "SiD started by '#{@controller.name}' on port '#{message.port}'" }
+              if defined? @on_sid_started
+                @on_sid_started.call(message.port)
               end
 
             else
@@ -151,16 +157,39 @@ module Flipped
       nil
     end
 
-    # Register event handler for a story starting.
+    # Register event handler for a story starting (first frame written out by player).
     public
-    def on_story_started(&block)
-      @on_story_started_block = block
+    def on_story_started(method = nil, &block)
+      @on_story_started = if block
+        block
+      else
+        method
+      end
+
+      nil
     end
 
     # Register event handler for a frame being received.
     public
-    def on_frame_received(&block)
-      @on_frame_received_block = block
+    def on_frame_received(method = nil, &block)
+      @on_frame_received = if block
+        block
+      else
+        method
+      end
+
+      nil
+    end
+
+    # Register event hander for SiD being started on the controller machine.
+    def on_sid_started(method = nil, &block)
+      @on_sid_started = if block
+        block
+      else
+        method
+      end
+
+      nil
     end
 
     # ONLY ON THE PLAYER client.
@@ -168,16 +197,10 @@ module Flipped
     def send_frames(frames)
       log.info { "Sending #{frames.size} frames to server."}
 
-      begin
-        frames.each do |frame|
-          Message::Frame.new(:frame => frame).write(@socket)
-        end
-      rescue IOError, SystemCallError => ex
-        log.error { "Failed to send frames."}
-        log.error { ex }
-        close
+      frames.each do |frame|
+        send(Message::Frame.new(:frame => frame))
       end
-      
+  
       nil
     end
 
@@ -185,17 +208,22 @@ module Flipped
     public
     def send_story_started
       @story_started_at = Time.now
-      message = Message::StoryStarted.new(:started_at => @story_started_at)
+      send(Message::StoryStarted.new(:started_at => @story_started_at))
 
+      @story_started_at
+    end
+
+    public
+    def send(message)
       begin
         message.write(@socket)
       rescue IOError, SystemCallError => ex
-        log.error { "Failed to send story started."}
+        log.error { "Failed to send message."}
         log.error { ex }
         close
       end
 
-      @story_started_at
+      nil
     end
 
     #

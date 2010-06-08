@@ -488,7 +488,7 @@ module Flipped
     # Update the info line and the title bar.
     protected
     def update_info_and_title
-      if monitoring? or spectating?
+      if spectating?
         if @spectate_client.story_started_at
           # Clocks might be unsynced, so assume that the game was always started BEFORE now.
           elapsed = Time.at([Time.now - @spectate_client.story_started_at, 0].max)
@@ -612,7 +612,7 @@ module Flipped
         :time_limit => @player_time_limit, :screen_width => @player_screen_width, :screen_height => @player_screen_height,
         :full_screen => @player_full_screen, :hard_to_quit_mode => @hard_to_quit_mode,
         :controller_address => @controller_address,
-        :sid_directory => @player_sid_directory, :sid_port => @sid_port,
+        :sid_directory => @player_sid_directory,
         :flip_book_pattern => @flip_book_pattern)
 
       return unless dialog.execute == 1
@@ -632,22 +632,8 @@ module Flipped
         @hard_to_quit_mode = dialog.hard_to_quit_mode?
         @controller_address = dialog.controller_address
         @player_sid_directory = dialog.sid_directory
-        @sid_port = dialog.sid_port
         @flip_book_pattern = dialog.flip_book_pattern
 
-        @sid = SiD.new(@player_sid_directory)
-
-        # Find out what the path to the flip-book directory the game will create will be called.
-        @story_flip_book_directory = @sid.flip_book_directory(@sid.number_of_automatic_flip_books + 1)
-
-        @sid.default_server_address = @controller_address
-        @sid.port = @sid_port
-        @sid.time_limit = @player_time_limit
-        @sid.screen_width = @player_screen_width
-        @sid.screen_height = @player_screen_height
-        @sid.fullscreen = @player_full_screen
-
-        @story_started_sent = false
         @story_ended_at = nil
 
         disable_monitors
@@ -662,8 +648,32 @@ module Flipped
       begin
         # Connect to the controller, in order to spectate own story.
         @spectate_client = SpectateClient.new(@controller_address, @spectate_port, @user_name, :player, @player_time_limit)
+        @spectate_client.on_sid_started(method(:on_sid_started))
         self.spectating = true
+      rescue Exception => ex
+        log.error { ex }
+        error_dialog(t.play_sid.error.server_failed.title, t.play_sid.error.server_failed.text(@spectate_port.to_s))
+      end
 
+      return 1
+    end
+
+    # SiD has been started by the controller and the player is being informed of the port.
+    protected
+    def on_sid_started(port)
+      log.info { "SiD started remotely on port #{port}. Going to connect..."}
+      @sid = SiD.new(@player_sid_directory)
+      @sid.port = port
+      @sid.default_server_address = @controller_address
+      @sid.time_limit = @player_time_limit
+      @sid.screen_width = @player_screen_width
+      @sid.screen_height = @player_screen_height
+      @sid.fullscreen = @player_full_screen
+
+      # Find out what the path to the flip-book directory the game will create will be called.
+      @story_flip_book_directory = @sid.flip_book_directory(@sid.number_of_automatic_flip_books + 1)
+
+      Thread.new do
         @sid.run(:player) do |sid|
           sleep 0.5 # Allow the game to finish writing the files.
           if File.directory? @story_flip_book_directory
@@ -672,12 +682,9 @@ module Flipped
           end
           disable_monitors
         end
-      rescue Exception => ex
-        log.error { ex }
-        error_dialog(t.play_sid.error.server_failed.title, t.play_sid.error.server_failed.text(@spectate_port.to_s))
       end
 
-      return 1
+      nil
     end
 
     protected
@@ -737,11 +744,10 @@ module Flipped
 
     protected
     def on_monitor_timeout(sender, selector, event)
-      unless @spectate_client.story_started_at
-        if (not @story_started_sent) and Book.valid_flip_book_directory?(@story_flip_book_directory)
+      unless spectating? and @spectate_client.story_started_at
+        if @story_flip_book_directory and Book.valid_flip_book_directory?(@story_flip_book_directory)
             @current_flip_book_directory = @story_flip_book_directory
             @spectate_client.send_story_started
-            @story_started_sent = true
             log.info { "Story started with flip-book at '#{@story_flip_book_directory}'" }
         else
           update_info_and_title
@@ -820,6 +826,7 @@ module Flipped
           @sid.screen_width = @controller_screen_width
           @sid.screen_height = @controller_screen_height
           @sid.fullscreen = @controller_full_screen
+          @spectate_client.send(Message::SiDStarted.new(:port => @sid_port))
           @sid.run(:controller) do |sid|
             sleep 0.5
             unless @book.empty?
@@ -929,8 +936,14 @@ module Flipped
     def on_story_started(name, started_at)
       @story_flip_book_directory = expand_flip_book_pattern(@spectate_client, @flip_book_pattern)
       log.info { "Story '#{name}' started at #{started_at} with flip-book at #{@story_flip_book_directory}" }
-
       nil
+    end
+
+    protected
+    def on_sid_started_controller(name, started_at)
+       @current_flip_book_directory = @story_flip_book_directory
+       @spectate_client.send_story_started
+       log.info { "Story started with flip-book at '#{@story_flip_book_directory}'" }
     end
 
     # Received new frames.

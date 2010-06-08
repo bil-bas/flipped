@@ -58,12 +58,6 @@ module Flipped
       @spectate_port_field.text.to_i
     end
 
-    public
-    attr_reader :sid_port
-    def sid_port # :nodoc:
-      @sid_port_field.text.to_i
-    end
-
     protected
     def initialize(owner, title, translations, options)
       t = translations
@@ -78,7 +72,6 @@ module Flipped
       add_resolution(t, options[:screen_width], options[:screen_height], options[:full_screen])
       add_hard_to_quit_mode(t.hard_to_quit_mode, options[:hard_to_quit_mode])
       add_spectator_port(t.spectate_port, options[:spectate_port])
-      add_sid_port(t.sid_port, options[:sid_port])
       
       nil
     end
@@ -93,7 +86,7 @@ module Flipped
       end
 
       Button.new(@grid, t.default_button, :opts => LAYOUT_FILL_X).connect(SEL_COMMAND) do |sender, selector, event|
-        @flip_book_pattern_field.text = Gui::DEFAULT_FLIP_BOOK_PATTERN.to_s
+        @flip_book_pattern_field.text = DEFAULT_FLIP_BOOK_PATTERN.to_s
       end
       
       skip_grid
@@ -125,7 +118,7 @@ module Flipped
       end
 
       Button.new(@grid, t.default_button, :opts => LAYOUT_FILL_X).connect(SEL_COMMAND) do |sender, selector, event|
-        @time_limit_field.text = Gui::DEFAULT_TIME_LIMIT.to_s
+        @time_limit_field.text = DEFAULT_TIME_LIMIT.to_s
       end
 
       skip_grid
@@ -172,7 +165,7 @@ module Flipped
 
       # Default button.
       Button.new(@grid, t.resolution.default_button, :opts => LAYOUT_FILL_X).connect(SEL_COMMAND) do |sender, selector, event|
-        @screen_width_field.text = Gui::DEFAULT_GAME_SCREEN_WIDTH.to_s
+        @screen_width_field.text = DEFAULT_GAME_SCREEN_WIDTH.to_s
         calculate_screen_height
       end
 
@@ -261,19 +254,6 @@ module Flipped
       skip_grid
 
       nil
-    end
-
-    protected
-    def add_sid_port(t, port)
-      FXLabel.new(@grid, t.label)
-      
-      @sid_port_field = port_field(@grid, port)
-
-      Button.new(@grid, t.default_button, :opts => LAYOUT_FILL_X).connect(SEL_COMMAND) do |sender, selector, event|
-        @sid_port_field.text = Gui::DEFAULT_SID_PORT.to_s
-      end
-      
-      skip_grid
     end
   end
 end

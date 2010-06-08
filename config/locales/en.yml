@@ -69,6 +69,9 @@ control_sid:
     title: Control SleepIsDeath
     story_name:
       label: Story name
+    sid_port:
+      label: SleepIsDeath port
+      default_button: Default port
     
   error:
     title: Control error
@@ -115,10 +118,7 @@ game:
     full_screen:
       label: Full screen?
     spectate_port:
-      label: Spectator port
-      default_button: Default port
-    sid_port:
-      label: SleepIsDeath port
+      label: Flipped port
       default_button: Default port
     flip_book_pattern:
       label: Flip-book pattern
