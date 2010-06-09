@@ -1,4 +1,4 @@
-require 'defaults'
+require 'constants'
 
 module Flipped
   # Commands on the file menu in the Flipped::Gui class.

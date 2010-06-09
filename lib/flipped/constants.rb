@@ -1,6 +1,5 @@
-require 'spectate_server'
-
 module Flipped
+  # Patterns replaced in the flip-book file name.
   module FlipBookPattern
     PATTERN = /%\w/
     CONTROLLER = '%c'
@@ -10,14 +9,28 @@ module Flipped
     STORY = '%s'
   end
 
+  APP_NAME = 'Flipped'
+  AUTHOR = 'Spooner'
+
+  LOG_DIR = File.join(INSTALLATION_ROOT, 'logs')
+  Dir.mkdir Flipped::LOG_DIR unless File.exists? Flipped::LOG_DIR
+  LOG_FILE = File.open(File.join(LOG_DIR, 'flipped.log'), 'w')
+  LOG_FILE.sync = true
+
+  STDOUT_LOG_FILENAME = File.join(LOG_DIR, 'stdout.log')
+  STDERR_LOG_FILENAME = File.join(LOG_DIR, 'stderr.log')
+
   DEFAULT_GAME_SCREEN_WIDTH = 640
   DEFAULT_GAME_SCREEN_HEIGHT = DEFAULT_GAME_SCREEN_WIDTH * 3 / 4
   DEFAULT_TIME_LIMIT = 30
   DEFAULT_FULL_SCREEN = false # Assume that if you are using Flipped, you want a window.
   DEFAULT_SID_DIRECTORY = File.expand_path(File.join(INSTALLATION_ROOT, '..'))
+  DEFAULT_FLIPPED_PORT = 7777
   DEFAULT_SID_PORT = 7778
   DEFAULT_FLIP_BOOK_PATTERN = "'#{FlipBookPattern::STORY}' (#{FlipBookPattern::CONTROLLER} - #{FlipBookPattern::PLAYER}) #{FlipBookPattern::DATE} #{FlipBookPattern::TIME}"
   DEFAULT_TEMPLATE_DIR = File.join(INSTALLATION_ROOT, 'templates')
+  DEFAULT_NAME = 'User'
+  DEFAULT_STORY_NAME = 'Story'
 
   SETTINGS_ATTRIBUTES = {
     :window_x => ['x', 100],
@@ -38,12 +51,12 @@ module Flipped
     :status_bar_shown => ['@status_bar_shown', true],
     :thumbnails_shown => ['@thumbnails_shown', true],
 
-    :spectate_port => ['@spectate_port', SpectateServer::DEFAULT_PORT],
+    :spectate_port => ['@spectate_port', DEFAULT_FLIPPED_PORT],
     :sid_port => ['@sid_port', DEFAULT_SID_PORT],
     :flip_book_pattern => ['@flip_book_pattern', DEFAULT_FLIP_BOOK_PATTERN],
 
-    :user_name => ['@user_name', 'User'],
-    :story_name => ['@story_name', 'Story'],
+    :user_name => ['@user_name', DEFAULT_NAME],
+    :story_name => ['@story_name', DEFAULT_STORY_NAME],
     :hard_to_quit_mode => ['@hard_to_quit_mode', false],
 
     :player_time_limit => ['@player_time_limit', DEFAULT_TIME_LIMIT],

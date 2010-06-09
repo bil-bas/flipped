@@ -16,7 +16,7 @@ require 'fileutils'
 require 'thread'
 
 # Require GUI modules.
-require 'defaults'
+require 'constants'
 require 'gui_menus'
 require 'gui_file_commands'
 
@@ -90,6 +90,8 @@ module Flipped
     def initialize(app)
       super(app, '', :opts => DECOR_ALL)
       log.info { "Initializing GUI" }
+
+      app.addSignal("SIGINT", method(:on_cmd_quit))
 
       @key = {}
       read_config(KEYS_ATTRIBUTES, KEYS_FILE)

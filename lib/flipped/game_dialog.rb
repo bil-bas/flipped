@@ -248,7 +248,7 @@ module Flipped
       @spectate_port_field = port_field(@grid, port)
 
       Button.new(@grid, t.default_button, :opts => LAYOUT_FILL_X).connect(SEL_COMMAND) do |sender, selector, event|
-        @spectate_port_field.text = SpectateServer::DEFAULT_PORT.to_s
+        @spectate_port_field.text = DEFAULT_FLIPPED_PORT.to_s
       end
 
       skip_grid

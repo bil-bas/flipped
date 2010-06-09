@@ -11,13 +11,8 @@ require 'message'
 module Flipped
   class SpectateClient
     include Log
-    
-    DEFAULT_PORT = SpectateServer::DEFAULT_PORT
-    DEFAULT_NAME = SpectateServer::DEFAULT_NAME
-    DEFAULT_TIME_LIMIT = SpectateServer::DEFAULT_TIME_LIMIT
-    DEFAULT_STORY_NAME = 'Story'
 
-     # Time that the Player first received a frame [Time].
+    # Time that the Player first received a frame [Time].
     attr_reader :story_started_at
     # Name that the Controller gave to the story [String].
     attr_accessor :story_name

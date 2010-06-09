@@ -13,7 +13,6 @@ module Flipped
   class SpectateServer
     include Log
     
-    DEFAULT_PORT = 7777
     DEFAULT_NAME = 'User'
     DEFAULT_TIME_LIMIT = 0
     
