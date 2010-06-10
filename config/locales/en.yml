@@ -123,6 +123,18 @@ game:
     flip_book_pattern:
       label: Flip-book pattern
       default_button: Default pattern
+    accept_button: "&Start"
+    cancel_button: "&Cancel"
+
+my_ip_address:
+  menu: My Internet IP address
+  dialog:
+    title: Internet IP address
+    ip_address:
+      label: IP address
+      initial: ?.?.?.?
+      update_button: Update
+    accept_button: "&OK"
 
 save_as:
   menu: "&Save flip-book as..."
@@ -261,6 +273,8 @@ settings:
   help: Edit aplication settings.
   dialog:
     title: Settings
+    accept_button: "&Accept"
+    cancel_button: "&Cancel"
     template_directory:
       label: Template directory
       browse_button: Browse...

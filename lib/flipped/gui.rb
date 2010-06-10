@@ -25,6 +25,7 @@ require 'book'
 require 'options_dialog'
 require 'play_dialog'
 require 'control_dialog'
+require 'my_ip_address_dialog'
 require 'settings_manager'
 require 'image_canvas'
 require 'spectate_server'
@@ -183,6 +184,13 @@ module Flipped
         @template_directory = dialog.template_directory
         @notification_sound = dialog.notification_sound
       end
+
+      return 1
+    end
+
+    def on_cmd_my_ip_address(sender, selector, event)
+      dialog = MyIPAddressDialog.new(self, t.my_ip_address.dialog)
+      dialog.execute
 
       return 1
     end

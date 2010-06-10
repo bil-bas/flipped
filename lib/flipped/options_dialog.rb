@@ -14,7 +14,7 @@ module Flipped
 
     def initialize(owner, translations, options = {})
       t = translations
-      super(owner, t.title)
+      super(owner, t.title, t.accept_button, t.cancel_button)
 
       # Template directory.
       FXLabel.new(@grid, t.template_directory.label)

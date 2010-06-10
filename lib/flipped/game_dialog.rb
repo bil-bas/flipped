@@ -60,10 +60,8 @@ module Flipped
 
     protected
     def initialize(owner, title, translations, options)
-      t = translations
-      super(owner, title)
-
-      t = t.game.dialog
+      t = translations.game.dialog
+      super(owner, title, t.accept_button, t.cancel_button)
 
       add_sid_directory(t.sid_directory, options[:sid_directory])
       add_flip_book_pattern(t.flip_book_pattern, options[:flip_book_pattern])

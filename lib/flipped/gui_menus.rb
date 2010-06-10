@@ -61,6 +61,10 @@ module Flipped
       create_menu(sid_menu, :play_sid)
       create_menu(sid_menu, :spectate_sid)
 
+      FXMenuSeparator.new(sid_menu)
+
+      create_menu(sid_menu, :my_ip_address)
+
       sid_menu
     end
 

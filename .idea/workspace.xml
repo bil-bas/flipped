@@ -2,10 +2,14 @@
 <project version="4">
   <component name="ChangeListManager" verified="true">
     <list default="true" readonly="true" id="09daf466-3604-48c6-8e7c-329650ff1ae4" name="Default" comment="Removed screenshot from rdoc to make it compatible with github.">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/dialog.rb" afterPath="$PROJECT_DIR$/lib/flipped/dialog.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config/locales/en.yml" afterPath="$PROJECT_DIR$/config/locales/en.yml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/gui.rb" afterPath="$PROJECT_DIR$/lib/flipped/gui.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/gui_menus.rb" afterPath="$PROJECT_DIR$/lib/flipped/gui_menus.rb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/constants.rb" afterPath="$PROJECT_DIR$/lib/flipped/constants.rb" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/flipped.iml" afterPath="$PROJECT_DIR$/.idea/flipped.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/options_dialog.rb" afterPath="$PROJECT_DIR$/lib/flipped/options_dialog.rb" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lib/flipped/game_dialog.rb" afterPath="$PROJECT_DIR$/lib/flipped/game_dialog.rb" />
     </list>
     <ignored path=".idea/workspace.xml" />
     <ignored path="flipped.iws" />
@@ -45,19 +49,55 @@
   <component name="FileColors" enabled="true" enabledForTabs="true" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="flipped.log" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/logs/flipped.log">
+      <file leaf-file-name="gui.rb" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="216" column="0" selection-start="52573" selection-end="52573" vertical-scroll-proportion="0.0">
+            <state line="191" column="36" selection-start="5846" selection-end="5846" vertical-scroll-proportion="-11.72">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="gui.rb" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
+      <file leaf-file-name="flipped.log" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/logs/flipped.log">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="89" column="6" selection-start="2190" selection-end="2190" vertical-scroll-proportion="0.0">
+            <state line="36" column="0" selection-start="3245" selection-end="3245" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="options_dialog.rb" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/flipped/options_dialog.rb">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="16" column="60" selection-start="378" selection-end="378" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="stdout.log" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/logs/stdout.log">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="my_ip_address_dialog.rb" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/flipped/my_ip_address_dialog.rb">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="55" column="64" selection-start="1446" selection-end="1446" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="keys.yml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/config/keys.yml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="20" column="22" selection-start="415" selection-end="415" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -66,25 +106,25 @@
       <file leaf-file-name="constants.rb" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/lib/flipped/constants.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="27" column="60" selection-start="921" selection-end="921" vertical-scroll-proportion="0.5590743">
+            <state line="102" column="50" selection-start="4309" selection-end="4309" vertical-scroll-proportion="0.80122954">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="spectate_server.rb" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/flipped/spectate_server.rb">
+      <file leaf-file-name="dialog.rb" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/lib/flipped/dialog.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="14" column="4" selection-start="248" selection-end="248" vertical-scroll-proportion="0.0">
+            <state line="13" column="53" selection-start="198" selection-end="198" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="spectate_client.rb" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/flipped/spectate_client.rb">
+      <file leaf-file-name="en.yml" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/config/locales/en.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="14" column="4" selection-start="237" selection-end="237" vertical-scroll-proportion="0.0">
+            <state line="125" column="26" selection-start="2877" selection-end="2877" vertical-scroll-proportion="-73.56">
               <folding />
             </state>
           </provider>
@@ -93,16 +133,7 @@
       <file leaf-file-name="game_dialog.rb" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/lib/flipped/game_dialog.rb">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="233" column="15" selection-start="7037" selection-end="7037" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="flipped.rbw" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lib/flipped.rbw">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="36" column="31" selection-start="1063" selection-end="1063" vertical-scroll-proportion="0.0">
+            <state line="63" column="45" selection-start="1252" selection-end="1252" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -118,21 +149,21 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/lib/flipped/message.rb" />
-        <option value="$PROJECT_DIR$/logs/stdout.log" />
-        <option value="$PROJECT_DIR$/logs/flipped_5548.log" />
-        <option value="$PROJECT_DIR$/logs/flipped_3036.log" />
-        <option value="$PROJECT_DIR$/lib/flipped/gui_menus.rb" />
-        <option value="$PROJECT_DIR$/lib/flipped/defaults.rb" />
-        <option value="$PROJECT_DIR$/lib/flipped/menu.rb" />
         <option value="$PROJECT_DIR$/spec/spectate_window_spec.rb" />
         <option value="$PROJECT_DIR$/lib/flipped/spectate_window.rb" />
-        <option value="$PROJECT_DIR$/lib/flipped/gui.rb" />
-        <option value="$PROJECT_DIR$/logs/flipped.log" />
         <option value="$PROJECT_DIR$/lib/flipped.rbw" />
         <option value="$PROJECT_DIR$/lib/flipped/spectate_server.rb" />
-        <option value="$PROJECT_DIR$/lib/flipped/game_dialog.rb" />
         <option value="$PROJECT_DIR$/lib/flipped/spectate_client.rb" />
+        <option value="$PROJECT_DIR$/lib/flipped/gui_menus.rb" />
+        <option value="$PROJECT_DIR$/lib/flipped/my_ip_dialog.rb" />
+        <option value="$PROJECT_DIR$/lib/flipped/gui.rb" />
+        <option value="$PROJECT_DIR$/lib/flipped/dialog.rb" />
+        <option value="$PROJECT_DIR$/lib/flipped/options_dialog.rb" />
+        <option value="$PROJECT_DIR$/lib/flipped/game_dialog.rb" />
+        <option value="$PROJECT_DIR$/config/locales/en.yml" />
+        <option value="$PROJECT_DIR$/logs/flipped.log" />
+        <option value="$PROJECT_DIR$/lib/flipped/my_ip_address_dialog.rb" />
+        <option value="$PROJECT_DIR$/config/keys.yml" />
         <option value="$PROJECT_DIR$/lib/flipped/constants.rb" />
       </list>
     </option>
@@ -238,6 +269,38 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="flipped" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="flipped" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="flipped" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="config" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="flipped" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="flipped" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="config" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="locales" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -415,7 +478,9 @@
       <envs />
       <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="$PROJECT_DIR$/lib/flipped.rbw" />
       <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="" />
+      <RunnerSettings RunnerId="RubyDebugRunner" />
       <RunnerSettings RunnerId="RubyRunner" />
+      <ConfigurationWrapper RunnerId="RubyDebugRunner" />
       <ConfigurationWrapper RunnerId="RubyRunner" />
       <method />
     </configuration>
@@ -561,16 +626,16 @@
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32992035" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32992035" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27306733" sideWeight="0.22866894" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Dependency Viewer" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.27306733" sideWeight="0.64050055" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3993174" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.35153583" sideWeight="0.9769526" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.35153583" sideWeight="0.9769526" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32992035" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32992035" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
@@ -613,41 +678,6 @@
     <breakpoint-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/lib/flipped/control_dialog.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="25" selection-start="321" selection-end="321" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped/player_proxy.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped/play_dialog.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="13" selection-start="603" selection-end="603" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped/message.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="36" column="0" selection-start="1043" selection-end="1043" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/spec/log_spec.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="24" selection-start="0" selection-end="93" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/logs/stdout.log">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/logs/stderr.log">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/spec/spectate_window_spec.rb">
       <provider selected="true" editor-type-id="text-editor">
         <state line="9" column="54" selection-start="174" selection-end="174" vertical-scroll-proportion="0.2849162" />
@@ -656,16 +686,6 @@
     <entry file="file://$PROJECT_DIR$/lib/flipped/spectate_window.rb">
       <provider selected="true" editor-type-id="text-editor">
         <state line="13" column="6" selection-start="243" selection-end="243" vertical-scroll-proportion="0.42337164" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/logs/flipped.log">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="216" column="0" selection-start="52573" selection-end="52573" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="89" column="6" selection-start="2190" selection-end="2190" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped/spectate_server.rb">
@@ -682,19 +702,82 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lib/flipped/game_dialog.rb">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="233" column="15" selection-start="7037" selection-end="7037" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped.rbw">
       <provider selected="true" editor-type-id="text-editor">
         <state line="36" column="31" selection-start="1063" selection-end="1063" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped/gui_menus.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="65" column="43" selection-start="1882" selection-end="1882" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logs/stdout.log">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped/options_dialog.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="16" column="60" selection-start="378" selection-end="378" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped/game_dialog.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="63" column="45" selection-start="1252" selection-end="1252" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config/locales/en.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="125" column="26" selection-start="2877" selection-end="2877" vertical-scroll-proportion="-73.56">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped/dialog.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="53" selection-start="198" selection-end="198" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped/gui.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="191" column="36" selection-start="5846" selection-end="5846" vertical-scroll-proportion="-11.72">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/logs/flipped.log">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="36" column="0" selection-start="3245" selection-end="3245" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/lib/flipped/my_ip_address_dialog.rb">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="55" column="64" selection-start="1446" selection-end="1446" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/config/keys.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="20" column="22" selection-start="415" selection-end="415" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/lib/flipped/constants.rb">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="60" selection-start="921" selection-end="921" vertical-scroll-proportion="0.5590743">
+        <state line="102" column="50" selection-start="4309" selection-end="4309" vertical-scroll-proportion="0.80122954">
           <folding />
         </state>
       </provider>

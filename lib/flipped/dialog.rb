@@ -11,7 +11,7 @@ module Flipped
     TEXT_COLUMNS = 40
 
     protected
-    def initialize(owner, title)
+    def initialize(owner, title, accept, cancel = nil)
       super(owner, title, :opts => DECOR_TITLE|DECOR_BORDER)
 
       # 4 columns wide.
@@ -25,23 +25,28 @@ module Flipped
         :padLeft => 40, :padRight => 40, :padTop => 10, :padBottom => 10)
 
       # Accept
-      accept = Button.new(buttons, "&Accept",
+      Button.new(buttons, accept,
                             :opts => LAYOUT_RIGHT|LAYOUT_CENTER_Y,
-                            :target => self,:selector => ID_ACCEPT)
+                            :target => self,:selector => ID_ACCEPT) do |widget|
+        widget.setDefault
+        widget.setFocus
+      end
 
-      # Cancel
-      Button.new(buttons, "&Cancel",
-                   :opts => LAYOUT_RIGHT|LAYOUT_CENTER_Y,
-                   :target => self, :selector => ID_CANCEL)
+      if cancel
+        Button.new(buttons, cancel,
+                     :opts => LAYOUT_RIGHT|LAYOUT_CENTER_Y,
+                     :target => self, :selector => ID_CANCEL)
+      end
 
-      accept.setDefault
-      accept.setFocus
+      nil
     end
 
     # Skip a grid cell.
     protected
     def skip_grid
       FXLabel.new(@grid, '')
+
+      nil
     end
 
     # Letter, number, _, &, -, ', ", %, ., ,, space
