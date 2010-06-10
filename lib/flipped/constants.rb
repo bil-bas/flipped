@@ -25,7 +25,7 @@ module Flipped
   DEFAULT_TIME_LIMIT = 30
   DEFAULT_FULL_SCREEN = false # Assume that if you are using Flipped, you want a window.
   DEFAULT_SID_DIRECTORY = File.expand_path(File.join(INSTALLATION_ROOT, '..'))
-  DEFAULT_FLIPPED_PORT = 7777
+  DEFAULT_FLIPPED_PORT = 7776 # Leaves 7777 for data socket.
   DEFAULT_SID_PORT = 7778
   DEFAULT_FLIP_BOOK_PATTERN = "'#{FlipBookPattern::STORY}' (#{FlipBookPattern::CONTROLLER} - #{FlipBookPattern::PLAYER}) #{FlipBookPattern::DATE} #{FlipBookPattern::TIME}"
   DEFAULT_TEMPLATE_DIR = File.join(INSTALLATION_ROOT, 'templates')
