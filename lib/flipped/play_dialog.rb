@@ -22,7 +22,7 @@ module Flipped
     
     protected
     def add_controller_address(t, address)
-      FXLabel.new(@grid, t.label)
+      FXLabel.new(@grid, t.label).tipText = t.tip
       @controller_address_field = address_field(@grid, address)
 
       skip_grid

@@ -76,7 +76,7 @@ module Flipped
 
     protected
     def add_flip_book_pattern(t, pattern)
-      FXLabel.new(@grid, t.label)
+      FXLabel.new(@grid, t.label).tipText = t.tip
 
       @flip_book_pattern_field = FXTextField.new(@grid, 20, :opts => TEXTFIELD_NORMAL|LAYOUT_RIGHT|LAYOUT_FILL_X) do |widget|
         widget.text = pattern
@@ -94,7 +94,7 @@ module Flipped
 
     protected
     def add_user_name(t, initial)
-      FXLabel.new(@grid, t.label)
+      FXLabel.new(@grid, t.label).tipText = t.tip
 
       @user_name_field = FXTextField.new(@grid, 20, :opts => TEXTFIELD_NORMAL|LAYOUT_RIGHT|LAYOUT_FILL_X) do |widget|
         widget.text = initial
@@ -109,7 +109,7 @@ module Flipped
 
     protected
     def add_time_limit(t, initial)
-      FXLabel.new(@grid, t.label)
+      FXLabel.new(@grid, t.label).tipText = t.tip
       @time_limit_field = FXTextField.new(@grid, 6, :opts => TEXTFIELD_NORMAL|JUSTIFY_RIGHT|TEXTFIELD_INTEGER) do |widget|
         widget.text = initial.to_s
         widget.connect(SEL_VERIFY, method(:verify_positive_number))
@@ -127,7 +127,7 @@ module Flipped
     # Resolution: width X height and full screen
     protected
     def add_resolution(t, width, height, full_screen)
-      FXLabel.new(@grid, t.resolution.label)
+      FXLabel.new(@grid, t.resolution.label).tipText = t.resolution.tip
       
       frame = FXHorizontalFrame.new(@grid, :padLeft => 0, :padRight => 0, :padTop => 0, :padBottom => 0)
 
@@ -159,6 +159,7 @@ module Flipped
       FXCheckButton.new(frame, t.full_screen.label,
                         :target => @full_screen_target, :selector => FXDataTarget::ID_VALUE) do |widget|
         widget.checkState = widget.target.value
+        widget.tipText = t.full_screen.tip
       end
 
       # Default button.
@@ -186,6 +187,7 @@ module Flipped
       check = FXCheckButton.new(@grid, t.label, :width => 10,
                         :target => @hard_to_quit_mode_target, :selector => FXDataTarget::ID_VALUE) do |widget|
         widget.checkState = widget.target.value
+        widget.tipText = t.tip
       end
 
       skip_grid
@@ -213,11 +215,11 @@ module Flipped
 
     protected
     def add_sid_directory(t, initial)
-      FXLabel.new(@grid, t.label)
+      FXLabel.new(@grid, t.label).tipText = t.tip
+
       @sid_directory_field = FXTextField.new(@grid, TEXT_COLUMNS) do |widget|
         widget.editable = false
         widget.text = initial
-        widget.enabled = false
       end
 
       Button.new(@grid, t.browse_button, :opts => LAYOUT_FILL_X) do |button|
@@ -241,7 +243,7 @@ module Flipped
 
     protected
     def add_spectator_port(t, port)
-      FXLabel.new(@grid, t.label)
+      FXLabel.new(@grid, t.label).tipText = t.tip
 
       @spectate_port_field = port_field(@grid, port)
 

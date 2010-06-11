@@ -19,7 +19,7 @@ module Flipped
 
       @initial_address = t.ip_address.initial
 
-      FXLabel.new(@grid, t.ip_address.label)
+      FXLabel.new(@grid, t.ip_address.label).tipText = t.ip_address.tip
       @address_field = FXTextField.new(@grid, 15) do |widget|
         widget.editable = false
         widget.text = @initial_address

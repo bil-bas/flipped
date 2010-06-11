@@ -16,23 +16,29 @@ module Flipped
       t = translations
       super(owner, t.title, t.accept_button, t.cancel_button)
 
-      # Template directory.
-      FXLabel.new(@grid, t.template_directory.label)
+      add_template_directory(t.template_directory, options[:template_directory])
+      add_notification_sound(t.notification_sound, options[:notification_sound])
+
+      nil
+    end
+
+    protected
+    def add_template_directory(t, initial_text)
+      FXLabel.new(@grid, t.label).tipText = t.tip
       @template_directory_field = FXTextField.new(@grid, 40) do |text_field|
         text_field.editable = false
-        text_field.text = options[:template_directory]
-        text_field.disable
+        text_field.text = initial_text
       end
 
-      Button.new(@grid, t.template_directory.browse_button) do |button|
+      Button.new(@grid, t.browse_button) do |button|
         button.connect(SEL_COMMAND) do |sender, selector, event|
-          directory = FXFileDialog.getOpenDirectory(self, t.template_directory.dialog.title, @template_directory_field.text)
+          directory = FXFileDialog.getOpenDirectory(self, t.dialog.title, @template_directory_field.text)
           unless directory.empty?
             if Book.valid_template_directory?(directory)
               @template_directory_field.text = directory
             else
-              FXMessageBox.error(self, MBOX_OK, t.template_directory.error.title,
-                    t.template_directory.error.message(directory))
+              FXMessageBox.error(self, MBOX_OK, t.error.title,
+                    t.error.message(directory))
             end
           end
         end
@@ -40,29 +46,34 @@ module Flipped
 
       skip_grid
 
-      # notification sound file.
-      FXLabel.new(@grid, t.notification_sound.label)
+      nil
+    end
+
+    protected
+    def add_notification_sound(t, initial_file_name)
+      FXLabel.new(@grid, t.label).tipText = t.tip
       @notification_sound_field = FXTextField.new(@grid, 40) do |widget|
         widget.editable = false
-        widget.text = options[:notification_sound]
-        widget.disable
+        widget.text = initial_file_name
       end
 
-      Button.new(@grid, t.notification_sound.browse_button) do |widget|
+      Button.new(@grid, t.browse_button) do |widget|
         widget.connect(SEL_COMMAND) do |sender, selector, event|
-          filename = FXFileDialog.getOpenFilename(self, t.notification_sound.dialog.title, @notification_sound_field.text,
-            t.notification_sound.dialog.pattern)
+          filename = FXFileDialog.getOpenFilename(self, t.dialog.title, @notification_sound_field.text,
+            t.dialog.pattern)
           unless filename.empty?
             @notification_sound_field.text = filename
           end
         end
       end
 
-      Button.new(@grid, t.notification_sound.play_button) do |widget|
+      Button.new(@grid, t.play_button) do |widget|
         widget.connect(SEL_COMMAND) do |sender, selector, event|
           Sound.play(@notification_sound_field.text)
         end
       end
+
+      nil
     end
   end
 end

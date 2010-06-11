@@ -36,6 +36,7 @@ play_sid:
     title: Play SleepIsDeath
     controller_address:
       label: Controller address
+      tip: IP address of the story's controller, who has already started a game
     flip_book_directory:
       label: Flip-book directory
       browse_button: Browse...
@@ -69,9 +70,11 @@ control_sid:
     title: Control SleepIsDeath
     story_name:
       label: Story name
+      tip: Name of the story that will be played
     sid_port:
       label: SleepIsDeath port
       default_button: Default port
+      tip:  The network port used by Flipped to communicate, which will need to be forwarded on this machine
     
   error:
     title: Control error
@@ -95,6 +98,7 @@ game:
   dialog:
     sid_directory:
       label: SleepIsDeath directory
+      tip: Directory into which SleepIsDeath is installed
       browse_button: Browse...
       dialog:
         title: Browse for SleepIsDeath directory
@@ -108,32 +112,39 @@ game:
     resolution:
       label: Resolution
       default_button: Default resolution
+      tip: Resolution of the SleepIsDeath window or the screen resolution if run full-screen
     hard_to_quit_mode:
-      label: Hard to quit mode?
+      label: Hard-to-quit mode?
+      tip: 'In hard-to-quit mode, exit the game with the # key instead of <escape>'
     user_name:
       label: User name
+      tip: Name you wish to be identified as to other participants
     time_limit:
       label: Time limit (secs)
       default_button: Default limit
+      tip: Maximum length of your turns which does not affect the turn length of the other player
     full_screen:
       label: Full screen?
+      tip: Run the game in full-screen mode, rather than in a window
     spectate_port:
       label: Flipped port
       default_button: Default port
+      tip: The network port used by Flipped to communicate, which will need to be forwarded on the controller's machine
     flip_book_pattern:
-      label: Flip-book pattern
-      default_button: Default pattern
+      label: Flip-book template
+      default_button: Default template
+      tip: Template for the name of the flip-book folder created by the game (%s => story name; %p => player name; %c => controller name; %d => date; %t => start time)
     accept_button: "&Start"
     cancel_button: "&Cancel"
 
 my_ip_address:
   menu: My Internet IP address
   dialog:
-    title: Internet IP address
+    title: Internet (WAN) IP address
     ip_address:
       label: IP address
       initial: ?.?.?.?
-      update_button: Update
+      tip: The WAN IP address of this machine to give to the Player
     accept_button: "&OK"
 
 save_as:
@@ -276,7 +287,8 @@ settings:
     accept_button: "&Accept"
     cancel_button: "&Cancel"
     template_directory:
-      label: Template directory
+      label: Templates directory
+      tip: Templates directory that will be used to construct flip-books as they are saved
       browse_button: Browse...
       dialog:
         title: Select template directory
@@ -286,6 +298,7 @@ settings:
         
     notification_sound:
       label: Turn notification sound
+      tip: Sound made to tell you when it is your turn (or on both turns for spectators)
       browse_button: Browse...
       play_button: Play
       dialog:
