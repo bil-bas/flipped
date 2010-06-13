@@ -12,19 +12,21 @@ module Flipped
   APP_NAME = 'Flipped'
   AUTHOR = 'Spooner'
 
+  TEST_VERSION = 'TEST'
+
   version_file = File.join(File.dirname(__FILE__), 'version.yml')
   if File.exists? version_file
     version_data = YAML::load(File.read(version_file))
     VERSION = version_data[:version]
     BUILD_DATE = version_data[:build_date]
   else
-    VERSION = 'TEST'
+    VERSION = TEST_VERSION
     BUILD_DATE = Time.at(0)
   end
 
   LOG_DIR = File.join(INSTALLATION_ROOT, 'logs')
   Dir.mkdir Flipped::LOG_DIR unless File.exists? Flipped::LOG_DIR
-  log_file_name = (VERSION == "TEST" ? "flipped_#{Process.pid}.log" : "flipped.log")
+  log_file_name = (VERSION == TEST_VERSION ? "flipped_#{Time.now.strftime('%Y-%m-%d_%H-%M-%S')}.log" : "flipped.log")
   LOG_FILE = File.open(File.join(LOG_DIR, log_file_name), 'w')
   LOG_FILE.sync = true
 
