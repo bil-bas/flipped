@@ -627,20 +627,20 @@ module Flipped
 
       return unless dialog.execute == 1
 
+      @spectate_port = dialog.spectate_port
+      @player_time_limit = dialog.time_limit
+      @player_screen_width = dialog.screen_width
+      @player_screen_height = dialog.screen_height
+      @player_full_screen = dialog.full_screen?
+      @controller_address = dialog.controller_address
+      @player_sid_directory = dialog.sid_directory
+
       begin
         app.beginWaitCursor do
           @book = Book.new
           @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
           show_frames(@book.size - 1)
         end
-        @spectate_port = dialog.spectate_port
-        @user_name = dialog.user_name
-        @player_time_limit = dialog.time_limit
-        @player_screen_width = dialog.screen_width
-        @player_screen_height = dialog.screen_height
-        @player_full_screen = dialog.full_screen?
-        @controller_address = dialog.controller_address
-        @player_sid_directory = dialog.sid_directory
 
         @story_ended_at = nil
 
