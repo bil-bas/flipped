@@ -12,13 +12,27 @@ module Flipped
   APP_NAME = 'Flipped'
   AUTHOR = 'Spooner'
 
+  version_file = File.join(File.dirname(__FILE__), 'version.yml')
+  if File.exists? version_file
+    version_data = YAML::load(File.read(version_file))
+    VERSION = version_data[:version]
+    BUILD_DATE = version_data[:build_date]
+  else
+    VERSION = 'TEST'
+    BUILD_DATE = Time.at(0)
+  end
+
   LOG_DIR = File.join(INSTALLATION_ROOT, 'logs')
   Dir.mkdir Flipped::LOG_DIR unless File.exists? Flipped::LOG_DIR
-  LOG_FILE = File.open(File.join(LOG_DIR, 'flipped.log'), 'w')
+  log_file_name = (VERSION == "TEST" ? "flipped_#{Process.pid}.log" : "flipped.log")
+  LOG_FILE = File.open(File.join(LOG_DIR, log_file_name), 'w')
   LOG_FILE.sync = true
 
   STDOUT_LOG_FILENAME = File.join(LOG_DIR, 'stdout.log')
   STDERR_LOG_FILENAME = File.join(LOG_DIR, 'stderr.log')
+
+  SETTINGS_FILE = File.join(INSTALLATION_ROOT, 'config', 'settings.yml')
+  KEYS_FILE = File.join(INSTALLATION_ROOT, 'config', 'keys.yml')
 
   DEFAULT_GAME_SCREEN_WIDTH = 640
   DEFAULT_GAME_SCREEN_HEIGHT = DEFAULT_GAME_SCREEN_WIDTH * 3 / 4

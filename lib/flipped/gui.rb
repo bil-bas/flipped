@@ -30,6 +30,7 @@ require 'settings_manager'
 require 'image_canvas'
 require 'spectate_server'
 require 'spectate_client'
+require 'spectate_window'
 require 'sound'
 require 'sid'
 
@@ -41,19 +42,6 @@ module Flipped
     
     DEFAULT = ORIGINAL
   end
-
-  SETTINGS_FILE = File.join(INSTALLATION_ROOT, 'config', 'settings.yml')
-  KEYS_FILE = File.join(INSTALLATION_ROOT, 'config', 'keys.yml')
-
-  version_file = File.join(File.dirname(__FILE__), 'version.yml')
-  if File.exists? version_file
-    version_data = YAML::load(File.read(version_file))
-    VERSION = version_data[:version]
-    BUILD_DATE = version_data[:build_date]
-  else
-    VERSION = 'TEST'
-    BUILD_DATE = Time.at(0)
-  end 
 
   class Gui < FXMainWindow
     include Log
@@ -659,6 +647,9 @@ module Flipped
         # Connect to the controller, in order to spectate own story.
         @spectate_client = SpectateClient.new(@controller_address, @spectate_port, @user_name, :player, @player_time_limit)
         @spectate_client.on_sid_started(method(:on_sid_started))
+        @spectate_client.on_chat_received do |from, to, text|
+          request_event(:on_chat_received, from, to, text)
+        end
         self.spectating = true
       rescue Exception => ex
         log.error { ex }
@@ -816,6 +807,9 @@ module Flipped
           @spectate_client.on_frame_received do |frame_data|
             request_event(:on_frame_received, frame_data)
           end
+          @spectate_client.on_chat_received do |from, to, text|
+            request_event(:on_chat_received, from, to, text)
+          end
           @spectate_client.story_name = dialog.story_name
           @spectate_port = dialog.spectate_port
           @user_name = dialog.user_name
@@ -856,6 +850,12 @@ module Flipped
       end
 
       return 1
+    end
+
+    def on_chat_received(from, to, text)
+      log.info { "Chat received (#{from}->#{to}): #{text}" }
+      @spectate_window.chat(from, to, text)
+      nil
     end
 
     protected
@@ -920,8 +920,32 @@ module Flipped
         unless monitoring?
           @spectate_timeout = app.addTimeout(SPECTATE_INTERVAL * 1000, method(:on_spectate_timeout), :repeat => true)
         end
+
+        @spectate_window = SpectateWindow.new(app)
+        @spectate_window.create
+        @spectate_window.show
+        @spectate_window.on_chat_input do |from, to, text|
+          @spectate_client.send(Message::Chat.new(:from => from, :to => to, :text => text))
+        end
+
+        @spectate_client.on_spectator_connected do |id, name, role|
+          @spectate_window.user_connected(id, name, role)
+        end
+        @spectate_client.on_spectator_disconnected do |id|
+          @spectate_window.user_disconnected(id)
+        end
+        @spectate_client.on_chat_received do |from, to, text|
+          @spectate_window.chat(from, to, text)
+        end
+
       else
         log.info { "Ended spectating"}
+        begin
+          @spectate_window.hide
+        rescue
+        end
+        @spectate_window = nil
+
         if @spectate_timeout
           app.removeTimeout(@spectate_timeout)
           @spectate_timeout = nil

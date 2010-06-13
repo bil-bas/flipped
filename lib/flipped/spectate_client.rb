@@ -2,6 +2,7 @@ require 'thread'
 require 'socket'
 
 require 'log'
+require 'constants'
 require 'spectate_server'
 require 'message'
 
@@ -25,6 +26,8 @@ module Flipped
       @spectators = Array.new
       @story_started_at = nil
       @story_name = DEFAULT_STORY_NAME
+
+      @on_chat = @on_connected = @on_disconnected = @on_sid_started = @on_story_started = @on_frame_received = nil
 
       connect
 
@@ -81,7 +84,7 @@ module Flipped
             when Message::Frame
               frame_data = message.frame
               log.info { "Received frame (#{frame_data.size} bytes)" }
-              if defined? @on_frame_received
+              if @on_frame_received
                 @on_frame_received.call(frame_data)
               end
 
@@ -114,6 +117,7 @@ module Flipped
               end
               
               @spectators.push message
+              @on_connected.call(message.id, message.name, message.role) if @on_connected
 
             when Message::Disconnected
               to_remove = @spectators.find {|s| s.id == message.id }
@@ -122,6 +126,9 @@ module Flipped
               @player = nil if to_remove.id == @player.id
               log.info { "Spectator '#{to_remove.name}' disconnected." }
 
+              @on_disconnected.call(message.id) if @on_disconnected
+
+
             when Message::StoryNamed
               @story_name = message.name
               log.info { "Story named as '#{@story_name}'" }
@@ -129,21 +136,26 @@ module Flipped
             when Message::StoryStarted
               @story_started_at = message.started_at
               log.info { "Story '#{@story_name}' started at '#{@story_started_at}'" }
-              if defined? @on_story_started
+              if @on_story_started
                 @on_story_started.call(@story_name, @story_started_at)
               end
 
             when Message::SiDStarted
               log.info { "SiD started by '#{@controller.name}' on port '#{message.port}'" }
-              if defined? @on_sid_started
+              if @on_sid_started
                 @on_sid_started.call(message.port)
+              end
+
+            when Message::Chat
+              if @on_chat_received
+                @on_chat_received.call(message.from, message.to, message.text)
               end
 
             else
               log.error { "Unrecognised message type: #{message.class}" }
           end
         end
-      rescue IOError, SystemCallError => ex
+      rescue Exception => ex
         log.error { "Failed to read message."}
         log.error { ex }
         close
@@ -155,11 +167,7 @@ module Flipped
     # Register event handler for a story starting (first frame written out by player).
     public
     def on_story_started(method = nil, &block)
-      @on_story_started = if block
-        block
-      else
-        method
-      end
+      @on_story_started = block ? block : method
 
       nil
     end
@@ -167,22 +175,36 @@ module Flipped
     # Register event handler for a frame being received.
     public
     def on_frame_received(method = nil, &block)
-      @on_frame_received = if block
-        block
-      else
-        method
-      end
+      @on_frame_received = block ? block : method
 
       nil
     end
 
     # Register event hander for SiD being started on the controller machine.
+    public
     def on_sid_started(method = nil, &block)
-      @on_sid_started = if block
-        block
-      else
-        method
-      end
+      @on_sid_started = block ? block : method
+
+      nil
+    end
+
+    public
+    def on_chat_received(method = nil, &block)
+      @on_chat_received = block ? block : method
+
+      nil
+    end
+
+    public
+    def on_spectator_connected(method = nil, &block)
+      @on_connected = block ? block : method
+
+      nil
+    end
+
+    public
+    def on_spectator_disconnected(method = nil, &block)
+      @on_disconnected = block ? block : method
 
       nil
     end

@@ -15,7 +15,7 @@ describe SpectateServer do
     @log = Logger.new(STDOUT)
     @log.progname = "SPEC SpectateServer"
     @player_name = "Test Server"
-    @server = described_class.new(described_class::DEFAULT_PORT)
+    @server = described_class.new(DEFAULT_FLIPPED_PORT)
   end
 
   after :each do
@@ -24,7 +24,7 @@ describe SpectateServer do
 
   # Run through the process of logging in a player client socket.
   def login(name, role, time_limit = nil)
-    socket = TCPSocket.new('localhost', SpectateServer::DEFAULT_PORT)
+    socket = TCPSocket.new('localhost', DEFAULT_FLIPPED_PORT)
 
     message = Message.read(socket)
     message.should be_a_kind_of Message::Challenge

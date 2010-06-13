@@ -3,6 +3,7 @@ require 'socket'
 require 'mutex_m'
 
 require 'log'
+require 'constants'
 require 'message'
 require 'spectator'
 
@@ -101,56 +102,48 @@ module Flipped
     end
 
     protected
-    def wait_for_player_messages
+    def wait_for_messages
       Thread.new do
-        log.info { "Started waiting for player messages..."}
-        begin
-          loop do
-            case message = Message.read(@player.socket)
-              when Message::Frame
-                @frames.synchronize do
-                  @frames.push message
-                end
-
-                update_spectators
-
-              when Message::StoryStarted
-                @story_started = message
-
-                @spectators.synchronize do
-                  @spectators.each {|s| s.send(message) if s.logged_in? }
-                end
-
-              else
-                log.error { "Unexpected message from player: #{message.class}"}
-            end
-          end
-        rescue IOError, SystemCallError => ex
-          log.error { "Problem when waiting for player updates."}
-          log.error { ex }
-          close
-        end
-      end
-    end
-
-    protected
-    def wait_for_controller_messages
-      Thread.new do
-        log.info { "Started waiting for controller messages..."}
+        log.info { "Started waiting for spectator messages..."}
         begin
           loop do
             case message = Message.read(@controller.socket)
-              when Message::StoryNamed
+              when Message::StoryNamed # Expected from Controller only
                 @story_named = message
 
                 @spectators.synchronize do
                   @spectators.each {|s| s.send(message) if s.logged_in? }
                 end
                 
-              when Message::SiDStarted
+              when Message::SiDStarted # Expected from Controller only
                 @sid_started = message
                 @player.send(message) if @player and @player.logged_in?
 
+              when Message::Frame # Expected from Player only
+                @frames.synchronize do
+                  @frames.push message
+                end
+
+                update_spectators
+
+              when Message::StoryStarted # Expected from Player only
+                @story_started = message
+
+                @spectators.synchronize do
+                  @spectators.each {|s| s.send(message) if s.logged_in? }
+                end
+
+              when Message::Chat # Expected from anyone
+                @spectators.synchronize do
+                  target_id = message.to
+                  if target_id
+                    target = @spectators.find {|s| s.id == target_id }
+                    target.send(message) if target
+                  else
+                    @spectators.each {|s| s.send(message) if s.logged_in? and s.id != message.from }
+                  end
+                end
+                
               else
                 log.error { "Unexpected message from controller: #{message.class}"}
             end
@@ -169,14 +162,12 @@ module Flipped
       case spectator.role
         when :player
           @player = spectator
-          wait_for_player_messages
+
         when :controller
           @controller = spectator
-          wait_for_controller_messages
       end
 
       begin
-
         spectator.send(Message::Accept.new)
 
         message = Message::Connected.new(:name => spectator.name, :id => spectator.id, :role => spectator.role, :time_limit => spectator.time_limit)
@@ -205,6 +196,8 @@ module Flipped
         log.error { ex }
         close
       end
+
+      wait_for_messages
 
       nil
     end

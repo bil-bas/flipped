@@ -15,7 +15,7 @@ describe SpectateClient do
     @log.progname = "SPEC SpectateClient"
 
     @player_name = "Test Server"
-    @server = SpectateServer.new(SpectateServer::DEFAULT_PORT)
+    @server = SpectateServer.new(DEFAULT_FLIPPED_PORT)
   end
 
   after :each do
@@ -23,7 +23,7 @@ describe SpectateClient do
   end
 
   it "should do something" do
-    player = described_class.new('localhost', SpectateServer::DEFAULT_PORT, "Player client", :player, 60)
+    player = described_class.new('localhost', DEFAULT_FLIPPED_PORT, "Player client", :player, 60)
     sleep 0.2
     player.send_frames(@book.frames)
 
@@ -39,7 +39,7 @@ describe SpectateClient do
           FileUtils.rm_r dir if File.exists? dir
         end
 
-        spectator = described_class.new('localhost', SpectateServer::DEFAULT_PORT, "Spectator client #{i}", :spectator, nil)
+        spectator = described_class.new('localhost', DEFAULT_FLIPPED_PORT, "Spectator client #{i}", :spectator, nil)
         spectator.on_story_started do |name, time|
           # TODO: Check this?
         end

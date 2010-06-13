@@ -214,7 +214,7 @@ module Flipped
 
       value :from, nil # ID, player is #0.
       value :to, nil # ID, optional.
-      value :message, nil
+      value :text, nil
     end
 
     # Player kicks a controller/spectator after connection.
