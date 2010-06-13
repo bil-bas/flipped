@@ -4,21 +4,49 @@ require 'sound'
 
 module Flipped
   class OptionsDialog < Dialog
+    public
+    attr_reader :template_directory
     def template_directory
       @template_directory_field.text
     end
 
+    public
+    attr_reader :notification_sound
     def notification_sound
       @notification_sound_field.text
     end
 
+    public
+    def hard_to_quit_mode?
+      @hard_to_quit_mode_target.value
+    end
+
+    public
+    attr_reader :user_name
+    def user_name # :nodoc:
+      @user_name_field.text
+    end
+
+    public
+    attr_reader :flip_book_pattern
+    def flip_book_pattern # :nodoc:
+      @flip_book_pattern_field.text
+    end
+
+    protected
     def initialize(owner, translations, options = {})
       t = translations
       super(owner, t.title, t.accept_button, t.cancel_button)
 
+      # Flip-book options
       add_template_directory(t.template_directory, options[:template_directory])
       add_notification_sound(t.notification_sound, options[:notification_sound])
 
+      # Game options.
+      add_user_name(t.user_name, options[:user_name])
+      add_hard_to_quit_mode(t.hard_to_quit_mode, options[:hard_to_quit_mode])
+      add_flip_book_pattern(t.flip_book_pattern, options[:flip_book_pattern])
+      
       nil
     end
 
@@ -72,6 +100,55 @@ module Flipped
           Sound.play(@notification_sound_field.text)
         end
       end
+
+      nil
+    end
+
+    protected
+    def add_hard_to_quit_mode(t, initial)
+      @hard_to_quit_mode_target = FXDataTarget.new(initial)
+      check = FXCheckButton.new(@grid, t.label, :width => 10,
+                        :target => @hard_to_quit_mode_target, :selector => FXDataTarget::ID_VALUE) do |widget|
+        widget.checkState = widget.target.value
+        widget.tipText = t.tip
+      end
+
+      skip_grid
+      skip_grid
+      skip_grid
+
+      nil
+    end
+
+    protected
+    def add_flip_book_pattern(t, pattern)
+      FXLabel.new(@grid, t.label).tipText = t.tip
+
+      @flip_book_pattern_field = FXTextField.new(@grid, 20, :opts => TEXTFIELD_NORMAL|LAYOUT_RIGHT|LAYOUT_FILL_X) do |widget|
+        widget.text = pattern
+        widget.connect(SEL_VERIFY, method(:verify_text))
+      end
+
+      Button.new(@grid, t.default_button, :opts => LAYOUT_FILL_X).connect(SEL_COMMAND) do |sender, selector, event|
+        @flip_book_pattern_field.text = DEFAULT_FLIP_BOOK_PATTERN.to_s
+      end
+
+      skip_grid
+
+      nil
+    end
+
+    protected
+    def add_user_name(t, initial)
+      FXLabel.new(@grid, t.label).tipText = t.tip
+
+      @user_name_field = FXTextField.new(@grid, 20, :opts => TEXTFIELD_NORMAL|LAYOUT_RIGHT|LAYOUT_FILL_X) do |widget|
+        widget.text = initial
+        widget.connect(SEL_VERIFY, method(:verify_name))
+      end
+
+      skip_grid
+      skip_grid
 
       nil
     end

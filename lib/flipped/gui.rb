@@ -166,11 +166,20 @@ module Flipped
 
     protected
     def on_cmd_settings(sender, selector, event)
-      dialog = OptionsDialog.new(self, t.settings.dialog, :template_directory => @template_directory, :notification_sound => @notification_sound)
+      dialog = OptionsDialog.new(self, t.settings.dialog,
+                                 :template_directory => @template_directory,
+                                 :notification_sound => @notification_sound,
+                                 :user_name => @user_name,
+                                 :flip_book_pattern => @flip_book_pattern,
+                                 :hard_to_quit_mode => @hard_to_quit_mode
+      )
 
       if dialog.execute == 1
         @template_directory = dialog.template_directory
         @notification_sound = dialog.notification_sound
+        @user_name = dialog.user_name
+        @flip_book_pattern = dialog.flip_book_pattern
+        @hard_to_quit_mode = dialog.hard_to_quit_mode?
       end
 
       return 1
@@ -606,12 +615,15 @@ module Flipped
     # Open a new flip-book and monitor it for changes.
     protected
     def on_cmd_play_sid(sender, selector, event)
-      dialog = PlayDialog.new(self, t, :spectate_port => @spectate_port, :user_name => @user_name,
-        :time_limit => @player_time_limit, :screen_width => @player_screen_width, :screen_height => @player_screen_height,
-        :full_screen => @player_full_screen, :hard_to_quit_mode => @hard_to_quit_mode,
+      dialog = PlayDialog.new(self, t,
+        :spectate_port => @spectate_port,
+        :time_limit => @player_time_limit,
+        :screen_width => @player_screen_width,
+        :screen_height => @player_screen_height,
+        :full_screen => @player_full_screen,
         :controller_address => @controller_address,
-        :sid_directory => @player_sid_directory,
-        :flip_book_pattern => @flip_book_pattern)
+        :sid_directory => @player_sid_directory
+      )
 
       return unless dialog.execute == 1
 
@@ -627,10 +639,8 @@ module Flipped
         @player_screen_width = dialog.screen_width
         @player_screen_height = dialog.screen_height
         @player_full_screen = dialog.full_screen?
-        @hard_to_quit_mode = dialog.hard_to_quit_mode?
         @controller_address = dialog.controller_address
         @player_sid_directory = dialog.sid_directory
-        @flip_book_pattern = dialog.flip_book_pattern
 
         @story_ended_at = nil
 
@@ -781,26 +791,38 @@ module Flipped
     # Open a new flip-book and monitor it for changes.
     protected
     def on_cmd_control_sid(sender, selector, event)
-      dialog = ControlDialog.new(self, t, :spectate_port => @spectate_port,
-        :user_name => @user_name, :flip_book_directory => @current_flip_book_directory,
-        :time_limit => @controller_time_limit, :story_name => @story_name,
-        :screen_width => @controller_screen_width, :screen_height => @controller_screen_height,
-        :full_screen => @controller_full_screen, :hard_to_quit_mode => @hard_to_quit_mode,
-        :sid_directory => @controller_sid_directory, :sid_port => @sid_port,
-        :flip_book_pattern => @flip_book_pattern)
+      dialog = ControlDialog.new(self, t,
+                                 :spectate_port => @spectate_port,
+                                 :time_limit => @controller_time_limit,
+                                 :story_name => @story_name,
+                                 :screen_width => @controller_screen_width,
+                                 :screen_height => @controller_screen_height,
+                                 :full_screen => @controller_full_screen,
+                                 :sid_directory => @controller_sid_directory,
+                                 :sid_port => @sid_port
+      )
 
       return unless dialog.execute == 1
       
       begin
+        @spectate_port = dialog.spectate_port
+        @controller_time_limit = dialog.time_limit
+        @story_name = dialog.story_name
+        @controller_screen_width = dialog.screen_width
+        @controller_screen_height = dialog.screen_height
+        @controller_full_screen = dialog.full_screen?
+        @controller_sid_directory = dialog.sid_directory
+        @sid_port = dialog.sid_port        
+
         app.beginWaitCursor do
           # Replace with new book, viewing last frame.
-          @spectate_server = SpectateServer.new(dialog.spectate_port)         
+          @spectate_server = SpectateServer.new(@spectate_port)
           @book = Book.new
           @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
           show_frames(-1)
           disable_monitors
 
-          @spectate_client = SpectateClient.new('localhost', dialog.spectate_port, dialog.user_name, :controller, dialog.time_limit)
+          @spectate_client = SpectateClient.new('localhost', @spectate_port, @user_name, :controller, @controller_time_limit)
           @spectate_client.on_story_started do |name, time|
             request_event(:on_story_started, name, time)
           end
@@ -810,19 +832,7 @@ module Flipped
           @spectate_client.on_chat_received do |from, to, text|
             request_event(:on_chat_received, from, to, text)
           end
-          @spectate_client.story_name = dialog.story_name
-          @spectate_port = dialog.spectate_port
-          @user_name = dialog.user_name
-          @flip_book_pattern = dialog.flip_book_pattern
-
-          @controller_time_limit = dialog.time_limit
-          @controller_screen_width = dialog.screen_width
-          @controller_screen_height = dialog.screen_height
-          @controller_full_screen = dialog.full_screen?
-          @controller_sid_directory = dialog.sid_directory
-          @sid_port = dialog.sid_port
-          @story_name = dialog.story_name
-          @hard_to_quit_mode = dialog.hard_to_quit_mode?
+          @spectate_client.story_name = @story_name
 
           @sid = SiD.new(@controller_sid_directory)
           @sid.port = @sid_port
@@ -862,14 +872,19 @@ module Flipped
     def on_cmd_spectate_sid(sender, selector, event)
       return # TODO: Complete implementation of this.
 
-      dialog = SpectateDialog.new(self, t, :spectate_address => @controller_address, :spectate_port => @spectate_port,
-        :user_name => @user_name, :flip_book_pattern => @flip_book_pattern)
+      dialog = SpectateDialog.new(self, t,
+        :spectate_address => @controller_address,
+        :spectate_port => @spectate_port
+      )
 
       return unless dialog.execute == 1
 
+      @controller_address = dialog.spectate_address
+      @spectate_port = dialog.spectate_port
+
       begin
         app.beginWaitCursor do
-          @spectate_client = SpectateClient.new(dialog.spectate_address, dialog.spectate_port, dialog.user_name, :spectator, nil)
+          @spectate_client = SpectateClient.new(@controller_address, @spectate_port, @user_name, :spectator, nil)
           @spectate_client.on_story_started do |name, time|
             request_event(:on_story_started, name, time)
           end
@@ -880,12 +895,7 @@ module Flipped
           @book = Book.new
           @thumbs_row.children.each {|c| @thumbs_row.removeChild(c) }
           show_frames(-1)
-          disable_monitors          
-          @spectate_client.story_name = dialog.story_name
-          @controller_address = dialog.spectate_address
-          @spectate_port = dialog.spectate_port
-          @user_name = dialog.user_name
-          @flip_book_pattern = dialog.flip_book_pattern
+          disable_monitors
 
           # TODO: How to manage this?
 #          @sid = SiD.new(@controller_sid_directory)

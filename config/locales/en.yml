@@ -113,12 +113,6 @@ game:
       label: Resolution
       default_button: Default resolution
       tip: Resolution of the SleepIsDeath window or the screen resolution if run full-screen
-    hard_to_quit_mode:
-      label: Hard-to-quit mode?
-      tip: 'In hard-to-quit mode, exit the game with the # key instead of <escape>'
-    user_name:
-      label: User name
-      tip: Name you wish to be identified as to other participants
     time_limit:
       label: Time limit (secs)
       default_button: Default limit
@@ -130,10 +124,6 @@ game:
       label: Flipped port
       default_button: Default port
       tip: The network port used by Flipped to communicate, which will need to be forwarded on the controller's machine
-    flip_book_pattern:
-      label: Flip-book template
-      default_button: Default template
-      tip: Template for the name of the flip-book folder created by the game (%s => story name; %p => player name; %c => controller name; %d => date; %t => start time)
     accept_button: "&Start"
     cancel_button: "&Cancel"
 
@@ -304,6 +294,19 @@ settings:
       dialog:
         title: Select a new notification sound
         pattern: "Wav files (*.wav)"
+
+    hard_to_quit_mode:
+      label: Hard-to-quit mode?
+      tip: 'In hard-to-quit mode, exit the game with the # key instead of <escape>'
+
+    user_name:
+      label: User name
+      tip: Name you wish to be identified as to other players
+
+    flip_book_pattern:
+      label: Flip-book template
+      default_button: Default template
+      tip: Template for the name of the flip-book folder created by the game (%s => story name; %p => player name; %c => controller name; %d => date; %t => start time)
 
 # Help menu
 help: "&Help"
