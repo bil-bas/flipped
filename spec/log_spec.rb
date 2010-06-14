@@ -2,7 +2,9 @@ require 'helper'
 
 require 'stringio'
 
-LOG_FILE = StringIO.new
+module Flipped
+  LOG_FILE = StringIO.new
+end
 
 require 'log'
 include Flipped

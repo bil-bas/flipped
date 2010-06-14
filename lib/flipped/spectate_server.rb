@@ -102,12 +102,12 @@ module Flipped
     end
 
     protected
-    def wait_for_messages
+    def wait_for_messages(spectator)
       Thread.new do
         log.info { "Started waiting for spectator messages..."}
         begin
           loop do
-            case message = Message.read(@controller.socket)
+            case message = Message.read(spectator.socket)
               when Message::StoryNamed # Expected from Controller only
                 @story_named = message
 
@@ -140,7 +140,7 @@ module Flipped
                     target = @spectators.find {|s| s.id == target_id }
                     target.send(message) if target
                   else
-                    @spectators.each {|s| s.send(message) if s.logged_in? and s.id != message.from }
+                    @spectators.each {|s| s.send(message) if s.logged_in? and s.id != spectator.id }
                   end
                 end
                 
@@ -197,7 +197,7 @@ module Flipped
         close
       end
 
-      wait_for_messages
+      wait_for_messages(spectator)
 
       nil
     end
