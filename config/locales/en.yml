@@ -74,7 +74,7 @@ control_sid:
     sid_port:
       label: SleepIsDeath port
       default_button: Default port
-      tip:  The network port used by Flipped to communicate, which will need to be forwarded on this machine
+      tip:  The network port used by SleepIsDeath to communicate, which will need to be forwarded on this machine
     
   error:
     title: Control error
