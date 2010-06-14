@@ -1066,7 +1066,7 @@ module Flipped
 
     protected
     def on_mouse_wheel(sender, selector, event)
-      if event.code > 0 or (event.code < 0 and @mouse_wheel_inverted)
+      if (@mouse_wheel_inverted ? event.code < 0 : event.code > 0)
         on_cmd_previous(sender, selector, event)
       else
         on_cmd_next(sender, selector, event)
