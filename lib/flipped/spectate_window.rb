@@ -179,7 +179,7 @@ module Flipped
     public
     def advance_turn(index, name, time_limit)
       role = index.modulo(2) == 0 ? :controller : :player
-      puts t.message.turn(index, name, role, time_limit, index + 1)
+      puts t.message.turn(index, name, t.role[role], time_limit, index + 1)
 
       nil
     end
