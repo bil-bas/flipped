@@ -333,6 +333,19 @@ Author: Spooner (Bil Bas) bil.bagpuss@gmail.com
 Gem libraries: FXRuby, json and r18n. Windows executable generated with Ocra.
 "
 
+spectate_window:
+  initial_title: Waiting for story to start...
+  title: %1
+  message:
+    connected: %1 connected as %2.
+    disconnected: %1 disconnected.
+    says: '%1: %2'
+    whispers: '%1 whispers: %2'
+    emotes: * %1 %2 %3
+  role:
+    player: player
+    controller: controller
+    spectator: spectator
 
 # General strings.
 book:

@@ -504,6 +504,7 @@ module Flipped
           type = controller_turn? ? t.controller : t.player
           setTitle t.title.spectate(@current_frame_index + 1, @book.size, elapsed, type, time_left, current_player_name)
           @frame_label.text = t.book.spectate(@current_frame_index + 1, @book.size, elapsed, type, time_left, current_player_name)
+          @spectate_window.title = t.spectate_window.title(@spectate_client.story_name)
         else
           setTitle t.title.waiting_for_start(@spectate_client.story_name)
           @frame_label.text = t.book.waiting_for_start(@spectate_client.story_name)
@@ -931,7 +932,7 @@ module Flipped
           @spectate_timeout = app.addTimeout(SPECTATE_INTERVAL * 1000, method(:on_spectate_timeout), :repeat => true)
         end
 
-        @spectate_window = SpectateWindow.new(app)
+        @spectate_window = SpectateWindow.new(app, t.spectate_window)
         @spectate_window.create
         @spectate_window.show
         @spectate_window.on_chat_input do |from, to, text|

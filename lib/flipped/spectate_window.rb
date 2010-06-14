@@ -90,10 +90,13 @@ module Flipped
       end
     end
 
-    protected
-    def initialize(app)
-      super(app, self.class.name, :x => 100, :y => 100, :width => 400, :height => 400)
+    # Translation strings.
+    attr_reader :t
 
+    protected
+    def initialize(app, translations)
+      @t = translations
+      super(app, t.initial_title, :x => 100, :y => 100, :width => 400, :height => 400)
       main_frame = FXSplitter.new(self, :opts => SPLITTER_TRACKING|LAYOUT_FILL)
 
       add_chat_frame(main_frame)
@@ -145,10 +148,9 @@ module Flipped
     def chat(from, to, text)
       name = @user_list[from].name
       if to
-        # TODO: internationalise
-        @chat_output.appendText("#{name} whispers: #{text}\n")
+        @chat_output.appendText("#{t.message.whispers(name, text)}\n")
       else
-        @chat_output.appendText("#{name}: #{text}\n")
+        @chat_output.appendText("#{t.message.says(name, text)}\n")
       end
 
       nil
@@ -157,8 +159,7 @@ module Flipped
     public
     def user_connected(id, name, role)
       if @player_id
-        # TODO: internationalise
-        @chat_output.appendText("#{name} connected.\n")
+        @chat_output.appendText("#{t.message.connected(name, t.role[role])}\n")
       else
         @player_id = id 
       end
@@ -169,6 +170,7 @@ module Flipped
 
     public
     def user_disconnected(id)
+      @chat_output.appendText("#{t.message.disconnected(name)}\n")
       @user_list.remove_user(id)
       
       nil
