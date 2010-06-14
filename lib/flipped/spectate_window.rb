@@ -148,9 +148,9 @@ module Flipped
     def chat(from, to, text)
       name = @user_list[from].name
       if to
-        @chat_output.appendText("#{t.message.whispers(name, text)}\n")
+        puts t.message.whispers(name, text)
       else
-        @chat_output.appendText("#{t.message.says(name, text)}\n")
+        puts t.message.says(name, text)
       end
 
       nil
@@ -159,7 +159,7 @@ module Flipped
     public
     def user_connected(id, name, role)
       if @player_id
-        @chat_output.appendText("#{t.message.connected(name, t.role[role])}\n")
+        puts t.message.connected(name, t.role[role])
       else
         @player_id = id 
       end
@@ -170,19 +170,24 @@ module Flipped
 
     public
     def user_disconnected(id)
-      @chat_output.appendText("#{t.message.disconnected(name)}\n")
+      puts t.message.disconnected(name)
       @user_list.remove_user(id)
       
       nil
     end
 
+    public
     def advance_turn(index, name, time_limit)
       role = index.modulo(2) == 0 ? :controller : :player
-      @chat_output.appendText("#{t.message.turn(index, name, role, time_limit, index + 1)}\n")
+      puts t.message.turn(index, name, role, time_limit, index + 1)
 
       nil
     end
 
+    protected
+    def puts(text)
+      @chat_output.appendText("#{text}\n")
+    end
 
     public
     def [](id)
