@@ -776,6 +776,8 @@ module Flipped
         # Always select the last frame.
         show_frames(@book.size - 1)
 
+        @spectate_window.advance_turn(@book.size, current_player_name, current_player_time_limit)
+
         # Player gets notified on their own turn
         if notification_enabled? and player_turn?
           Sound.play(@notification_sound)
@@ -997,6 +999,8 @@ module Flipped
     def on_frame_received(frame_data)
       @book.insert(@book.size, frame_data)
       show_frames(@book.size - 1)
+
+      @spectate_window.advance_turn(@book.size, current_player_name, current_player_time_limit)
 
       # Spectators get all notifications. Controller only gets it on start of their turn.
       if notification_enabled? and (controller_turn? or (not controller?))

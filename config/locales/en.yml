@@ -339,6 +339,7 @@ spectate_window:
   message:
     connected: %1 connected as %2.
     disconnected: %1 disconnected.
+    turn: Turn %1 complete. %2 (%3) now has %4 seconds to complete turn %5.
     says: '%1: %2'
     whispers: '%1 whispers: %2'
     emotes: * %1 %2 %3

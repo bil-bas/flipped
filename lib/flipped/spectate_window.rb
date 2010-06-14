@@ -176,6 +176,14 @@ module Flipped
       nil
     end
 
+    def advance_turn(index, name, time_limit)
+      role = index.modulo(2) == 0 ? :controller : :player
+      @chat_output.appendText("#{t.message.turn(index, name, role, time_limit, index + 1)}\n")
+
+      nil
+    end
+
+
     public
     def [](id)
       @user_list[id]
