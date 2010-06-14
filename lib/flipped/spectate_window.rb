@@ -96,7 +96,7 @@ module Flipped
     protected
     def initialize(app, translations)
       @t = translations
-      super(app, t.initial_title, :x => 100, :y => 100, :width => 400, :height => 400)
+      super(app, t.initial_title, :opts => (DECOR_ALL & ~DECOR_CLOSE), :x => 100, :y => 100, :width => 400, :height => 400)
       main_frame = FXSplitter.new(self, :opts => SPLITTER_TRACKING|LAYOUT_FILL)
 
       add_chat_frame(main_frame)
