@@ -116,17 +116,31 @@ module Flipped
         widget.editable = false      
       end      
 
-      @chat_input = FXTextField.new(chat_frame, 1, :opts => TEXTFIELD_NORMAL|LAYOUT_FILL_X) do |widget|
-        widget.connect(SEL_COMMAND) do |sender, selector, text|
-          if @player_id
-            @on_chat_input.call(@player_id, nil, text) if @on_chat_input
-            chat(@player_id, nil, text)
-            sender.text = ''
-          end
+      input_frame = FXHorizontalFrame.new(chat_frame, :opts => LAYOUT_FILL_X)
+
+      @chat_input = FXTextField.new(input_frame, 1, :opts => TEXTFIELD_NORMAL|LAYOUT_FILL_X) do |widget|
+        widget.connect(SEL_COMMAND, method(:chat_input_handler))
+        widget.connect(SEL_CHANGED) do |sender, selector, text|
+          @chat_send_button.enabled = (not text.empty?)
         end
       end
 
+      @chat_send_button = Button.new(input_frame, t.send_button) do |widget|
+        widget.enabled = false
+        widget.connect(SEL_COMMAND, method(:chat_input_handler))
+      end
+
       nil
+    end
+
+    protected
+    def chat_input_handler(sender, selector, text)
+      if @player_id and not sender.text.empty?
+        @on_chat_input.call(@player_id, nil, text) if @on_chat_input
+        chat(@player_id, nil, text)
+        sender.text = ''
+        @chat_send_button.enabled = false
+      end
     end
 
     protected

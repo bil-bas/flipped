@@ -336,6 +336,7 @@ Gem libraries: FXRuby, json and r18n. Windows executable generated with Ocra.
 spectate_window:
   initial_title: Waiting for story to start...
   title: %1
+  send_button: Send
   message:
     connected: %1 connected as %2.
     disconnected: %1 disconnected.
